@@ -1,8 +1,10 @@
+import ProductSlider from './components/ProductSlider';
+
 export default function HomePage() {
-  return (
-     <main>
-        <h1>Welcome to My Fresh Next.js App</h1>
-        <p>This is the starting page.</p>
-     </main>
-  );
+    return (
+        <main>
+            <h1>Leghetto</h1>
+            <ProductSlider />
+        </main>
+    );
 }
