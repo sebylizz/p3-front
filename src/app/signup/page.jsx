@@ -1,98 +1,110 @@
-// src/app/signup/page.jsx
+"use client";
+
 import React from 'react';
-import { Box, TextField, Button, Typography, Link, Radio, FormControl, FormLabel, RadioGroup, FormControlLabel } from '@mui/material';
+import addCustomer from '../addCustomerFetcher';
+import { Box, TextField, Button, Typography, Link } from '@mui/material';
 
 export default function SignUp() {
 
-    //onclick function here
+async function passData(event) {
 
-    return (
-        <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            height="85vh"
-            bgcolor="#f5f5f5"
-        >
-            <Box
-                p={4}
-                bgcolor="white"
-                borderRadius={2}
-                boxShadow={3}
-                width="100%"
-                maxWidth="400px"
-            >
+  // Prevents the default form submission behavior
+  event.preventDefault();
 
+  let newSignUp = {};
+  newSignUp.firstName = document.getElementById("FirstName").value;
+  newSignUp.lastName = document.getElementById("LastName").value;
+  newSignUp.email = document.getElementById("Email").value;
+  newSignUp.password = document.getElementById("Password").value;
 
-                <form>
-                    {/* Name Field */}
-                    <TextField
-                        label="Name"
-                        type="text"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        required
-                    />
+  await addCustomer(newSignUp);
+}
 
-                    {/* Email Field */}
-                    <TextField
-                        label="Email"
-                        type="email"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        required
-                    />
+  return (
+    <Box 
+      display="flex" 
+      justifyContent="center" 
+      alignItems="center" 
+      height="85vh" 
+      bgcolor="#f5f5f5"
+    >
+      <Box 
+        p={4} 
+        bgcolor="white" 
+        borderRadius={2} 
+        boxShadow={3} 
+        width="100%" 
+        maxWidth="400px"
+      >
 
-                    {/* Password Field */}
-                    <TextField
-                        label="Password"
-                        type="password"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        required
-                    />
-                    {/* Newsletter check */}
-                    <FormControl>
-                        <FormLabel id="newsLetter_Check" sx={{ fontWeight: 'bold'}}>Sign up to newsletter</FormLabel>
-                        <RadioGroup
-                            row
-                            required
-                            aria-labelledby="demo-radio-buttons-group-label"
-                            name="newsletter check"
-                        >
-                            <FormControlLabel value="yes" control={<Radio />} label="yes" sx={{ fontWeight: 'bold', color: 'black' }} />
-                            <FormControlLabel value="no" control={<Radio />} label="no" sx={{ fontWeight: 'bold', color: 'black' }}/>
-                        </RadioGroup>
-                    </FormControl>
+        
+        <form onSubmit={passData}>
+          {/* First Name Field */}
+          <TextField
+            id="FirstName"
+            label="FirstName"
+            type="text"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            required
+          />
 
+          {/* Last Name Field */}
+          <TextField
+            id="LastName"
+            label="LastName"
+            type="text"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            required
+          />
 
+          {/* Email Field */}
+          <TextField
+            id="Email"
+            label="Email"
+            type="email"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            required
+          />
 
-                    {/* Sign Up Button */}
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                        type="submit"
-                        sx={{ mt: 2, mb: 1 }}
-                    //add onclick here
-                    >
-                        Sign Up
-                    </Button>
-                </form>
+          {/* Password Field */}
+          <TextField
+            id="Password"
+            label="Password"
+            type="password"
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            required
+          />
 
-                {/* Link to Login Page */}
-                <Box mt={2} textAlign="center">
-                    <Typography variant="body2" sx={{ fontWeight: 'bold', color: 'black' }}>
-                        Already have an account?{' '}
-                        <Link href="/login" underline="hover">
-                            Log In
-                        </Link>
-                    </Typography>
-                </Box>
-            </Box>
+          {/* Sign Up Button */}
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            type="submit"
+            sx={{ mt: 2, mb: 1 }}
+          >
+            Sign Up
+          </Button>
+        </form>
+
+        {/* Link to Login Page */}
+        <Box mt={2} textAlign="center">
+          <Typography variant="body2">
+            Already have an account?{' '}
+            <Link href="/login" underline="hover">
+              Log In
+            </Link>
+          </Typography>
         </Box>
-    );
+      </Box>
+    </Box>
+  );
 }
