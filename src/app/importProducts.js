@@ -1,5 +1,5 @@
 function productFetcher() {
-    return fetch("https://kjaeldgaard.com/leghetto/products/getproducts")
+    return fetch("http://localhost:8080/products/getproducts")
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -19,7 +19,6 @@ function productFetcher() {
                 products.push(product);
             }
 
-            console.log(products);
             return products;
 
         })
