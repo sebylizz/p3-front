@@ -26,8 +26,8 @@ export default function ForgotPassword() {
         width="100%" 
         maxWidth="400px"
       >
-        <Typography variant="h5" component="h1" gutterBottom align="center">
-          Forgot Password?
+        <Typography variant="h5" component="h1" gutterBottom align="center" sx={{ fontWeight: 'bold', color: 'black'}}>
+          Submit Email for password reset
         </Typography>
         
         <form onSubmit={handleSubmit}>
