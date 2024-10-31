@@ -13,14 +13,14 @@ const contactOptions = [
     icon: () => <SfIconInstagram size="lg" style={{ width: '24px', height: '24px' }} />,
   },
   {
-    label: 'Leghetto.lsh@gmail.com',
-    link: '#',
+    label: 'leghetto.lsh@gmail.com',
+    link: 'mailto:leghetto.lsh@gmail.com',
     details: [],
     icon: () => <SfIconEmail size="lg" style={{ width: '24px', height: '24px' }} />,
   },
   {
     label: '(+45) 60884354',
-    link: '#',
+    link: 'tel:+4560884354',
     details: [],
     icon: () => <SfIconCall size="lg" style={{ width: '24px', height: '24px' }} />,
   },
@@ -28,11 +28,21 @@ const contactOptions = [
 
 export default function FooterBasic() {
   return (
-    <footer className="bg-neutral-100">
+    <footer
+      style={{
+        position: 'fixed',
+        bottom: 0,
+        width: '100%',
+        zIndex: 10,
+        backgroundColor: '#f5f5f5',
+      }}
+    >
       <div className="md:flex md:mx-auto max-w-[1536px]">
         {contactOptions.map(({ label, icon: Icon, link, details }) => (
           <div className="flex flex-col items-center mx-auto my-4 text-center" key={label}>
-            <Icon />
+            <SfLink href={link} target="_blank" rel="noopener noreferrer">
+              <Icon />
+            </SfLink>
             <p className="py-1 my-2 font-medium typography-text-lg font-body">
               <SfLink
                 variant="secondary"
