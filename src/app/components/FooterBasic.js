@@ -34,7 +34,7 @@ export default function FooterBasic() {
         bottom: 0,
         width: '100%',
         zIndex: 10,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: 'white',
       }}
     >
       <div className="md:flex md:mx-auto max-w-[1536px]">

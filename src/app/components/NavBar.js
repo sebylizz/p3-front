@@ -1,4 +1,5 @@
 'use client';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import {
   SfButton,
@@ -11,7 +12,7 @@ import {
 
 export default function TopNav() {
   const [inputValue, setInputValue] = useState('');
-
+  const router = useRouter();
   const actionItems = [
     {
         icon: <SfIconShoppingCart />,
@@ -29,11 +30,14 @@ export default function TopNav() {
 
   const handleButtonClick = (role) => {
     if (role === 'login') {
-        console.log('Login clicked');
+        console.log('Login clicked'); //go to login page
+        router.push('/login');
     } else if( role === 'cart') {
-        console.log('cart clicked');
+        console.log('cart clicked'); // go to checkout page
+        router.push('/checkout'); 
     } else {
-        console.log('logo clicked');
+        console.log('logo clicked'); // Return to homepage
+        window.location.href = '/'; 
     }
    };
 
