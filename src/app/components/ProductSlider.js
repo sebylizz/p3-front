@@ -1,95 +1,56 @@
-import penisProducts from '../importProducts.js';
+'use client';
 
-import {
-    SfLink,
-    SfButton,
-    SfIconFavorite,
-    SfIconChevronLeft,
-    SfIconChevronRight,
-    SfScrollable,
-} from '@storefront-ui/react';
-import classNames from 'classnames';
+import React, { useEffect, useState } from 'react';
+import productFetcher from '../importProducts'; // adjust the path as needed
+import { Grid, Card, CardMedia, CardContent, Typography, CircularProgress } from '@mui/material';
 
+const ProductSlider = () => {
+    const [products, setProducts] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-function ButtonPrev({ disabled = false, ...attributes }) {
+    useEffect(() => {
+        productFetcher().then(data => {
+            setProducts(data);
+            setLoading(false);
+        });
+    }, []);
+
+    if (loading) {
+        return <CircularProgress />;
+    }
+
     return (
-        <SfButton
-            className={classNames('absolute !rounded-full z-10 left-4 bg-white hidden md:block', {
-                '!hidden': disabled,
-            })}
-            variant="secondary"
-            size="lg"
-            square
-            {...attributes}
-        >
-            <SfIconChevronLeft />
-        </SfButton>
-    );
-}
-
-function ButtonNext({ disabled = false, ...attributes }) {
-    return (
-        <SfButton
-            className={classNames('absolute !rounded-full z-10 right-4 bg-white hidden md:block', {
-                '!hidden': disabled,
-            })}
-            variant="secondary"
-            size="lg"
-            square
-            {...attributes}
-        >
-            <SfIconChevronRight />
-        </SfButton>
-    );
-}
-
-export default async function ProductSliderBasic() {
-    let products = penisProducts();
-    return penisProducts().then((data) => {
-        products = data;
-        return (
-            <SfScrollable
-                className="m-auto py-4 items-center w-full [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
-                buttons-placement="floating"
-                drag
-                slotPreviousButton={<ButtonPrev />}
-                slotNextButton={<ButtonNext />}
-            >
-                {products.map(({ id, name, price, size, img }) => (
-                    <div
-                        key={id}
-                        className="first:ms-auto last:me-auto ring-1 ring-inset ring-neutral-200 shrink-0 rounded-md hover:shadow-lg w-[148px] lg:w-[192px]"
-                    >
-                        <div className="relative">
-                            <SfLink href="#" className="block">
-                                <img
-                                    src={img}
-                                    alt={name}
-                                    className="block object-cover h-auto rounded-md aspect-square lg:w-[190px] lg:h-[190px]"
-                                    width="146"
-                                    height="146"
+        <div style={{ minHeight: '70vh', paddingTop: '20px', paddingBottom: '20px', marginLeft: '10%', marginRight: '10%' }}>
+            <Grid container spacing={2}>
+                {products.map((product) => (
+                    <Grid item xs={12} sm={6} md={4} key={product.id}>
+                        <Card style={{ margin: '10px' }}>
+                            <div style={{ position: 'relative', paddingTop: '100%' }}>
+                                <CardMedia
+                                    component="img"
+                                    image={product.img}
+                                    alt={product.name}
+                                    style={{
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover'
+                                    }}
                                 />
-                            </SfLink>
-                            <SfButton
-                                variant="tertiary"
-                                size="sm"
-                                square
-                                className="absolute bottom-0 right-0 mr-2 mb-2 bg-white border border-neutral-200 !rounded-full"
-                                aria-label="Add to wishlist"
-                            >
-                                <SfIconFavorite size="sm" />
-                            </SfButton>
-                        </div>
-                        <div className="p-2 border-t border-neutral-200 typography-text-sm">
-                            <SfLink href="#" variant="secondary" className="no-underline">
-                                {name}
-                            </SfLink>
-                            <span className="block mt-2">{size}</span>
-                            <span className="block mt-2 font-bold">{price}</span>
-                        </div>
-                    </div>
+                            </div>
+                            <CardContent>
+                                <Typography variant="h6">{product.name}</Typography>
+                                <Typography variant="body2">Size: {product.size}</Typography>
+                                <Typography variant="body2">Price: {product.price} DKK</Typography>
+                            </CardContent>
+                        </Card>
+                    </Grid>
                 ))}
-            </SfScrollable>
-        );
-    });
-}
+            </Grid>
+        </div>
+    );
+};
+
+export default ProductSlider;
