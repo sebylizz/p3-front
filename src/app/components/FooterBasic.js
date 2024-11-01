@@ -30,11 +30,9 @@ export default function FooterBasic() {
   return (
     <footer
       style={{
-        position: 'fixed',
-        bottom: 0,
         width: '100%',
-        zIndex: 10,
         backgroundColor: 'white',
+        marginTop: '20px',
       }}
     >
       <div className="md:flex md:mx-auto max-w-[1536px]">
