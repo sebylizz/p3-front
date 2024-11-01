@@ -19,4 +19,4 @@ async function addCustomer(data) {
     }
   }
 
-export default addCustomer;dsadsa
+export default addCustomer;
