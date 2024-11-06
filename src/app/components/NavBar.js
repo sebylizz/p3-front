@@ -8,6 +8,7 @@ export default function TopNav() {
   const rightNavItems = [
     { icon: <SfIconShoppingCart />, label: 'Cart', ariaLabel: 'Cart', role: 'cart' },
     { icon: <SfIconPerson />, label: 'Log in', ariaLabel: 'Log in', role: 'login' },
+    { icon: <SfIconPerson />, label: 'Account', ariaLabel: 'Account', role: 'account' },
   ];
 
   const handleButtonClick = (role) => {
@@ -15,6 +16,8 @@ export default function TopNav() {
       router.push('/login');
     } else if (role === 'cart') {
       router.push('/checkout');
+    } else if (role === 'account') {
+      router.push('/account');
     } else {
       window.location.href = '/';
     }

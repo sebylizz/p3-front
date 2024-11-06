@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import addCustomer from '../addCustomerFetcher';
+import addCustomer from '../../addCustomerFetcher';
 import { Box, TextField, Button, Typography, Link } from '@mui/material';
 
 export default function SignUp() {
