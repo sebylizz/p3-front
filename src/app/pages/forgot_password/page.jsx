@@ -11,25 +11,25 @@ export default function ForgotPassword() {
   };
 
   return (
-    <Box 
-      display="flex" 
-      justifyContent="center" 
-      alignItems="center" 
-      height="100vh" 
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      height="100vh"
       bgcolor="#f5f5f5"
     >
-      <Box 
-        p={4} 
-        bgcolor="white" 
-        borderRadius={2} 
-        boxShadow={3} 
-        width="100%" 
+      <Box
+        p={4}
+        bgcolor="white"
+        borderRadius={2}
+        boxShadow={3}
+        width="100%"
         maxWidth="400px"
       >
-        <Typography variant="h5" component="h1" gutterBottom align="center" sx={{ fontWeight: 'bold', color: 'black'}}>
+        <Typography variant="h5" component="h1" gutterBottom align="center" sx={{ fontWeight: 'bold', color: 'black' }}>
           Submit Email for password reset
         </Typography>
-        
+
         <form onSubmit={handleSubmit}>
           {/* Email Field */}
           <TextField

@@ -1,43 +1,43 @@
 "use client";
 
 import React from 'react';
-import addCustomer from '../../addCustomerFetcher';
+import addCustomer from '../../functions/addCustomerFetcher';
 import { Box, TextField, Button, Typography, Link } from '@mui/material';
 
 export default function SignUp() {
 
-async function passData(event) {
+  async function passData(event) {
 
-  // Prevents the default form submission behavior
-  event.preventDefault();
+    // Prevents the default form submission behavior
+    event.preventDefault();
 
-  let newSignUp = {};
-  newSignUp.firstName = document.getElementById("FirstName").value;
-  newSignUp.lastName = document.getElementById("LastName").value;
-  newSignUp.email = document.getElementById("Email").value;
-  newSignUp.password = document.getElementById("Password").value;
-  console.log("nigga" + newSignUp);
-  await addCustomer(newSignUp);
-}
+    let newSignUp = {};
+    newSignUp.firstName = document.getElementById("FirstName").value;
+    newSignUp.lastName = document.getElementById("LastName").value;
+    newSignUp.email = document.getElementById("Email").value;
+    newSignUp.password = document.getElementById("Password").value;
+    console.log("nigga" + newSignUp);
+    await addCustomer(newSignUp);
+  }
 
   return (
-    <Box 
-      display="flex" 
-      justifyContent="center" 
-      alignItems="center" 
-      height="85vh" 
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      height="85vh"
       bgcolor="#f5f5f5"
     >
-      <Box 
-        p={4} 
-        bgcolor="white" 
-        borderRadius={2} 
-        boxShadow={3} 
-        width="100%" 
+      <Box
+        p={4}
+        bgcolor="white"
+        borderRadius={2}
+        boxShadow={3}
+        width="100%"
         maxWidth="400px"
       >
 
-        
+
         <form onSubmit={passData}>
           {/* First Name Field */}
           <TextField
