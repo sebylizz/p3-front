@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import productFetcher from '../importProducts'; // adjust the path as needed
+import productFetcher from '../lib/importProducts';
 import { Grid, Card, CardMedia, CardContent, Typography, CircularProgress } from '@mui/material';
 
 const ProductSlider = () => {
