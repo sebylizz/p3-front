@@ -115,13 +115,21 @@ export default function AdminProducts() {
           Sort by
         </h6>
         <div className="px-4">
-          <SfSelect aria-label="Sort by" value={sortOption} onChange={handleSortChange}>
-            {sortingOptions.map((option) => (
-              <option value={option.value} key={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </SfSelect>
+        <label htmlFor="sortOptions">Sort by</label>
+        <select
+          id="sortOptions"
+          aria-label="Sort by"
+          value={sortOption}
+          onChange={handleSortChange}
+        >
+          <option value="relevance">Relevance</option>
+          <option value="price low to high">Price: Low to High</option>
+          <option value="price high to low">Price: High to Low</option>
+          <option value="quantity high to low">Quantity: High to Low</option>
+          <option value="name">Name</option>
+          <option value="quantity low to high">Quantity: Low to High</option>
+        </select>
+
         </div>
       </div>
 

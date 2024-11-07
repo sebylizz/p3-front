@@ -11,7 +11,7 @@ export async function POST(request) {
       return NextResponse.json({ error: "No filename provided" }, { status: 400 });
     }
 
-    const filePath = path.join(process.cwd(), "public/uploads", filename);
+    const filePath = path.join(process.cwd(), "public", filename);
 
     // Delete the file
     await unlink(filePath);

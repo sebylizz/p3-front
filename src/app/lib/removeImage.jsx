@@ -2,7 +2,7 @@
 
 async function removeImage(imageName) {
     try {
-      const response = await fetch("/api/delete", {
+      const response = await fetch("/lib/delete", {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ filename: imageName }),
