@@ -1,41 +1,35 @@
-// src/app/components/RightNav.js
+'use client'
 
-import { useRouter } from 'next/navigation';
 import { SfIconShoppingCart, SfIconPerson } from '@storefront-ui/react';
+import isLoggedIn from '../lib/isLoggedIn';  // Server-side login check
+import { useEffect, useState } from 'react';
+import RightNavButton from '../components/RightNavButton';
 
-export default function RightNav({ isLoggedIn }) {
-    const router = useRouter();
+export default function RightNav() {
+    const [loggedIn, setLoggedIn] = useState(null);
+    useEffect(() => {
+        const fetchLoginStatus = async () => {
+            const loginStatus = await isLoggedIn();
+            setLoggedIn(loginStatus);
+        };
 
-    const handleButtonClick = (role) => {
-        if (role === 'login') {
-          router.push('/login');
-        } else if (role === 'cart') {
-          router.push('/checkout');
-        } else if (role === 'account') {
-          router.push('/account');
-        } else {
-          window.location.href = '/';
-        }
-      };
+        fetchLoginStatus();
+    }, []);
 
-  const rightNavItems = [
-    { icon: <SfIconShoppingCart />, label: 'Cart', ariaLabel: 'Cart', role: 'cart' },
-    isLoggedIn
-      ? { icon: <SfIconPerson />, label: 'Account', ariaLabel: 'Account', role: 'account' }
-      : { icon: <SfIconPerson />, label: 'Log in', ariaLabel: 'Log in', role: 'login' }
-  ];
+    if (loggedIn === null) {
+        return;  // Optionally show a loading indicator
+    }
 
-  return (
-    <>
-      {rightNavItems.map((item) => (
-        <button
-          key={item.ariaLabel}
-          aria-label={item.ariaLabel}
-          onClick={() => handleButtonClick(item.role)}
-        >
-          {item.icon} {item.label}
-        </button>
-      ))}
-    </>
-  );
+    const rightNavItems = [
+        { icon: <SfIconShoppingCart />, label: 'Cart', ariaLabel: 'Cart', role: 'cart' },
+        loggedIn ? { icon: <SfIconPerson />, label: 'Account', ariaLabel: 'Account', role: 'account' } : { icon: <SfIconPerson />, label: 'Log in', ariaLabel: 'Log in', role: 'login' }
+    ];
+
+    return (
+        <>
+            {rightNavItems.map((item) => (
+                <RightNavButton key={item.ariaLabel} item={item} />
+            ))}
+        </>
+    );
 }

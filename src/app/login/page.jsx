@@ -42,7 +42,6 @@ export default function Login() {
             justifyContent="center"
             alignItems="center"
             height="85vh"
-            bgcolor="black"
         >
             <Box
                 p={4}
