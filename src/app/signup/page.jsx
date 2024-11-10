@@ -16,7 +16,6 @@ export default function SignUp() {
         newSignUp.lastName = document.getElementById("LastName").value;
         newSignUp.email = document.getElementById("Email").value;
         newSignUp.password = document.getElementById("Password").value;
-        console.log("nigga" + newSignUp);
         await addCustomer(newSignUp);
     }
 
