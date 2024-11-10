@@ -5,18 +5,14 @@ export default async function addCustomer(data) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify( data ), // Use parameters in the request body
+            body: JSON.stringify(data)
         });
 
         if (!response.ok) {
-            // If response is not ok, return an error indicator
             return { success: false };
+        } else {
+            return { success: true };
         }
-
-        const result = await response.json();
-
-        // Return success if the login succeeded
-        return { success: true, data: result };
     } catch (error) {
         console.error('Error login:', error);
         return { success: false };

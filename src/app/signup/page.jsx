@@ -18,10 +18,11 @@ export default function SignUp() {
         const email = document.getElementById("Email").value;
 
         // Email validation
-        const isEmailValid = email.includes("@");
+        const pattern = RegExp("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+        const isEmailValid = pattern.test(email);
         if (!isEmailValid) {
-            setEmailError(true); // Show email error if "@" is missing
-            return; // Stop the form submission
+            setEmailError(true);
+            return;
         } else {
             setEmailError(false); // Reset email error
         }
