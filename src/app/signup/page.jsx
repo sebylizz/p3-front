@@ -11,6 +11,7 @@ export default function SignUp() {
     async function passData(event) {
         event.preventDefault();
 
+<<<<<<< HEAD
         const firstName = document.getElementById("FirstName").value;
         const lastName = document.getElementById("LastName").value;
         const password = document.getElementById("Password").value;
@@ -43,6 +44,14 @@ export default function SignUp() {
         } else {
             setPasswordError(true); // Show password mismatch error
         }
+=======
+        let newSignUp = {};
+        newSignUp.firstName = document.getElementById("FirstName").value;
+        newSignUp.lastName = document.getElementById("LastName").value;
+        newSignUp.email = document.getElementById("Email").value;
+        newSignUp.password = document.getElementById("Password").value;
+        await addCustomer(newSignUp);
+>>>>>>> main
     }
 
     return (
