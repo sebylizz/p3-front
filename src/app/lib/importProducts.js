@@ -1,3 +1,7 @@
+'use server'
+
+import fs from 'fs';
+
 function productFetcher() {
     return fetch("http://localhost:8080/products/getproducts")
         .then(response => {
@@ -15,7 +19,12 @@ function productFetcher() {
                 product.name = data[i].name;
                 product.size = data[i].size;
                 product.price = data[i].price;
-                product.img = data[i].image || "placeholder.jpg";
+
+                if (!fs.existsSync('./' + data[i].image)) {
+                    product.img = 'placeholder.jpg';
+                } else {
+                    product.img = data[i].image;
+                }
                 products.push(product);
             }
 
