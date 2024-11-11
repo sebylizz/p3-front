@@ -1,7 +1,7 @@
 'use client'
 
 import { SfIconShoppingCart, SfIconPerson } from '@storefront-ui/react';
-import isLoggedIn from '../lib/isLoggedIn';  // Server-side login check
+import isLoggedIn from '../lib/isTokenValid.js';  // Server-side login check
 import { useEffect, useState } from 'react';
 import RightNavButton from '../components/RightNavButton';
 
