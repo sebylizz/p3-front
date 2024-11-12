@@ -1,22 +1,19 @@
 'use client';
 import React, { useEffect, useState } from 'react';
 import fetchCustomer from '../../lib/fetchCustomer';
-//import editCustomer from '.../lib/editCustomer';
+import editCustomer from '../../lib/editCustomer';
 
 export default function EditAccount() {
-    
-    const [user, setUser] = useState(null);  // This is to store the user data
-    const [isEditing, setIsEditing] = useState({
-        name: false,
-        lastname: false,
-        email: false
-    });
+    const temp = {};
+    temp.firstName = '';
+    temp.lastName = '';
+    temp.email = '';
+    const [user, setUser] = useState(temp);  // This is to store the user data
 
     useEffect(() => {
-        // Create an async function to fetch user data
+        //async function to fetch user data
         const fetchCustomerData = async () => {
             try {
-                // Assuming fetchCustomer is a function that fetches user data
                 const fetchedUser = await fetchCustomer();  
                 setUser(fetchedUser);  // Update state with the fetched user data
             } catch (error) {
@@ -28,19 +25,26 @@ export default function EditAccount() {
     }, []);  // Empty dependency array means it will run only once, when the component mounts
 
     
-
-    const handleEdit = (field) => {
-        setIsEditing(prev => ({ ...prev, [field]: true }));
+    const handleSaveChanges = async () => {
+        try {
+            await editCustomer(user); // Call editCustomer with updated user data
+            setOriginalUser(user); // Update originalUser to match saved data
+        } catch (error) {
+            console.error('Error saving customer data:', error);
+        }
     };
 
-    const handleSaveChanges = () => {
-        // Logic for saving changes
-        setIsEditing({ name: false, lastname: false, email: false });
+    
+
+    const handleInputChange = (field, value) => {
+        setUser(prevUser => ({
+            ...prevUser,
+            [field]: value
+        }));
     };
 
     const handleDiscardChanges = () => {
-        // Logic for discarding changes
-        setIsEditing({ name: false, lastname: false, email: false });
+        setUser(originalUser); // Reset user data to the original fetched data
     };
 
     return (
@@ -52,19 +56,15 @@ export default function EditAccount() {
                     <input
                         type="text"
                         value={user.firstName}
-                        readOnly={!isEditing.name}
+                        onChange={(e) => handleInputChange('firstName', e.target.value)}
                         style={{
                             flex: 1,
                             padding: '10px',
                             fontSize: '16px',
                             textAlign: 'center',
-                            backgroundColor: isEditing.name ? 'white' : '#f0f0f0',
-                            border: isEditing.name ? '1px solid #000' : 'none'
                         }}
                     />
-                    <button onClick={() => handleEdit('name')} className="account-edit-editbutton">
-                        Edit
-                    </button>
+                    
                 </div>
 
                 {/* Last Name Box */}
@@ -72,19 +72,15 @@ export default function EditAccount() {
                     <input
                         type="text"
                         value={user.lastName}
-                        readOnly={!isEditing.lastname}
+                        onChange={(e) => handleInputChange('lastName', e.target.value)}
                         style={{
                             flex: 1,
                             padding: '10px',
                             fontSize: '16px',
                             textAlign: 'center',
-                            backgroundColor: isEditing.lastname ? 'white' : '#f0f0f0',
-                            border: isEditing.lastname ? '1px solid #000' : 'none'
                         }}
                     />
-                    <button onClick={() => handleEdit('lastname')} className="account-edit-editbutton">
-                        Edit
-                    </button>
+                    
                 </div>
 
                 {/* Email Box */}
@@ -92,26 +88,22 @@ export default function EditAccount() {
                     <input
                         type="email"
                         value={user.email}
-                        readOnly={!isEditing.email}
+                        onChange={(e) => handleInputChange('email', e.target.value)}
                         style={{
                             flex: 1,
                             padding: '10px',
                             fontSize: '16px',
                             textAlign: 'center',
-                            backgroundColor: isEditing.email ? 'white' : '#f0f0f0',
-                            border: isEditing.email ? '1px solid #000' : 'none'
+                            border: 'black',
                         }}
                     />
-                    <button onClick={() => handleEdit('email')} className="account-edit-editbutton">
-                        Edit
-                    </button>
+                    
                 </div>
 
                 {/* Save and Discard Buttons */}
-                {(isEditing.name || isEditing.lastname || isEditing.email) && (
                     <div style={{ display: 'flex', gap: '10px', marginTop: '20px', justifyContent: 'center' }}>
                         <button
-                            onClick={handleSaveChanges}
+                            onClick={handleSaveChanges()}
                             style={{ padding: '10px', fontSize: '16px', cursor: 'pointer', backgroundColor: 'green', color: 'white' }}
                         >
                             Save Changes
@@ -123,11 +115,10 @@ export default function EditAccount() {
                             Discard Changes
                         </button>
                     </div>
-                )}
+                
 
                 {/* Delete Account Button */}
                 <button
-                    onClick={() => alert('Delete Account Logic Here')}
                     style={{
                         padding: '10px',
                         fontSize: '16px',
