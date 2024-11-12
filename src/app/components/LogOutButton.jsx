@@ -1,4 +1,3 @@
-// components/LogOutButton.jsx
 'use client'; // Mark this as a Client Component
 
 import React, { useCallback } from 'react';
