@@ -29,6 +29,7 @@ const ProductSlider = () => {
                                 <CardMedia
                                     component="img"
                                     image={product.img}
+                                    onError={(e) => e.target.src = 'placeholder.jpg'}
                                     alt={product.name}
                                     style={{
                                         position: 'absolute',

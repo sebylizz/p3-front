@@ -1,8 +1,4 @@
-'use server'
-
-import fs from 'fs';
-
-function productFetcher() {
+async function productFetcher() {
     return fetch("http://localhost:8080/products/getproducts")
         .then(response => {
             if (!response.ok) {
@@ -10,8 +6,7 @@ function productFetcher() {
             }
             return response.json();
         })
-        .then(data => {
-
+        .then(async data => {
             let products = [];
             for (let i = 0; i < data.length; i++) {
                 let product = {};
@@ -19,12 +14,7 @@ function productFetcher() {
                 product.name = data[i].name;
                 product.size = data[i].size;
                 product.price = data[i].price;
-
-                if (!fs.existsSync('./' + data[i].image)) {
-                    product.img = 'placeholder.jpg';
-                } else {
-                    product.img = data[i].image;
-                }
+                product.img = data[i].image;
                 products.push(product);
             }
 

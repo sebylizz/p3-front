@@ -23,7 +23,6 @@ export default function Login() {
 
             // If login is successful, redirect to the main page
             if (result.success) {
-                await cook(result.data.token);
                 window.location.href = '/'; // Redirect to main page
             } else {
                 // Set error message if login fails
