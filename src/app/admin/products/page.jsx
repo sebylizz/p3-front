@@ -172,8 +172,8 @@ export default function AdminProducts() {
                   />
                 </td>
                 <td className="border border-gray-300 px-4 py-2">{product.name}</td>
-                <td className="border border-gray-300 px-4 py-2">{product.price}</td>
-                <td className="border border-gray-300 px-4 py-2">{product.quantity}</td>
+                <td className="border border-gray-300 px-4 py-2">{product.price || 0}</td>
+                <td className="border border-gray-300 px-4 py-2">{product.quantity || 0}</td>
                 <td className="border border-gray-300 px-4 py-2">
                   <button
                     className="bg-red-500 text-white px-2 py-1 rounded mr-2"

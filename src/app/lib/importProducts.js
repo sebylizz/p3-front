@@ -16,6 +16,7 @@ function productFetcher() {
                 product.size = data[i].size;
                 product.price = data[i].price;
                 product.img = data[i].image || "placeholder.jpg";
+                product.main_image= data[i].mainImage;
                 products.push(product);
             }
 

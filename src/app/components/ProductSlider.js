@@ -28,7 +28,7 @@ const ProductSlider = () => {
                             <div style={{ position: 'relative', paddingTop: '100%' }}>
                                 <CardMedia
                                     component="img"
-                                    image={product.img}
+                                    image={product.main_image}
                                     alt={product.name}
                                     style={{
                                         position: 'absolute',

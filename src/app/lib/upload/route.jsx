@@ -5,8 +5,11 @@ import { existsSync } from "fs";
 
 export const POST = async (request) => {
   try {
+    const formData = await request.formData();
     // Define the path to the "public/uploads" directory
-    const uploadsDir = path.join(process.cwd(), "public");
+    const folderName = formData.get("folderName"); 
+    const uploadsDir = path.join(process.cwd(), `public/${folderName}`);
+
     console.log("hej");
 
     // Check if the "public/uploads" directory exists; if not, create it
@@ -14,7 +17,6 @@ export const POST = async (request) => {
       await mkdir(uploadsDir, { recursive: true }); // Create the directory, including parent directories if needed
     }
 
-    const formData = await request.formData();
     const uploadedFiles = [];
 
     // Loop through all form data entries

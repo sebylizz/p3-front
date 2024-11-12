@@ -5,13 +5,13 @@ import { NextResponse } from "next/server";
 
 export async function POST(request) {
   try {
-    const { filename } = await request.json();
+    const { filename, folderName } = await request.json();
 
     if (!filename) {
       return NextResponse.json({ error: "No filename provided" }, { status: 400 });
     }
 
-    const filePath = path.join(process.cwd(), "public", filename);
+    const filePath = path.join(process.cwd(), `public/${folderName}`, filename);
 
     // Delete the file
     await unlink(filePath);

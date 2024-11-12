@@ -1,9 +1,10 @@
-async function uploadImages (images) {
+async function uploadImages (images, id) {
     try {
       const formData = new FormData();
       images.forEach((image) => {
         formData.append("file", image);
       });
+      formData.append("folderName", id);
   
       const response = await fetch("/lib/upload", {
         method: "POST",

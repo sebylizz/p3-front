@@ -12,6 +12,7 @@ export default function AddProduct() {
   const [name, setName] = useState('');
   const [size, setSize] = useState('');
   const [price, setPrice] = useState(0);  // Initialized to 0
+  const [mainImage, setMainImage] = useState(null);
   const [images, setImages] = useState([]); 
   const [quantity, setQuantity] = useState(0);  // Initialized to 0
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
@@ -37,35 +38,41 @@ export default function AddProduct() {
       return;
     }  
   
-    if (images.length === 0) {
+    if (mainImage.length===0 && images.length === 0) {
       alert("Please select images before submitting.");
       return;
     }
+    const mainImageName = mainImage instanceof File ? mainImage.name : mainImage;
+    const uniqueImages= images.filter((image) => image.name !== mainImageName);
   
     try {
-      const files = await uploadImages(images);
-      const imagesString = files.join(",");
-  
-      const newProduct = {
+
+      const imagesString = uniqueImages.map(file => file.name).join(",");
+
+        const newProduct = {
         name,
         size,
+        mainImage: mainImageName,
         image: imagesString,
         price,
         quantity,
       };
-  
-      await addProduct(newProduct);
-      console.log("Product added successfully!");
-      setShowSuccessMessage(true);
 
-      setTimeout(() => setShowSuccessMessage(false), 3000);
+      const res = await addProduct(newProduct);
+      console.log(res);
+      console.log(res.id);
+      if (!res.id) throw new Error("Failed to add product");
+      const uploadedImages = await uploadImages(uniqueImages, res.id); 
+      const uploadMainImage= await uploadImages([mainImage], res.id);
       
-      // Reset form
       setName('');
       setSize('');
       setPrice(0);
+      setMainImage([]);
       setImages([]);
       setQuantity(0);
+      console.log("Product added successfully!");
+      setTimeout(() => setShowSuccessMessage(false), 3000);
 
     } catch (error) {
       console.error("Submission error:", error);
@@ -77,8 +84,22 @@ export default function AddProduct() {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files); 
-    setImages(files); 
+    setImages((prevImages) => [...prevImages, ...files]); 
+    console.log(images);
   };
+  const handleDeleteImage = (imageToDelete) => {
+    setImages((prevImages) =>
+      prevImages.filter((image) => image !== imageToDelete)
+    );
+  };
+  const handleMainImageChange = (e) => {
+    const file = e.target.files[0];
+    setMainImage(file);
+  };
+  const handleMainImageDelete = () => {
+    setMainImage(null); // Set mainImage back to null to remove it
+  };
+
 
   return (
     <div className="add-product-container">
@@ -125,6 +146,18 @@ export default function AddProduct() {
         </div>
         <div>
           <label>
+            Main image:
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleMainImageChange}
+              required
+              style={{ border: '1px solid #ccc', borderRadius: '4px', padding: '8px' }}
+            />
+          </label>
+        </div>
+        <div>
+          <label>
             Images:
             <input
               type="file"
@@ -150,19 +183,67 @@ export default function AddProduct() {
         </div>
         <button type="submit">Add Product</button>
       </form>
-
       <div className="image-preview">
+  {mainImage instanceof File && (
+    <div className="image-thumbnails" style={{ position: 'relative', display: 'inline-block' }}>
+      <img
+        src={URL.createObjectURL(mainImage)}
+        alt="Main Image Preview"
+        style={{ width: '100px', height: 'auto', margin: '5px' }}
+      />
+      <button
+        type="button"
+        onClick={handleMainImageDelete}
+        style={{
+          position: 'absolute',
+          top: 0,
+          right: 0,
+          background: 'red',
+          color: 'white',
+          border: 'none',
+          cursor: 'pointer',
+          borderRadius: '50%',
+          width: '20px',
+          height: '20px',
+        }}
+      >
+        &times;
+      </button>
+    </div>
+  )}
+</div>
+ {/* Image Previews with Delete Option */}
+ <div className="image-preview">
         {images.length > 0 && (
           <h3>Selected Images:</h3>
         )}
         <div className="image-thumbnails">
           {images.map((image, index) => (
-            <img
-              key={index}
-              src={URL.createObjectURL(image)} 
-              alt={`Preview ${index}`}
-              style={{ width: '100px', height: 'auto', margin: '5px' }} 
-            />
+            <div key={index} style={{ position: 'relative', display: 'inline-block', margin: '5px' }}>
+              <img
+                src={URL.createObjectURL(image)}
+                alt={`Preview ${index}`}
+                style={{ width: '100px', height: 'auto' }}
+              />
+              <button
+                type="button"
+                onClick={() => handleDeleteImage(image)}
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  background: 'red',
+                  color: 'white',
+                  border: 'none',
+                  cursor: 'pointer',
+                  borderRadius: '50%',
+                  width: '20px',
+                  height: '20px',
+                }}
+              >
+                &times;
+              </button>
+            </div>
           ))}
         </div>
       </div>

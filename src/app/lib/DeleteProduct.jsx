@@ -1,5 +1,8 @@
+import DeleteFolder from "./DeleteFolder";
+
 async function HandleDelete(idsToDelete){
-  console.log("Deleting IDs:", idsToDelete); // Debug log to see IDs being deleted
+  console.log("Deleting IDs:", idsToDelete);
+
 
   try {
     const response = await fetch('http://localhost:8080/products/deleteproducts', {
@@ -9,7 +12,7 @@ async function HandleDelete(idsToDelete){
       },
       body: JSON.stringify(idsToDelete), // Send array of IDs as JSON
     });
-
+      DeleteFolder(idsToDelete);
     if (response.ok) {
       console.log('Products deleted successfully.');
     } else {
@@ -19,5 +22,4 @@ async function HandleDelete(idsToDelete){
     console.error('Error while deleting products:', error);
   }
 };
-
 export default HandleDelete;
