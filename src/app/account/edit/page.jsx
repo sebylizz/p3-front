@@ -14,6 +14,7 @@ export default function EditAccount() {
             try {
                 const fetchedUser = await fetchCustomer();  
                 setUser(fetchedUser);  // Update state with the fetched user data
+                setOriginalUser(fetchedUser);
             } catch (error) {
                 console.error('Error fetching customer data:', error);
             }
