@@ -4,11 +4,9 @@ import fetchCustomer from '../../lib/fetchCustomer';
 import editCustomer from '../../lib/editCustomer';
 
 export default function EditAccount() {
-    const temp = {};
-    temp.firstName = '';
-    temp.lastName = '';
-    temp.email = '';
+    const temp = { firstName: '', lastName: '', email: '' };
     const [user, setUser] = useState(temp);  // This is to store the user data
+    const [originalUser, setOriginalUser] = useState(temp);  // This is to store the original fetched data
 
     useEffect(() => {
         //async function to fetch user data
@@ -103,7 +101,7 @@ export default function EditAccount() {
                 {/* Save and Discard Buttons */}
                     <div style={{ display: 'flex', gap: '10px', marginTop: '20px', justifyContent: 'center' }}>
                         <button
-                            onClick={handleSaveChanges()}
+                            onClick={handleSaveChanges}
                             style={{ padding: '10px', fontSize: '16px', cursor: 'pointer', backgroundColor: 'green', color: 'white' }}
                         >
                             Save Changes
