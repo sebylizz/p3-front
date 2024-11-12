@@ -3,15 +3,12 @@ import React from 'react';
 import { useState } from 'react';
 import { Box, TextField, Button, Typography, Link } from '@mui/material';
 import loginFunction from '../lib/loginFunction.js';
-import cook from '../lib/cookies.js';
-
 
 export default function Login() {
     // State hooks for email, password, and error message
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
-
 
     // Handle login button click
     const handleLogin = async (event) => {
