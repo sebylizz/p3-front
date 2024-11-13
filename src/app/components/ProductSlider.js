@@ -1,57 +1,47 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import productFetcher from '../lib/importProducts';
-import { Grid, Card, CardMedia, CardContent, Typography, CircularProgress } from '@mui/material';
+import ProductCardVertical from './ProductCard';
+import { Grid, CircularProgress } from '@mui/material';
 
 const ProductSlider = () => {
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        productFetcher().then(data => {
-            setProducts(data);
-            setLoading(false);
-        });
-    }, []);
+  useEffect(() => {
+    productFetcher().then(data => {
+      setProducts(data);
+      setLoading(false);
+    });
+  }, []);
 
-    if (loading) {
-        return <CircularProgress />;
-    }
+  if (loading) {
+    return <CircularProgress />;
+  }
 
-    return (
-        <div style={{ minHeight: '70vh', paddingTop: '20px', paddingBottom: '20px', marginLeft: '10%', marginRight: '10%' }}>
-            <Grid container spacing={2}>
-                {products.map((product) => (
-                    <Grid item xs={12} sm={6} md={4} key={product.id}>
-                        <Card style={{ margin: '10px' }}>
-                            <div style={{ position: 'relative', paddingTop: '100%' }}>
-                                <CardMedia
-                                    component="img"
-                                    image={product.img}
-                                    onError={(e) => e.target.src = 'placeholder.jpg'}
-                                    alt={product.name}
-                                    style={{
-                                        position: 'absolute',
-                                        top: 0,
-                                        left: 0,
-                                        width: '100%',
-                                        height: '100%',
-                                        objectFit: 'cover'
-                                    }}
-                                />
-                            </div>
-                            <CardContent>
-                                <Typography variant="h6">{product.name}</Typography>
-                                <Typography variant="body2">Size: {product.size}</Typography>
-                                <Typography variant="body2">Price: {product.price} DKK</Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                ))}
-            </Grid>
-        </div>
-    );
+  return (
+    <div style={{ minHeight: '70vh', paddingTop: '20px', paddingBottom: '20px', marginLeft: '10%', marginRight: '10%' }}>
+      <Grid container spacing={2}>
+        {products.map((product) => (
+          <Grid item xs={12} sm={6} md={4} key={product.id}>
+            {/* Remove the nested <a> and just use Link */}
+            <Link href={`/productPage/${product.id}`} passHref>
+              <div style={{ cursor: 'pointer' }}>
+                <ProductCardVertical
+                  name={product.name}
+                  image={product.img}
+                  price={product.price}
+                  description={product.description} // Optional, if you want to display it
+                />
+              </div>
+            </Link>
+          </Grid>
+        ))}
+      </Grid>
+    </div>
+  );
 };
 
 export default ProductSlider;
