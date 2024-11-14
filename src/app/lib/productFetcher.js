@@ -11,11 +11,12 @@ async function productFetcher() {
             for (let i = 0; i < data.length; i++) {
                 let product = {};
                 product.id = data[i].id;
+                product.quantity = data[i].quantity;
                 product.name = data[i].name;
                 product.size = data[i].size;
                 product.price = data[i].price;
-                product.img = data[i].id+"/"+data[i].mainImage || "placeholder.jpg";
-                product.main_image= data[i].mainImage;
+                product.img = data[i].id+"/"+data[i].image;
+                product.mainImage= data[i].id+"/"+data[i].mainImage || "placeholder.jpg"
                 products.push(product);
             }
 
