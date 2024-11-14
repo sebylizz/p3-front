@@ -14,7 +14,7 @@ async function productFetcher() {
                 product.name = data[i].name;
                 product.size = data[i].size;
                 product.price = data[i].price;
-                product.img = data[i].image || "placeholder.jpg";
+                product.img = data[i].id+"/"+data[i].mainImage || "placeholder.jpg";
                 product.main_image= data[i].mainImage;
                 products.push(product);
             }
