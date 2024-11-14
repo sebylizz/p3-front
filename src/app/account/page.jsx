@@ -1,13 +1,11 @@
-import { cookies } from 'next/headers';
 import AccountLayout from '../components/AccountLayout';
-import { deleteToken } from '../lib/logOut'; // Ensure deleteToken is correctly imported
+import { deleteToken } from '../lib/logOut';
+import getJWT from '../lib/getJWT';
 
 export default async function Account() {
     try {
-        const cookieStore = await cookies();
-        const token = cookieStore.get('token');
+        const token = await getJWT();
 
-        // Fetch user information
         const response = await fetch('http://localhost:8080/login/users-allowed', {
             method: 'GET',
             headers: {
@@ -23,7 +21,6 @@ export default async function Account() {
 
         const userName = await response.text();
 
-        // Render AccountLayout component with user data
         return <AccountLayout userName={userName} onLogout={deleteToken} />;
     } catch (error) {
         console.log('Error:', error);
