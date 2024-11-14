@@ -1,44 +1,42 @@
-import React from 'react';
-import productFetcher from '../../GetProducts';
-import { notFound } from 'next/navigation';
+"use client";
 
-export const dynamicParams = true;
+import React, { useEffect, useState } from 'react';
+import { useProducts } from '@/app/context/productContext';
+import { useRouter } from 'next/navigation';
+import { use } from 'react';
 
-export async function generateStaticParams() {
-    const products = await productFetcher();
+export default function ProductDetail({ params }) {
+  const { id } = use(params); // Unwrap params with `use`
+  const { products, loading } = useProducts();
+  const [product, setProduct] = useState(null);
+  const router = useRouter();
 
-    return products.map((product) => ({
-        id: product.id.toString(), // Ensure id is a string
-    }));
-}
-
-export async function getProduct(id) {
-    const response = await fetch(`http://localhost:8080/products/getproducts/${id}`);
-
-    if (!response.ok) {
-        notFound(); // Trigger a 404 page if the product is not found
+  useEffect(() => {
+    if (!loading) {
+      const selectedProduct = products.find((p) => p.id.toString() === id);
+      if (selectedProduct) {
+        setProduct(selectedProduct);
+      } else {
+        router.push('/404'); // Navigate to a 404 page if not found
+      }
     }
+  }, [id, products, loading, router]);
 
-    try {
-        return await response.json();
-    } catch (error) {
-        console.error('Failed to parse JSON:', error);
-        notFound();
-    }
-}
+  if (loading) {
+    return <p>Loading...</p>;
+  }
 
-export default async function ProductDetail({ params }) {
-    const { id } = await params
-    const product = await getProduct(id);
+  if (!product) {
+    return <p>Product not found</p>;
+  }
 
-
-    // Render product details
-    return (
-        <section>
-            <h1>{product.name}</h1>
-            <p>Product ID: {product.id}</p>
-            <p>{product.description}</p>
-            <p>Price: {product.price}</p>
-        </section>
-    );
+  // Render product details
+  return (
+    <section>
+      <h1>{product.name}</h1>
+      <p>Product ID: {product.id}</p>
+      <p>{product.description}</p>
+      <p>Price: {product.price}</p>
+    </section>
+  );
 }

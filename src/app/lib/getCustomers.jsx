@@ -1,6 +1,6 @@
-async function productFetcherJSX() {
+async function customerFetcher(offset = 0, limit = 10) {
     try {
-        const response = await fetch("http://localhost:8080/products/getproducts");
+        const response = await fetch(`http://localhost:8080/customers/getcustomers?offset=${offset}&limit=${limit}`);
 
         if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -14,4 +14,4 @@ async function productFetcherJSX() {
     }
 }
 
-export default productFetcherJSX;
+export default customerFetcher;
