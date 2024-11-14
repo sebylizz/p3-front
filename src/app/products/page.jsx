@@ -1,19 +1,15 @@
 "use client"
-import React from 'react';
-import productFetcher from '../GetProducts';
-import { notFound } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import productFetcherJSX from '../lib/GetProducts';
 import Link from "next/link";
-import BouncingBall from '../loader'
-
-
+// import BouncingBall from '../loader';
 
 export default function Products() {
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
         async function fetchProducts() {
-            const data = await productFetcher();
+            const data = await productFetcherJSX();
             setProducts(data);
         }
 
@@ -23,12 +19,14 @@ export default function Products() {
         <>
             {products.length > 0 ? (
                 products.map((product) => (
-                    <div className="border border-neutral-200 rounded-md hover:shadow-lg max-w-[300px]" key={product.id}>
-
-                        <Link className="block" href={`/products/${product.id}`}>
+                    <div
+                        className="border border-neutral-200 rounded-md hover:shadow-lg max-w-[300px]"
+                        key={product.id}
+                    >
+                        <Link href={`/products/${product.id}`} className="block">
                             <div className="relative">
                                 <img
-                                    src={product.image || "/image.png"} // Adjust the image path
+                                    src={`${product.image ? `/${product.id}/${product.image}` : "/basketball.jpg"}`}
                                     alt={product.name}
                                     className="object-cover h-auto rounded-md aspect-square"
                                     width="300"
@@ -43,7 +41,7 @@ export default function Products() {
                     </div>
                 ))
             ) : (
-                <p>Damns</p>
+                <p>No products available</p>
             )}
         </>
     );
