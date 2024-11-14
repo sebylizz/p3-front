@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function ProductInfo({ name, price, discount, colors, quantity }) {
   return (
     <div>
@@ -14,22 +12,13 @@ export default function ProductInfo({ name, price, discount, colors, quantity })
         <p className="text-neutral-600">Color:</p>
         {colors && colors.length > 0 ? (
           colors.map((color, index) => (
-            <img
-              key={index}
-              src={color.image}
-              alt={color.name}
-              className="h-8 w-8 ml-2 cursor-pointer"
-            />
+            <img key={index} src={color.image} alt={color.name} className="h-8 w-8 ml-2 cursor-pointer" />
           ))
         ) : (
-          <span>No colors available</span>
+          <span className="ml-2">No colors available</span>
         )}
       </div>
-
-      {/* Display Quantity (Stock) */}
-      <div className="mt-2">
-        <p className="text-sm">Stock available: {quantity} items</p>
-      </div>
+      <p className="text-sm">Stock available: {quantity} items</p> {/* Show quantity/stock */}
     </div>
   );
 }

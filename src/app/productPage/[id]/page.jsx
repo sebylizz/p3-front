@@ -1,12 +1,12 @@
 'use client';
 
-import { useParams } from 'next/navigation'; // Use useParams from next/navigation
+import { useParams } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import ImageGallery from '../../components/ImageGallery';
 import ProductInfo from '../../components/ProductInfo';
 import SizeSelector from '../../components/SizeSelector';
 import AddToCartButton from '../../components/AddToCartButton';
-import productFetcher from '../../lib/importProducts';  // Import the productFetcher
+import productFetcher from '../../lib/importProducts';
 
 export default function ProductDetailsPage() {
   const { id } = useParams(); // Extract the 'id' from the dynamic route parameters
@@ -23,14 +23,21 @@ export default function ProductDetailsPage() {
           const products = await productFetcher();
           // Find the specific product by id
           const selectedProduct = products.find(p => p.id === parseInt(id));
-          // Update the state with the selected product
+
           if (selectedProduct) {
+            // Construct the image paths
+            selectedProduct.image = `/${id}/${selectedProduct.image || ''}`;
+            selectedProduct.mainImage = selectedProduct.mainImage
+              ? `/${id}/${selectedProduct.mainImage}`
+              : selectedProduct.image;
+
+            console.log('Product loaded:', selectedProduct); // Debugging: log the loaded product
+
             setProduct(selectedProduct);
-            setLoading(false);
           } else {
             console.error("Product not found:", id);
-            setLoading(false);
           }
+          setLoading(false);
         } catch (error) {
           console.error("Error fetching product:", error);
           setLoading(false);
@@ -49,17 +56,16 @@ export default function ProductDetailsPage() {
     return <p>Product not found or failed to load.</p>;  // Handle error in case no product is found
   }
 
-  // Use the main image if available, else fallback to the first image
-  const mainImage = product.mainImage || product.image;
+  // Use the selected image if available; otherwise, use mainImage as the fallback.
+  const mainImage = selectedImage || product.mainImage || product.image;
 
   return (
     <div className="flex p-8">
       {/* Left Column: Image Gallery */}
       <div className="w-1/4 pr-4">
-        <ImageGallery 
-          images={[product.image, product.mainImage].filter(Boolean)} // Pass array of images to ImageGallery component
-          onImageSelect={setSelectedImage}  // Update selected image when a thumbnail is clicked
-        />
+      <ImageGallery
+  images={[product.image, product.mainImage].filter(Boolean)} // Pass absolute paths with /${id}
+/>
       </div>
 
       {/* Right Column: Product Details */}
@@ -67,21 +73,26 @@ export default function ProductDetailsPage() {
         <div className="flex">
           {/* Main Image */}
           <div className="w-1/2">
-            <img 
-              src={selectedImage ? `/images/${selectedImage}` : `/images/${mainImage}`} // Assuming images are stored in the public/images directory
+            <img
+              src={mainImage}  // Display the selected or main image
               alt={product.name}
               className="rounded-md object-cover"
               style={{ maxWidth: '100%', height: 'auto' }} // Ensure image fits well in the container
+              onError={(e) => {
+                e.target.onerror = null; // Prevent looping
+                e.target.src = '/placeholder.jpg'; // Fallback image in case of error
+              }}
             />
           </div>
 
           {/* Product Information */}
           <div className="w-1/2 pl-4">
-            <ProductInfo 
-              name={product.name} 
-              price={product.price} 
+            <ProductInfo
+              name={product.name}
+              price={product.price}
               discount={product.discount}  // Adjust if needed based on the response data
-              colors={product.colors || []}  // Adjust if needed, ensure default empty array if no colors
+              colors={product.colors}  // Adjust if needed
+              quantity={product.quantity}  // Pass quantity here
             />
             <SizeSelector sizes={[product.size]} onSizeSelect={setSelectedSize} />
             <AddToCartButton selectedSize={selectedSize} />
