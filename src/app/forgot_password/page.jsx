@@ -1,13 +1,17 @@
-//retrieve forgotten password or make new or sum shit
 'use client';
 import React from 'react';
+import emailSender from '../lib/forgotPasswordFetcher';
 import { Box, TextField, Button, Typography } from '@mui/material';
 
 export default function ForgotPassword() {
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Here you can add your logic to handle the email submission
-        console.log('Email submitted');
+
+        const email = {email: document.getElementById("Email").value};
+
+        await emailSender(email);
+        window.location.href = '/';
+        
     };
 
     return (
@@ -33,6 +37,7 @@ export default function ForgotPassword() {
                 <form onSubmit={handleSubmit}>
                     {/* Email Field */}
                     <TextField
+                        id="Email"
                         label="Email"
                         type="email"
                         variant="outlined"

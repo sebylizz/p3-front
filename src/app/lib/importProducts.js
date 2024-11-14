@@ -1,4 +1,4 @@
-function productFetcher() {
+async function productFetcher() {
     return fetch("http://localhost:8080/products/getproducts")
         .then(response => {
             if (!response.ok) {
@@ -6,8 +6,7 @@ function productFetcher() {
             }
             return response.json();
         })
-        .then(data => {
-
+        .then(async data => {
             let products = [];
             for (let i = 0; i < data.length; i++) {
                 let product = {};

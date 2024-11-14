@@ -2,6 +2,7 @@ export default async function loginFunction(email, password) {
     try {
         const response = await fetch('http://localhost:8080/login', {
             method: 'POST',
+            credentials: 'include',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -13,10 +14,8 @@ export default async function loginFunction(email, password) {
             return { success: false };
         }
 
-        const result = await response.json();
-
         // Return success if the login succeeded
-        return { success: true, data: result };
+        return { success: true };
     } catch (error) {
         console.error('Error login:', error);
         return { success: false };

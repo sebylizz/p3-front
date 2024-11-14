@@ -15,7 +15,6 @@ export default function Products() {
 
         fetchProducts();
     }, []);
-
     return (
         <>
             {products.length > 0 ? (
