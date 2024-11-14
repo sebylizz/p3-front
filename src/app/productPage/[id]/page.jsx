@@ -1,103 +1,87 @@
+// ProductDetailsPage.jsx
 'use client';
 
 import { useParams } from 'next/navigation';
-import { useState, useEffect } from 'react';
-import ImageGallery from '../../components/ImageGallery';
+import { useState } from 'react';
 import ProductInfo from '../../components/ProductInfo';
 import SizeSelector from '../../components/SizeSelector';
 import AddToCartButton from '../../components/AddToCartButton';
-import productFetcher from '../../lib/importProducts';
+import { useProducts } from '../../context/productContext';
 
 export default function ProductDetailsPage() {
-  const { id } = useParams(); // Extract the 'id' from the dynamic route parameters
-  const [product, setProduct] = useState(null);
-  const [selectedImage, setSelectedImage] = useState(null);
+  const { id } = useParams();
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { products, loading } = useProducts();
 
-  useEffect(() => {
-    if (id) {
-      const fetchProduct = async () => {
-        try {
-          // Fetch all products
-          const products = await productFetcher();
-          // Find the specific product by id
-          const selectedProduct = products.find(p => p.id === parseInt(id));
-
-          if (selectedProduct) {
-            // Construct the image paths
-            selectedProduct.image = `/${id}/${selectedProduct.image || ''}`;
-            selectedProduct.mainImage = selectedProduct.mainImage
-              ? `/${id}/${selectedProduct.mainImage}`
-              : selectedProduct.image;
-
-            console.log('Product loaded:', selectedProduct); // Debugging: log the loaded product
-
-            setProduct(selectedProduct);
-          } else {
-            console.error("Product not found:", id);
-          }
-          setLoading(false);
-        } catch (error) {
-          console.error("Error fetching product:", error);
-          setLoading(false);
-        }
-      };
-
-      fetchProduct();
-    }
-  }, [id]);
+  const product = products.find(p => p.id === parseInt(id));
 
   if (loading) {
-    return <p>Loading...</p>;  // Show loading message if product is not yet fetched
+    return <p>Loading...</p>;
   }
 
   if (!product) {
-    return <p>Product not found or failed to load.</p>;  // Handle error in case no product is found
+    return <p>Product not found or failed to load.</p>;
   }
 
-  // Use the selected image if available; otherwise, use mainImage as the fallback.
-  const mainImage = selectedImage || product.mainImage || product.image;
+  // Prepare image paths with folder prefix
+  const images = (product.image || '').split(',').map(img => `/${id}/${img.trim()}`);
+  const currentImage = images[currentIndex];
+
+  // Functions to navigate images
+  const handleNextImage = () => {
+    setCurrentIndex((currentIndex + 1) % images.length); // Loop to the start if at the end
+  };
+
+  const handlePrevImage = () => {
+    setCurrentIndex((currentIndex - 1 + images.length) % images.length); // Loop to the end if at the start
+  };
 
   return (
     <div className="flex p-8">
-      {/* Left Column: Image Gallery */}
-      <div className="w-1/4 pr-4">
-      <ImageGallery
-  images={[product.image, product.mainImage].filter(Boolean)} // Pass absolute paths with /${id}
-/>
+      {/* Left Column: Image Viewer with Arrows */}
+      <div className="w-1/2 flex justify-center items-center relative">
+        {/* Left Arrow */}
+        <button
+          onClick={handlePrevImage}
+          className="absolute left-0 px-2 py-1 bg-gray-500 bg-opacity-50 text-white rounded-full hover:bg-opacity-80"
+          style={{ zIndex: 10 }}
+        >
+          &#10094; {/* Left arrow symbol */}
+        </button>
+
+        {/* Main Image */}
+        <img
+          src={currentImage}
+          alt={product.name}
+          className="rounded-md object-cover"
+          style={{ maxWidth: '100%', height: 'auto' }}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = '/placeholder.jpg';
+          }}
+        />
+
+        {/* Right Arrow */}
+        <button
+          onClick={handleNextImage}
+          className="absolute right-0 px-2 py-1 bg-gray-500 bg-opacity-50 text-white rounded-full hover:bg-opacity-80"
+          style={{ zIndex: 10 }}
+        >
+          &#10095; {/* Right arrow symbol */}
+        </button>
       </div>
 
-      {/* Right Column: Product Details */}
-      <div className="w-3/4">
-        <div className="flex">
-          {/* Main Image */}
-          <div className="w-1/2">
-            <img
-              src={mainImage}  // Display the selected or main image
-              alt={product.name}
-              className="rounded-md object-cover"
-              style={{ maxWidth: '100%', height: 'auto' }} // Ensure image fits well in the container
-              onError={(e) => {
-                e.target.onerror = null; // Prevent looping
-                e.target.src = '/placeholder.jpg'; // Fallback image in case of error
-              }}
-            />
-          </div>
-
-          {/* Product Information */}
-          <div className="w-1/2 pl-4">
-            <ProductInfo
-              name={product.name}
-              price={product.price}
-              discount={product.discount}  // Adjust if needed based on the response data
-              colors={product.colors}  // Adjust if needed
-              quantity={product.quantity}  // Pass quantity here
-            />
-            <SizeSelector sizes={[product.size]} onSizeSelect={setSelectedSize} />
-            <AddToCartButton selectedSize={selectedSize} />
-          </div>
-        </div>
+      <div className="w-1/2 pl-4">
+        <ProductInfo
+          name={product.name}
+          price={product.price}
+          discount={product.discount}
+          colors={product.colors}
+          quantity={product.quantity}
+        />
+        <SizeSelector sizes={[product.size]} onSizeSelect={setSelectedSize} />
+        <AddToCartButton selectedSize={selectedSize} />
       </div>
     </div>
   );
