@@ -81,7 +81,7 @@ export default function ProductDetailsPage() {
           quantity={product.quantity}
         />
         <SizeSelector sizes={[product.size]} onSizeSelect={setSelectedSize} />
-        <AddToCartButton selectedSize={selectedSize} />
+        <AddToCartButton selectedSize={selectedSize} product={product} />
       </div>
     </div>
   );

@@ -9,6 +9,8 @@ export const ProductProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  
+
   // Function to fetch products, allowing it to be called on demand
   const fetchProducts = async () => {
     setLoading(true);
@@ -37,3 +39,4 @@ export const ProductProvider = ({ children }) => {
 
 // Custom hook to access the context
 export const useProducts = () => useContext(ProductContext);
+
