@@ -1,19 +1,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import productFetcher from '../lib/importProducts';
-import { Grid, Card, CardMedia, CardContent, Typography, CircularProgress } from '@mui/material';
+import { useProducts } from '@/app/context/productContext';
+import { Grid2, Card, CardMedia, CardContent, Typography, CircularProgress } from '@mui/material';
 
 const ProductSlider = () => {
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const { products, loading } = useProducts();
 
     useEffect(() => {
-        productFetcher().then(data => {
-            setProducts(data);
-            setLoading(false);
-        });
-    }, []);
+    }, [products, loading]);
 
     if (loading) {
         return <CircularProgress />;
@@ -21,16 +16,16 @@ const ProductSlider = () => {
 
     return (
         <div style={{ minHeight: '70vh', paddingTop: '20px', paddingBottom: '20px', marginLeft: '10%', marginRight: '10%' }}>
-            <Grid container spacing={2}>
-                {products.map((product) => (
-                    <Grid item xs={12} sm={6} md={4} key={product.id}>
+            <Grid2 container spacing={2}>
+                {products.map((p) => (
+                    <Grid2 xs={12} sm={6} md={4} key={p.id}>
                         <Card style={{ margin: '10px' }}>
                             <div style={{ position: 'relative', paddingTop: '100%' }}>
                                 <CardMedia
                                     component="img"
-                                    image={product.img}
-                                    onError={(e) => e.target.src = 'placeholder.jpg'}
-                                    alt={product.name}
+                                    image={'placeholder.jpg'}
+                                    onError={(e) => image = 'placeholder.jpg'}
+                                    alt={p.name}
                                     style={{
                                         position: 'absolute',
                                         top: 0,
@@ -42,14 +37,14 @@ const ProductSlider = () => {
                                 />
                             </div>
                             <CardContent>
-                                <Typography variant="h6">{product.name}</Typography>
-                                <Typography variant="body2">Size: {product.size}</Typography>
-                                <Typography variant="body2">Price: {product.price} DKK</Typography>
+                                <Typography variant="h6">{p.name}</Typography>
+                                <Typography variant="body2">Size: {p.size}</Typography>
+                                <Typography variant="body2">Price: 69 DKK</Typography>
                             </CardContent>
                         </Card>
-                    </Grid>
+                    </Grid2>
                 ))}
-            </Grid>
+            </Grid2>
         </div>
     );
 };
