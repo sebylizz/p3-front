@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { SfSelect } from '@storefront-ui/react';
 import productFetcherJSX from '@/app/lib/GetProducts';
 import Link from 'next/link';
 import { useRouter } from "next/navigation";
