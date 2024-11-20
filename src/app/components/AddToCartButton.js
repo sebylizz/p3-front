@@ -1,11 +1,13 @@
 import React from 'react';
 import { useCart } from '../context/cartContext';
 
+
 export default function AddToCartButton({ selectedSize, product }) {
   const { addToCart } = useCart();
 
   const handleClick = () => {
     if (selectedSize) {
+      console.log(product);
       addToCart(product.id); // Only pass the product ID to the cart if a size is selected
     } else {
       alert("Please select a size.");

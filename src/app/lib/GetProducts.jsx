@@ -1,6 +1,6 @@
 async function productFetcherJSX() {
     try {
-        const response = await fetch("http://localhost:8080/products/getproducts");
+        const response = await fetch("http://localhost:8080/products/getall");
 
         if (!response.ok) {
             throw new Error('Network response was not ok');
@@ -12,6 +12,7 @@ async function productFetcherJSX() {
     } catch (error) {
         console.error('Error:', error);
     }
+
 }
 
 export default productFetcherJSX;
