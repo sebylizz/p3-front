@@ -32,7 +32,7 @@ export default function ResetPassword() {
                 window.location.href = '/';
                 alert("Password reset succesfull!")
             } else {
-                alert("Failed to reset password. Please try again.");
+                alert("Failed to reset password. Please resubmit email for password reset.");
             }
         } else {
             setPasswordError(true); // Show password mismatch error
