@@ -1,5 +1,5 @@
 async function productFetcher() {
-    return fetch("http://localhost:8080/products/getproducts")
+    return fetch("http://localhost:8080/products/getall")
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -7,6 +7,7 @@ async function productFetcher() {
             return response.json();
         })
         .then(async data => {
+            console.log(data)
             let products = [];
             for (let i = 0; i < data.length; i++) {
                 let product = {};
