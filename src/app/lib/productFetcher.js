@@ -1,5 +1,6 @@
 async function productFetcher() {
     /*return fetch("http://localhost:8080/products/getall")
+    return fetch("http://localhost:8080/products/getall")
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -27,17 +28,6 @@ async function productFetcher() {
         .catch(error => {
             console.error('Error:', error);
         });*/
-        let products = [];
-        let product = {};
-                product.id = 1
-                product.quantity = 1
-                product.name = "test"
-                product.size = "test"
-                product.price = "69"
-                product.img = "placeholder.jpg"
-                product.mainImage= "placeholder.jpg"
-                products.push(product);
-        return products;
 }
 
 export default productFetcher;
