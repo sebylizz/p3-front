@@ -26,6 +26,8 @@ export default function ProductDetailsPage() {
 
     // Prepare image paths with folder prefix
     const images = (product.colors[0].images).split(',').map(img => `/${id}/${img.trim()}`);
+    images.unshift(`/${product.id}/${product.mainImage}`);
+        
     const currentImage = images[currentIndex];
 
     // Functions to navigate images
