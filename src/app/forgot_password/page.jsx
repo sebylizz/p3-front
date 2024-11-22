@@ -4,14 +4,16 @@ import emailSender from '../lib/forgotPasswordFetcher';
 import { Box, TextField, Button, Typography } from '@mui/material';
 
 export default function ForgotPassword() {
-    const handleSubmit = async (e) => {
+    const handleSubmit = (e) => {
         e.preventDefault();
 
         const email = {email: document.getElementById("Email").value};
+        emailSender(email);
 
-        await emailSender(email);
         window.location.href = '/';
-        
+
+        alert("If customer with email address: " + email.email + " exists, an email has been sent to reset the password.");
+
     };
 
     return (
