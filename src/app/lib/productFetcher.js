@@ -1,4 +1,5 @@
 async function productFetcher() {
+    /*return fetch("http://localhost:8080/products/getall")
     return fetch("http://localhost:8080/products/getall")
         .then(response => {
             if (!response.ok) {
@@ -26,7 +27,7 @@ async function productFetcher() {
         })
         .catch(error => {
             console.error('Error:', error);
-        });
+        });*/
 }
 
 export default productFetcher;

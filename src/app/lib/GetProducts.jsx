@@ -12,6 +12,7 @@ async function productFetcherJSX() {
     } catch (error) {
         console.error('Error:', error);
     }
+
 }
 
 export default productFetcherJSX;

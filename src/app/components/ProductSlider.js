@@ -29,7 +29,7 @@ const ProductSlider = () => {
                         >
                             <ProductCardVertical
                                 name={product.name}
-                                image={'placeholder.jpg'}
+                                image={product.id + '/' + product.mainImage}
                                 price={product.price}
                                 description={product.description}
                             />

@@ -141,6 +141,7 @@ export default function SignUp() {
 
                     {/* Password Field */}
                     <TextField
+                        autoComplete="new-password"
                         id="Password"
                         label="Password"
                         type="password"

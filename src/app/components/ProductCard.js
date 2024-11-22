@@ -25,9 +25,6 @@ export default function ProductCard({ name, image, price, description }) {
           </p>
         )}
         <span className="block pb-2 font-bold typography-text-lg">{price} DKK</span>
-        <SfButton size="sm" slotPrefix={<SfIconShoppingCart size="sm" />}>
-          Add to cart
-        </SfButton>
       </div>
     </div>
   );

@@ -37,3 +37,4 @@ export const ProductProvider = ({ children }) => {
 
 // Custom hook to access the context
 export const useProducts = () => useContext(ProductContext);
+
