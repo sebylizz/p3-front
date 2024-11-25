@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 
 export default async function setCart(cart) {
-  try {
+  /*try {
     cookies().set("cart", JSON.stringify(cart), {
       httpOnly: false, // Accessible via client-side JS
       sameSite: "lax",
@@ -12,5 +12,5 @@ export default async function setCart(cart) {
     });
   } catch (error) {
     console.error("Error setting cart cookie:", error);
-  }
+  }*/
 }

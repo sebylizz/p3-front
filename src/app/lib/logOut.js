@@ -1,6 +1,6 @@
 'use client'
 
-export async function deleteToken() {
+export default async function deleteToken() {
     try {
         const response = await fetch('http://localhost:8080/login/logout', {
             method: 'GET',
