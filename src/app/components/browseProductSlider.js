@@ -7,7 +7,7 @@ import ProductCardVertical from './ProductCard';
 import { useRouter } from 'next/navigation';
 import { useProducts } from '@/app/context/productContext';
 
-const ProductSlider = ({ filteredProducts }) => {
+const browseProductSlider = ({ filteredProducts }) => {
     const { products: allProducts, loading } = useProducts();
     const router = useRouter();
 
@@ -41,4 +41,4 @@ const ProductSlider = ({ filteredProducts }) => {
     );
 };
 
-export default ProductSlider;
+export default browseProductSlider;
