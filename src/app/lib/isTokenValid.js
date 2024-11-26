@@ -5,10 +5,8 @@ import { jwtDecode } from 'jwt-decode';
 export default async function isTokenValid() {
     const cookieStore = await cookies()
     const hasCookie = cookieStore.has('token')
-    if (hasCookie != true) {
-        return false // no token found, return false
-    } 
-    else {
+    if (hasCookie) {
+      console.log("Her:" + cookieStore);
         try {
             const decodedToken = jwtDecode(cookieStore.get('token')?.value);
             const currentTime = Date.now() / 1000;

@@ -11,6 +11,8 @@ export default async function getCart() {
     return []; // Default empty cart if no cookie exists
   } catch (error) {
     console.error("Error reading cart cookie:", error);
+
     return []; // Fallback to empty cart on error
   }
+
 }

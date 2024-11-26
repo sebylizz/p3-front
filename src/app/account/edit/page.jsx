@@ -2,14 +2,30 @@
 import React, { useEffect, useState } from 'react';
 import fetchCustomer from '../../lib/fetchCustomer';
 import editCustomer from '../../lib/editCustomer';
+import deleteAccount from '../../lib/deleteAccount';
+import logOut from '../../lib/logOut';
+import { useRouter } from 'next/navigation';
 
 export default function EditAccount() {
-    const temp = { firstName: '', lastName: '', email: '' };
+    const temp = { firstName: '', lastName: '', email: '', id: null };
     const [user, setUser] = useState(temp);  // This is to store the user data
     const [originalUser, setOriginalUser] = useState(temp);  // This is to store the original fetched data
+    const router = useRouter();
+
+    const handleDeleteButton = async () => {
+        try {
+            let confirmation = await deleteAccount(user.id);
+            if (confirmation) {
+                logOut().then(() => router.push("/"));
+                alert("your account has been deleted");
+            }
+            } catch (error) {
+                alert("error deleting account");
+                console.error('error deleting account: ', error);
+            } 
+    }
 
     useEffect(() => {
-        //async function to fetch user data
         const fetchCustomerData = async () => {
             try {
                 const fetchedUser = await fetchCustomer();  
@@ -118,13 +134,14 @@ export default function EditAccount() {
 
                 {/* Delete Account Button */}
                 <button
+                onClick={handleDeleteButton}
                     style={{
                         padding: '10px',
                         fontSize: '16px',
                         cursor: 'pointer',
                         backgroundColor: 'red',
                         color: 'white',
-                        marginTop: '30px'
+                        marginTop: '30px',
                     }}
                 >
                     Delete Account
