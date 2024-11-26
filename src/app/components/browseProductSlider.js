@@ -2,17 +2,17 @@
 'use client';
 
 import React from 'react';
-import { Grid, CircularProgress } from '@mui/material';
+import { Grid2, CircularProgress } from '@mui/material';
 import ProductCardVertical from './ProductCard';
 import { useRouter } from 'next/navigation';
 import { useProducts } from '@/app/context/productContext';
 
-const browseProductSlider = ({ filteredProducts }) => {
-    const { products: allProducts, loading } = useProducts();
+const BrowseProductSlider = ({ filteredProducts }) => {
+    const { products, loading } = useProducts();
     const router = useRouter();
 
     // Use filtered products if provided, otherwise fall back to all products
-    const productsToDisplay = filteredProducts || allProducts;
+    const productsToDisplay = filteredProducts || products;
 
     if (loading) {
         return <CircularProgress />;
@@ -20,25 +20,27 @@ const browseProductSlider = ({ filteredProducts }) => {
 
     return (
         <div style={{ minHeight: '70vh', paddingTop: '20px', paddingBottom: '20px', marginLeft: '10%', marginRight: '10%' }}>
-            <Grid container spacing={2}>
+            <Grid2 container spacing={2}>
                 {productsToDisplay.map((product) => (
-                    <Grid xs={12} sm={6} md={4} key={product.id}>
+                    product.colors.map((color) => (
+                    <Grid2 xs={12} sm={6} md={4} key={color.id}>
                         <div
                             style={{ cursor: 'pointer' }}
-                            onClick={() => router.push(`/productPage/${product.id}`)}
+                            onClick={() => router.push(`/productPage/${color.id}`)}
                         >
                             <ProductCardVertical
                                 name={product.name}
-                                image={product.id + '/' + product.mainImage}
+                                image={color.id + '/' + product.mainImage}
                                 price={product.price}
                                 description={product.description}
                             />
                         </div>
-                    </Grid>
+                    </Grid2>
+                    ))
                 ))}
-            </Grid>
+            </Grid2>
         </div>
     );
 };
 
-export default browseProductSlider;
+export default BrowseProductSlider;

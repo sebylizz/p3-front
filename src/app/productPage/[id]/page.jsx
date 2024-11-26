@@ -14,7 +14,10 @@ export default function ProductDetailsPage() {
     const [currentColorIndex, setCurrentColorIndex] = useState(0);
     const { products, loading } = useProducts();
 
-    const product = products.find(p => p.id === parseInt(id));
+    let product = products.find(p => p.colors.id === parseInt(id));
+    if (!product) {
+        product = products.find(p => p.id === parseInt(id));
+    }
 
     if (loading) {
         return <p>Loading...</p>;

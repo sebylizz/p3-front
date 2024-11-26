@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useProducts } from '../context/productContext';
-import ProductSlider from '../components/ProductSlider';
+import ProductSlider from '../components/BrowseProductSlider';
 import { MenuItem, Select, FormControl, InputLabel, Box, Typography } from '@mui/material';
 
 const BrowseProductsPage = () => {
