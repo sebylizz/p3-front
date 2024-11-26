@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useProducts } from '../context/productContext';
-import ProductSlider from '../components/BrowseProductSlider';
+import ProductSlider from '../components/browseProductSlider'
 import { MenuItem, Select, FormControl, InputLabel, Box, Typography } from '@mui/material';
 
 const BrowseProductsPage = () => {
@@ -23,8 +23,6 @@ const BrowseProductsPage = () => {
             setFilteredProducts(products.filter((product) => product.category === category));
         }
     };
-
-    
 
     return (
         <Box sx={{ padding: '20px' }}>
@@ -58,7 +56,6 @@ const BrowseProductsPage = () => {
 
             </Box>
 
-            {/* Product Slider */}
             <ProductSlider filteredProducts={filteredProducts} />
         </Box>
     );
