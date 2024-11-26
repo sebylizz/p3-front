@@ -1,5 +1,5 @@
 import AccountLayout from '../components/AccountLayout';
-import { deleteToken } from '../lib/logOut';
+import logOut from '../lib/logOut';
 import getJWT from '../lib/getJWT';
 
 export default async function Account() {
@@ -21,7 +21,7 @@ export default async function Account() {
 
         const userName = await response.text();
 
-        return <AccountLayout userName={userName} onLogout={deleteToken} />;
+        return <AccountLayout userName={userName} onLogout={logOut} />;
     } catch (error) {
         console.log('Error:', error);
         return <p>Error occurred: {error.message}</p>;
