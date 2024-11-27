@@ -1,4 +1,4 @@
-async function productFetcherJSX() {
+async function productFetcher() {
     try {
         const response = await fetch("http://localhost:8080/products/getall");
 
@@ -16,4 +16,4 @@ async function productFetcherJSX() {
 
 }
 
-export default productFetcherJSX;
+export default productFetcher;

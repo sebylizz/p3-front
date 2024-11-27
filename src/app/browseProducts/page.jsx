@@ -1,26 +1,59 @@
-// BrowseProductsPage.jsx
 'use client';
 
 import React, { useState, useEffect } from 'react';
 import { useProducts } from '../context/productContext';
-import ProductSlider from '../components/browseProductSlider'
+import ProductSlider from '../components/browseProductSlider';
 import { MenuItem, Select, FormControl, InputLabel, Box, Typography } from '@mui/material';
 
-const BrowseProductsPage = () => {
+export default function BrowseProductsPage() {
     const { products } = useProducts();
-    const [filteredProducts, setFilteredProducts] = useState(products); // Filtered products state
-    const [category, setCategory] = useState('all'); // Category filter state
+
+    const categoriesMap = { // Mapping IDs to match the database
+        1: { name: 'Clothing', children: [2, 5, 6, 7] },
+        2: { name: 'Hoodies', children: [] },
+        3: { name: 'Accessories', children: [] },
+        4: { name: 'Basketballs', children: [] },
+        5: { name: 'T-shirts', children: [] },
+        6: { name: 'Shorts', children: [] },
+        7: {name: 'Sweatpants', children: []}
+    };
+
+    const [filteredProducts, setFilteredProducts] = useState(products);
+    const [category, setCategory] = useState('all');
 
     useEffect(() => {
-        applyCategoryFilter(); // Apply category filter whenever the category or products change
+        applyCategoryFilter();
     }, [category, products]);
 
-    // Function to filter products by category
+    const getAllChildCategoryIds = (parentCategoryId) => {
+        const category = categoriesMap[parentCategoryId];
+        if (!category) return [];
+
+        const childCategoryIds = category.children || [];
+        return childCategoryIds.reduce(
+            (allIds, childId) => [...allIds, childId, ...getAllChildCategoryIds(childId)],
+            []
+        );
+    };
+
     const applyCategoryFilter = () => {
         if (category === 'all') {
-            setFilteredProducts(products); // Show all products
+            setFilteredProducts(products);
         } else {
-            setFilteredProducts(products.filter((product) => product.category === category));
+            const selectedCategory = Object.entries(categoriesMap).find(
+                ([_, value]) => value.name === category
+            );
+
+            if (selectedCategory) {
+                const categoryId = parseInt(selectedCategory[0], 10);
+                const categoryIdsToFilter = [categoryId, ...getAllChildCategoryIds(categoryId)];
+
+                setFilteredProducts(
+                    products.filter((product) => categoryIdsToFilter.includes(product.categoryId))
+                );
+            } else {
+                setFilteredProducts([]);
+            }
         }
     };
 
@@ -29,8 +62,6 @@ const BrowseProductsPage = () => {
             <Typography variant="h4" sx={{ marginBottom: '20px', textAlign: 'center' }}>
                 Browse Products
             </Typography>
-
-            {/* Category Filter */}
             <Box
                 sx={{
                     display: 'flex',
@@ -48,17 +79,16 @@ const BrowseProductsPage = () => {
                         onChange={(e) => setCategory(e.target.value)}
                     >
                         <MenuItem value="all">All</MenuItem>
-                        <MenuItem value="BasketBall">BasketBalls</MenuItem>
-                        <MenuItem value="Clothing">Clothing</MenuItem>
-                        <MenuItem value="Hoodie">Hoodies</MenuItem>
+                        {Object.values(categoriesMap).map((cat) => (
+                            <MenuItem key={cat.name} value={cat.name}>
+                                {cat.name}
+                            </MenuItem>
+                        ))}
                     </Select>
                 </FormControl>
-
             </Box>
 
             <ProductSlider filteredProducts={filteredProducts} />
         </Box>
     );
 };
-
-export default BrowseProductsPage;

@@ -1,7 +1,7 @@
 // ProductSlider.jsx
 'use client';
 
-import React, {useEffect} from 'react';
+import React from 'react';
 import { Grid2, CircularProgress } from '@mui/material';
 import ProductCard from './ProductCard';
 import { useProducts } from '@/app/context/productContext';
@@ -15,11 +15,6 @@ const BrowseProductSlider = ({ filteredProducts }) => {
     if (loading) {
         return <CircularProgress />;
     }
-
-    useEffect(() => {
-        console.log('Loading state:', loading);
-        console.log('Fetched products:', products);
-    }, [products, loading]);
 
     return (
         <div style={{ minHeight: '70vh', paddingTop: '20px', paddingBottom: '20px', marginLeft: '10%', marginRight: '10%' }}>
