@@ -23,7 +23,6 @@ export default function ProductDetailsPage() {
           const colorIndex = product.colors.findIndex(
             (color) => color.id === parseInt(colorIdFromQuery)
           );
-          console.log('Parsed colorIdFromQuery:', colorIdFromQuery); // Debugging
           if (colorIndex !== -1) {
             setCurrentColorIndex(colorIndex);
           }

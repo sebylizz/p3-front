@@ -5,10 +5,8 @@ import { useRouter } from 'next/navigation';
 
 export default function ProductCard({ name, image, price, description, productId, colorId }) {
   const router = useRouter();
-  console.log("before " + colorId);
   const handleCardClick = () => {
     const url = `/productPage/${productId}?colorId=${colorId}`
-    console.log('Navigating to:', url); // Debugging
     router.push(url);
   };
 
