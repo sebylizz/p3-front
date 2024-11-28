@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import cartSender from "../../lib/cartSender.js";
 import { useCart } from "../../context/cartContext";
+import fetchCustomer from "../../lib/fetchCustomer.js";
 
 export default function CheckoutPage() {
     const { cart } = useCart();
@@ -14,8 +15,30 @@ export default function CheckoutPage() {
         email: "",
     });
 
+    const [fetchedCustomer, setFetchedCustomer] = useState(null);
     const [loading, setLoading] = useState(false);
     const [stripePaymentLink, setStripePaymentLink] = useState("");
+
+    useEffect(() => {
+        const fetchCustomerData = async () => {
+            try {
+                const fetchedUser = await fetchCustomer();
+                setFetchedCustomer(fetchedUser);
+                setFormData({
+                    firstName: fetchedUser.firstName || "",
+                    lastName: fetchedUser.lastName || "",
+                    address: fetchedUser.address || "",
+                    postalCode: fetchedUser.postalCode || "",
+                    phoneNumber: fetchedUser.phoneNumber || "",
+                    email: fetchedUser.email || "",
+                });
+            } catch (error) {
+                console.error("Error fetching customer data:", error);
+            }
+        };
+
+        fetchCustomerData();
+    }, []);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -101,7 +124,7 @@ export default function CheckoutPage() {
 
                 {/* Address */}
                 <div>
-                    <label htmlFor="address" className="block text-gray-700">Address</label>
+                    <label htmlFor="address" className="block text-gray-700">Delivery Address</label>
                     <input
                         type="text"
                         id="address"

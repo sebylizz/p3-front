@@ -80,7 +80,6 @@ export default function ProductDetailsPage() {
                     &#10094; {/* Left arrow symbol */}
                 </button>
 
-                {/* Main Image */}
                 <img
                     src={currentImage}
                     alt={product.name}
