@@ -23,6 +23,7 @@ export default function ProductDetailsPage() {
             const colorIndex = product.colors.findIndex((color) => color.id === parseInt(colorIdFromQuery));
             if (colorIndex !== -1) {
                 setCurrentColorIndex(colorIndex);
+                //console.log("Test Quantity: " + product.colors[currentColorIndex].variants[selectedSize].quantity);
             }
         }
     }, [product, colorIdFromQuery]);
@@ -57,7 +58,13 @@ export default function ProductDetailsPage() {
         setCurrentIndex(0);
     };
 
-    const sizes = product.colors[0].variants.map(variant => variant.size);
+    let sizes = [];
+    product.colors[currentColorIndex].variants.forEach(variant => {
+        sizes.push({
+            id: variant.id,
+            name: variant.size,
+        });
+    });
 
     return (
         <div className="flex p-8">
@@ -97,15 +104,16 @@ export default function ProductDetailsPage() {
             <div className="w-1/2 pl-4">
                 <ProductInfo
                     id={product.id}
+                    selectedSize={selectedSize}
                     name={product.name}
                     price={product.price}
                     discount={product.discount}
                     colors={product.colors}
-                    quantity={product.quantity}
+                    colorIndex={currentColorIndex}
                     onColorSelect={handleColorSelect}
                 />
                 <SizeSelector sizes={sizes} onSizeSelect={setSelectedSize} />
-                <AddToCartButton selectedSize={selectedSize} product={product} />
+                <AddToCartButton productId={product.id} colorId={product.colors[currentColorIndex].id} selectedSize={selectedSize} />
             </div>
         </div>
     );

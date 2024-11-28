@@ -31,7 +31,6 @@ const ProductSlider = () => {
                                 name={product.name}
                                 image={product.id + '/' + product.colors[0].id + '/' + product.mainImage}
                                 price={product.price}
-                                description={product.description}
                             />
                         </div>
                     </Grid2>

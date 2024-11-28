@@ -1,4 +1,5 @@
-export default function ProductInfo({ id, name, price, discount, colors, quantity, onColorSelect }) {
+export default function ProductInfo({ id, name, price, discount, colors, onColorSelect, selectedSize, colorIndex }) {
+    console.log(selectedSize);
     return (
         <div>
             <h1 className="text-2xl font-bold">{name}</h1>
@@ -28,12 +29,17 @@ export default function ProductInfo({ id, name, price, discount, colors, quantit
             </div>
 
             <div className="my-2">
-                {quantity === 0 ? (
-                    <p className="text-sm text-red-500">Out of stock</p>
+                {selectedSize === null ? (
+                    <p className="text-sm text-gray-500">Please select a size</p> // Add content for when size is not selected
                 ) : (
-                    <p className="text-sm">Stock available: {quantity} items</p>
+                    colors[colorIndex].variants[selectedSize].quantity === 0 ? (
+                        <p className="text-sm text-red-500">Out of stock</p>
+                    ) : (
+                        <p className="text-sm">Stock available: {colors[colorIndex].variants[selectedSize].quantity} items</p>
+                    )
                 )}
             </div>
+
         </div>
     );
 }
