@@ -3,34 +3,35 @@
 import React, { useState, useEffect } from 'react';
 import { useProducts } from '../context/productContext';
 import ProductSlider from '../components/browseProductSlider';
+import getCategories from '../lib/getCategories';
 import { MenuItem, Select, FormControl, InputLabel, Box, Typography } from '@mui/material';
 
 export default function BrowseProductsPage() {
     const { products } = useProducts();
 
-    const categoriesMap = { // Mapping IDs to match the database
-        1: { name: 'Clothing', children: [2, 5, 6, 7] },
-        2: { name: 'Hoodies', children: [] },
-        3: { name: 'Accessories', children: [] },
-        4: { name: 'Basketballs', children: [] },
-        5: { name: 'T-shirts', children: [] },
-        6: { name: 'Shorts', children: [] },
-        7: {name: 'Sweatpants', children: []}
-    };
-
+    const [categories, setCategories] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState(products);
     const [category, setCategory] = useState('all');
 
     useEffect(() => {
+        async function fetchCategories() {
+            const categoryData = await getCategories(); 
+            setCategories(categoryData);
+        }
+        fetchCategories();
+    }, []);
+
+    useEffect(() => {
         applyCategoryFilter();
-    }, [category, products]);
+    }, [category, products, categories]);
 
     const getAllChildCategoryIds = (parentCategoryId) => {
-        const category = categoriesMap[parentCategoryId];
-        if (!category) return [];
+        const childCategories = categories.filter(
+            (cat) => cat.parentCategory && cat.parentCategory.id === parentCategoryId
+        );
 
-        const childCategoryIds = category.children || [];
-        return childCategoryIds.reduce(
+        const childIds = childCategories.map((child) => child.id);
+        return childIds.reduce(
             (allIds, childId) => [...allIds, childId, ...getAllChildCategoryIds(childId)],
             []
         );
@@ -40,12 +41,10 @@ export default function BrowseProductsPage() {
         if (category === 'all') {
             setFilteredProducts(products);
         } else {
-            const selectedCategory = Object.entries(categoriesMap).find(
-                ([_, value]) => value.name === category
-            );
+            const selectedCategory = categories.find((cat) => cat.name === category);
 
             if (selectedCategory) {
-                const categoryId = parseInt(selectedCategory[0], 10);
+                const categoryId = selectedCategory.id;
                 const categoryIdsToFilter = [categoryId, ...getAllChildCategoryIds(categoryId)];
 
                 setFilteredProducts(
@@ -62,6 +61,7 @@ export default function BrowseProductsPage() {
             <Typography variant="h4" sx={{ marginBottom: '20px', textAlign: 'center' }}>
                 Browse Products
             </Typography>
+
             <Box
                 sx={{
                     display: 'flex',
@@ -79,8 +79,8 @@ export default function BrowseProductsPage() {
                         onChange={(e) => setCategory(e.target.value)}
                     >
                         <MenuItem value="all">All</MenuItem>
-                        {Object.values(categoriesMap).map((cat) => (
-                            <MenuItem key={cat.name} value={cat.name}>
+                        {categories.map((cat) => (
+                            <MenuItem key={cat.id} value={cat.name}>
                                 {cat.name}
                             </MenuItem>
                         ))}
@@ -91,4 +91,4 @@ export default function BrowseProductsPage() {
             <ProductSlider filteredProducts={filteredProducts} />
         </Box>
     );
-};
+}
