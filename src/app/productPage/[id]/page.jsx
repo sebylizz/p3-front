@@ -57,7 +57,13 @@ export default function ProductDetailsPage() {
         setCurrentIndex(0);
     };
 
-    const sizes = product.colors[0].variants.map(variant => variant.size);
+    let sizes = [];
+    product.colors[currentColorIndex].variants.forEach(variant => {
+        sizes.push({
+            id: variant.id,
+            name: variant.size,
+        });
+    });
 
     return (
         <div className="flex p-8">
@@ -72,7 +78,6 @@ export default function ProductDetailsPage() {
                     &#10094; {/* Left arrow symbol */}
                 </button>
 
-                {/* Main Image */}
                 <img
                     src={currentImage}
                     alt={product.name}
@@ -105,7 +110,7 @@ export default function ProductDetailsPage() {
                     onColorSelect={handleColorSelect}
                 />
                 <SizeSelector sizes={sizes} onSizeSelect={setSelectedSize} />
-                <AddToCartButton selectedSize={selectedSize} product={product} />
+                <AddToCartButton productId={product.id} colorId={product.colors[currentColorIndex].id} selectedSize={selectedSize} />
             </div>
         </div>
     );

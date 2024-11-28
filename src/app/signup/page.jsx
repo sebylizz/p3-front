@@ -14,9 +14,6 @@ export default function SignUp() {
         const firstName = document.getElementById("FirstName").value;
         const lastName = document.getElementById("LastName").value;
         const email = document.getElementById("Email").value;
-        const telephone = document.getElementById("Telephone").value;
-        const address = document.getElementById("Address").value;
-        const postalCode = document.getElementById("PostalCode").value;
         const password = document.getElementById("Password").value;
         const confirmPassword = document.getElementById("ConfirmPassword").value;
 
@@ -104,39 +101,6 @@ export default function SignUp() {
                         required
                         error={emailError}
                         helperText={emailError ? "Please enter a valid email address" : ""}
-                    />
-
-                    {/* Telephone Field */}
-                         <TextField
-                        id="Telephone"
-                        label="Telephone"
-                        type="tel"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        required
-                    />
-
-                    {/* Address Field */}
-                    <TextField
-                        id="Address"
-                        label="Address"
-                        type="text"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        required
-                    />
-
-                    {/* Postal Code Field */}
-                    <TextField
-                        id="PostalCode"
-                        label="Postal Code"
-                        type="text"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        required
                     />
 
                     {/* Password Field */}
