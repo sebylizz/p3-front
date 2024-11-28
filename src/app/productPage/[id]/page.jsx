@@ -14,6 +14,7 @@ export default function ProductDetailsPage() {
     const [selectedSize, setSelectedSize] = useState(null);
     const [currentColorIndex, setCurrentColorIndex] = useState(0);
     const { products, loading } = useProducts();
+    const [showDescription, setShowDescription] = useState(false);
 
     const product = products.find(p => p.id === parseInt(id));
     const colorIdFromQuery = searchParams.get('colorId');
@@ -111,9 +112,23 @@ export default function ProductDetailsPage() {
                     colors={product.colors}
                     colorIndex={currentColorIndex}
                     onColorSelect={handleColorSelect}
+                    description = {product.description}
                 />
                 <SizeSelector sizes={sizes} onSizeSelect={setSelectedSize} />
                 <AddToCartButton productId={product.id} colorId={product.colors[currentColorIndex].id} selectedSize={selectedSize} />
+                <button
+                    onClick={() => setShowDescription(!showDescription)}
+                    className={`w-full p-4 mt-4 text-white ${showDescription ? 'bg-black' : 'bg-gray-400'}`}
+                >
+                    {showDescription ? "Hide Description" : "Show Description"}
+                </button>
+
+                {/* Description Text */}
+                {showDescription && (
+                    <p className="mt-4 text-gray-700">
+                        {product.description}
+                    </p>
+                )}
             </div>
         </div>
     );
