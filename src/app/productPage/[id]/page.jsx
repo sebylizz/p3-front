@@ -1,7 +1,7 @@
 'use client';
 
-import { useParams } from 'next/navigation';
-import { useState } from 'react';
+import { useParams, useSearchParams } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import ProductInfo from '../../components/ProductInfo';
 import SizeSelector from '../../components/SizeSelector';
 import AddToCartButton from '../../components/AddToCartButton';
@@ -9,12 +9,23 @@ import { useProducts } from '../../context/productContext';
 
 export default function ProductDetailsPage() {
     const { id } = useParams();
+    const searchParams = useSearchParams();
     const [currentIndex, setCurrentIndex] = useState(0);
     const [selectedSize, setSelectedSize] = useState(null);
     const [currentColorIndex, setCurrentColorIndex] = useState(0);
     const { products, loading } = useProducts();
 
     const product = products.find(p => p.id === parseInt(id));
+    const colorIdFromQuery = searchParams.get('colorId');
+
+    useEffect(() => {
+        if (product && colorIdFromQuery) {
+            const colorIndex = product.colors.findIndex((color) => color.id === parseInt(colorIdFromQuery));
+            if (colorIndex !== -1) {
+                setCurrentColorIndex(colorIndex);
+            }
+        }
+    }, [product, colorIdFromQuery]);
 
     if (loading) {
         return <p>Loading...</p>;

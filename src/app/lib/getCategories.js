@@ -1,19 +1,16 @@
-async function productFetcher() {
+'use server';
+
+export default async function getCategories(){
     try {
-        const response = await fetch("http://localhost:8080/products/getall");
+        const response = await fetch('http://localhost:8080/categories/getCategories');
 
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
 
         const data = await response.json();
-
         return data;
-
     } catch (error) {
-        console.error('Error:', error);
+        console.error('error: ', error);
     }
-
 }
-
-export default productFetcher;
