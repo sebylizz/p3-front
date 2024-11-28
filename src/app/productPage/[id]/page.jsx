@@ -20,14 +20,12 @@ export default function ProductDetailsPage() {
 
     useEffect(() => {
         if (product && colorIdFromQuery) {
-          const colorIndex = product.colors.findIndex(
-            (color) => color.id === parseInt(colorIdFromQuery)
-          );
-          if (colorIndex !== -1) {
-            setCurrentColorIndex(colorIndex);
-          }
+            const colorIndex = product.colors.findIndex((color) => color.id === parseInt(colorIdFromQuery));
+            if (colorIndex !== -1) {
+                setCurrentColorIndex(colorIndex);
+            }
         }
-      }, [product, colorIdFromQuery]);
+    }, [product, colorIdFromQuery]);
 
     if (loading) {
         return <p>Loading...</p>;
