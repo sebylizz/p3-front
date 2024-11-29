@@ -26,7 +26,6 @@ const BrowseProductSlider = ({ filteredProducts }) => {
                                 name={product.name}
                                 image={product.id + '/' + color.id + '/' + color.mainImage}
                                 price={product.price}
-                                description={product.description}
                                 productId={product.id}
                                 colorId={color.id}
                             />

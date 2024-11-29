@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 
 
-export default function ProductCard({ name, image, price, description, productId, colorId }) {
+export default function ProductCard({ name, image, price, productId, colorId }) {
   const router = useRouter();
   const handleCardClick = () => {
     const url = `/productPage/${productId}?colorId=${colorId}`
@@ -30,11 +30,6 @@ export default function ProductCard({ name, image, price, description, productId
       </div>
       <div className="p-4 border-t border-neutral-200">
         <div className="font-bold">{name}</div>
-        {description && (
-          <p className="block py-2 font-normal typography-text-sm text-neutral-700">
-            {description}
-          </p>
-        )}
         <span className="block pb-2 font-bold typography-text-lg">{price} DKK</span>
       </div>
     </div>
