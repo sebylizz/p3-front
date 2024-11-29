@@ -4,9 +4,10 @@ import { cookies } from "next/headers";
 
 export default async function getCart() {
   try {
-    const cartCookie = cookies().get("cart");
+    const cs = await cookies();
+    const cartCookie = cs.get("cart");
     if (cartCookie) {
-      return JSON.parse(cartCookie.value); // Parse and return cart
+      return JSON.parse(cartCookie.value); 
     }
     return []; // Default empty cart if no cookie exists
   } catch (error) {

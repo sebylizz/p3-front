@@ -7,7 +7,10 @@ export default function SizeSelector({ sizes, onSizeSelect }) {
             <select
                 id="size"
                 className="border border-neutral-300 rounded p-2 w-full"
-                onChange={(e) => onSizeSelect(parseInt(e.target.value))}
+                onChange={(e) => {
+                    const value = e.target.value;
+                    onSizeSelect(value === "" ? null : parseInt(value, 10));
+                }}
             >
                 <option value="">Select size</option>
                 {sizes.map((size) => (

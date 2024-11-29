@@ -2,14 +2,15 @@ import React from 'react';
 import { useCart } from '../context/cartContext';
 
 
-export default function AddToCartButton({ productId, colorId, selectedSize }) {
-    const { addToCart } = useCart();
+export default function AddToCartButton({ selectedSize, productId, colorId }) {
+  const { addToCart } = useCart();
 
-    const handleClick = () => {
-        const p = `${productId}/${colorId}/${selectedSize}`;
-        console.log(p);
-        addToCart(p);
-    };
+  const handleClick = () => {
+    if (selectedSize) {
+      const p = `${productId}/${colorId}/${selectedSize}`;
+      addToCart(p);
+    }
+  };
 
     return (
         <button
@@ -21,3 +22,4 @@ export default function AddToCartButton({ productId, colorId, selectedSize }) {
         </button>
     );
 }
+

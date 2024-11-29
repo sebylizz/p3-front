@@ -30,8 +30,7 @@ const ProductSlider = () => {
                             <ProductCardVertical
                                 name={product.name}
                                 image={product.id + '/' + product.colors[0].id + '/' + product.mainImage}
-                                price={product.price / 100}
-                                description={product.description}
+                                price={(product.price/100).toFixed(2)}
                             />
                         </div>
                     </Grid2>
