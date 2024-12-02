@@ -10,6 +10,11 @@ export default function CartPage() {
     const { products = [], isLoading: productsLoading } = useProducts();
     const [isLoading, setIsLoading] = useState(true);
 
+    const handleCardClick = (productId, colorId) => {
+        const url = `/productPage/${productId}?colorId=${colorId}`
+        router.push(url);
+      };
+
     useEffect(() => {
         if (!productsLoading) {
             setIsLoading(false);
@@ -29,7 +34,6 @@ export default function CartPage() {
         return sortedSummary;
     };
 
-    // Calculate the total price of the cart
     const calculateTotal = () => {
         const cartSummary = getCartSummary();
         return Object.entries(cartSummary)
@@ -40,7 +44,6 @@ export default function CartPage() {
             .toFixed(2);
     };
 
-    // Render each product in the cart
     const renderCartItems = () => {
         const cartSummary = getCartSummary();
         return Object.entries(cartSummary).map(([productId, quantity]) => {
@@ -56,7 +59,12 @@ export default function CartPage() {
                     className="flex justify-between items-center border-b py-4"
                 >
                     {/* Product Information */}
-                    <div className="flex items-center">
+                    <div 
+                        className="flex items-center"
+                        onClick={() => handleCardClick(product.id, product.color.id)}
+                        style={{ cursor: 'pointer' }}
+                    >
+                        
                         <img
                             src={`${product.id}/${product.color.id}/${product.color.mainImage}`}
                             alt={product.name}
