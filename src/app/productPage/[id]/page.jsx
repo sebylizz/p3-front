@@ -24,6 +24,7 @@ export default function ProductDetailsPage() {
             const colorIndex = product.colors.findIndex((color) => color.id === parseInt(colorIdFromQuery));
             if (colorIndex !== -1) {
                 setCurrentColorIndex(colorIndex);
+                //console.log("Test Quantity: " + product.colors[currentColorIndex].variants[selectedSize].quantity);
             }
         }
     }, [product, colorIdFromQuery]);
