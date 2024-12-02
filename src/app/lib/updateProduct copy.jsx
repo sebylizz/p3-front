@@ -20,10 +20,10 @@ async function updateProduct(productData, updatedProduct) {
     } else {
       const contentType = response.headers.get("Content-Type");
       if (contentType && contentType.includes("application/json")) {
-        const errorDetails = await response.json(); 
+        const errorDetails = await response.json(); // Parse JSON error
         console.error("Backend returned an error:", errorDetails);
       } else {
-        const errorDetails = await response.text(); 
+        const errorDetails = await response.text(); // Handle plain text/HTML errors
         console.error("Error details:", errorDetails);
       }
       return false;

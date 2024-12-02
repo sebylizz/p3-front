@@ -1,358 +1,120 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import {
-  SfButton,
-  SfInput,
-  SfSelect,
-  SfSwitch,
-  SfCheckbox,
-  SfListItem,
-  SfModal,
-} from "@storefront-ui/react";
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import uploadImages from '@/app/lib/uploadImages';
+import updateProduct from '@/app/lib/updateProduct';
+import removeImage from '@/app/lib/removeImage';
+import AlertError from '@/app/components/errorAlert';
+import AlertPositive from '@/app/components/okAlert';
 
-import colorFetcher from "@/app/lib/getColors";
-import sizeFetcher from "@/app/lib/getSizes";
-import categoryFetcher from "@/app/lib/getCategories";
-import addProduct from "@/app/lib/addProduct";
-import collectionFetcher from "@/app/lib/getCollections";
+export default function ModifyProduct({ productData }) {
+  const router = useRouter();
 
-import AddCollectionModal from "@/app/components/admin/AddCollectionModal";
-import AddCategoryModal from "@/app/components/admin/AddCategoryModal";
-import AddColorModal from "@/app/components/admin/AddColorModal";
-import AddSizeModal from "@/app/components/admin/AddSizeModal";
+  const [name, setName] = useState(productData.name || '');
+  const [size, setSize] = useState(productData.size || '');
+  const [price, setPrice] = useState(productData.price || 0);
+  const [images, setImages] = useState(productData.image ? productData.image.split(",") : []);
+  const [mainImage, setMainImage] = useState(productData.mainImage || null);
+  const [quantity, setQuantity] = useState(productData.quantity || 0);
+  const [newImages, setNewImages] = useState([]);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
 
-import uploadImages from "@/app/lib/uploadImages";
+  const id= productData.id;
+  const initialMainImage = productData.mainImage || null;
 
-import ConfirmationModal from "@/app/components/admin/ConfirmationModal";
-
-export default function AddProduct() {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [isActive, setIsActive] = useState(true);
-  const [collectionId, setCollectionId] = useState(null);
-  const [price, setPrice] = useState(0);
-  const [startDate, setStartDate] = useState("");
-
-  const [colors, setColors] = useState([]);
-  const [selectedColors, setSelectedColors] = useState([]);
-  const [colorToAdd, setColorToAdd] = useState(null);
-
-  const [sizes, setSizes] = useState([]);
-  const [sizeToAdd, setSizeToAdd] = useState(null);
-  const [quantityToAdd, setQuantityToAdd] = useState("");
-
-  const [mainImage, setMainImage] = useState(null);
-  const [extraImages, setExtraImages] = useState([]);
-
-  //collection
-  const [isAddCollectionModalOpen, setIsAddCollectionModalOpen] =
-    useState(false);
-  const [collections, setCollections] = useState([]);
-
-  //categories
-  const [parentCategoryId, setParentCategoryId] = useState(null);
-  const [childCategoryId, setChildCategoryId] = useState(null);
-  const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false);
-  const [categories, setCategories] = useState([]);
-
-  //variant
-  const [isAddColorModalOpen, setIsAddColorModalOpen] = useState(false);
-  const [isAddSizeModalOpen, setIsAddSizeModalOpen] = useState(false);
-
-  const [collapsedColors, setCollapsedColors] = useState({});
-
-  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false); // Modal state
-
-  const [productData, setProductData] = useState(null); // Temporarily hold data for submission
-
-  const [status, setStatus] = useState(null); // Tracks success or failure
-  const handleDeleteVariant = (colorId, variantIndex) => {
-  setSelectedColors((prevColors) =>
-    prevColors.map((color) =>
-      color.colorId === colorId
-        ? {
-            ...color,
-            variants: color.variants.filter((_, index) => index !== variantIndex),
-          }
-        : color
-    )
-  );
-}
-
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        const [
-          fetchedColors,
-          fetchedSizes,
-          fetchedCollections,
-          fetchedCategories,
-        ] = await Promise.all([
-          colorFetcher(),
-          sizeFetcher(),
-          collectionFetcher(),
-          categoryFetcher(),
-        ]);
-
-        setColors(fetchedColors);
-        setSizes(fetchedSizes);
-        setCollections(fetchedCollections);
-        setCategories(fetchedCategories);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchInitialData();
-  }, []);
-
-  // Handle startDate changes
-  const handleStartDateChange = (e) => {
-    const date = e.target.value; // Extract the date from the event
-    setStartDate(date); // Update the startDate state
-    setIsActive(!isStartDateInFuture(date)); // Update isActive based on the date
-  };
-
-  // useEffect(() => {
-  //   // Check if startDate is in the future
-  //   const today = new Date();
-  //   const selectedDate = new Date(startDate);
-
-  //   if (selectedDate > today) {
-  //     setIsActive(false); // Automatically set to false
-  //   }
-  // }, [startDate]);
-
-  const isStartDateInFuture = () => {
-    const today = new Date();
-    const selectedDate = new Date(startDate);
-    return selectedDate > today;
-  };
-
-  const handleToggleCollapse = (colorId) => {
-    setCollapsedColors((prev) => ({
-      ...prev,
-      [colorId]: !prev[colorId],
-    }));
-  };
-
-  const handleCollectionAdded = (newCollection) => {
-    setCollections((prevCollections) => [...prevCollections, newCollection]);
-  };
-
-  const handleCategoryAdded = (newCategory) => {
-    setCategories((prevCategories) => [...prevCategories, newCategory]);
-  };
-
-  const handleColorAdded = (newColor) => {
-    setColors((prevColors) => [...prevColors, newColor]);
-  };
-
-  const handleSizeAdded = (newSize) => {
-    setSizes((prevSizes) => [...prevSizes, newSize]);
-  };
-
-  const handleAddColor = () => {
-    if (!colorToAdd) {
-      alert("Please select a color to add.");
-      return;
-    }
-
-    const colorAlreadyAdded = selectedColors.some(
-      (color) => color.colorId === colorToAdd
-    );
-    if (colorAlreadyAdded) {
-      alert("Color is already added.");
-      return;
-    }
-
-    const selectedColorDetails = colors.find(
-      (color) => color.id === colorToAdd
-    );
-
-    setSelectedColors((prevColors) => [
-      ...prevColors,
-      {
-        colorId: selectedColorDetails.id,
-        colorName: selectedColorDetails.name,
-        mainImage: null,
-        extraImages: [],
-        variants: [],
-      },
-    ]);
-
-    setColorToAdd(null);
-  };
-
-  const handleMainImageChange = (colorId, e) => {
+  // Handle main image selection and replacement
+  const handleMainImageChange = (e) => {
     const file = e.target.files[0];
-    if (!file) return;
-
-    setSelectedColors((prevColors) =>
-      prevColors.map((color) =>
-        color.colorId === colorId ? { ...color, mainImage: file } : color
-      )
-    );
+    setMainImage(file); // Replace with the new file
   };
-
-  const handleMainImageDelete = (colorId) => {
-    setSelectedColors((prevColors) =>
-      prevColors.map((color) =>
-        color.colorId === colorId ? { ...color, mainImage: null } : color
-      )
-    );
-  };
-
-  const handleExtraImagesChange = (colorId, e) => {
+  const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    if (files.length === 0) return;
-
-    setSelectedColors((prevColors) =>
-      prevColors.map((color) =>
-        color.colorId === colorId
-          ? { ...color, extraImages: [...(color.extraImages || []), ...files] }
-          : color
-      )
+    setNewImages((prevImages) => [...prevImages, ...files]);
+  };
+  const handleDeleteImage = (imageToDelete) => {
+    setNewImages((prevImages) =>
+      prevImages.filter((image) => image !== imageToDelete)
     );
   };
 
-  const handleExtraImageDelete = (colorId, imageToDelete) => {
-    setSelectedColors((prevColors) =>
-      prevColors.map((color) =>
-        color.colorId === colorId
-          ? {
-              ...color,
-              extraImages: (color.extraImages || []).filter(
-                (image) => image !== imageToDelete
-              ),
-            }
-          : color
-      )
-    );
+
+  const handleRemoveImage = async (imageName) => {
+    const updatedImages = images.filter((image) => image !== imageName);
+    setImages(updatedImages);
+    await removeImage(imageName, id,images, setImages);
   };
 
-  const handleAddSizeAndQuantity = (colorId) => {
-    if (!sizeToAdd || !quantityToAdd || quantityToAdd <= 0) {
-      alert("Please select a size and enter a valid quantity.");
-      return;
-    }
-
-    setSelectedColors((prevColors) =>
-      prevColors.map((color) =>
-        color.colorId === colorId
-          ? {
-              ...color,
-              variants: [
-                ...color.variants,
-                {
-                  sizeId: sizeToAdd,
-                  sizeName: sizes.find((s) => s.id === sizeToAdd).name,
-                  quantity: parseInt(quantityToAdd, 10),
-                },
-              ],
-            }
-          : color
-      )
-    );
-
-    setSizeToAdd(null);
-    setQuantityToAdd("");
-  };
-
-  const handleFormSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!startDate) {
-      alert("Start Date is required.");
+    if (!name || name.length < 3) {
+      alert("Name must be at least 3 characters.");
       return;
     }
+    if (!size) {
+      alert("Size is required.");
+      return;
+    }
+    if (isNaN(price) || price <= 0) {
+      alert("Price must be a positive number.");
+      return;
+    }
+    if (isNaN(quantity) || quantity <= 0) {
+      alert("Quantity must be a positive integer.");
+      return;
+    }  
+  
+    if (images.length === 0 && newImages.length === 0) {
+      alert("Please select images before submitting.");
+      return;
+    }
+    if (!mainImage){
+      alert("Please select main image before submitting.");
+      return;
 
-    const data = {
+    }
+    const mainImageName = mainImage instanceof File ? mainImage.name : mainImage;
+    console.log(mainImageName);
+    
+    const uniqueImages= images.filter((image) => image.name !== mainImageName);
+    const uniqueNewImages= newImages.filter((image)=>image.name !== mainImageName);
+    console.log(uniqueNewImages);
+
+    if (mainImage instanceof File && mainImage.name !== initialMainImage){
+      const files =await uploadImages([mainImage], id);
+    }
+    if (uniqueNewImages.length>0){
+      const files = await uploadImages(uniqueNewImages, id);
+      var imagesString = files.join(",");
+      
+    }
+
+    var imageFilenamesOld=uniqueImages.join(",");
+
+    const imageFilenames = imageFilenamesOld && imagesString 
+    ? `${imageFilenamesOld},${imagesString}` 
+    : imageFilenamesOld || imagesString;
+
+      const updatedProduct = {
       name,
-      description,
-      isActive: !isStartDateInFuture,
-      collectionId,
-      categoryId: childCategoryId || parentCategoryId,
-      price: {
-        price,
-        isDiscount: false,
-        startDate,
-        endDate: null,
-      },
-      colors: selectedColors.map((color) => ({
-        colorId: color.colorId,
-        mainImage: color.mainImage ? color.mainImage.name : null,
-        images: color.extraImages
-          ? color.extraImages.map((img) => img.name).join(",")
-          : "",
-      })),
-      variants: selectedColors.flatMap((color) =>
-        color.variants.map((variant) => ({
-          colorId: color.colorId,
-          sizeId: variant.sizeId,
-          quantity: variant.quantity,
-        }))
-      ),
+      size,
+      price: parseInt(price, 10),
+      image: imageFilenames,
+      mainImage: mainImage instanceof File ? mainImage.name : mainImage,
+      quantity: parseInt(quantity, 10),
     };
-    setProductData(data);
-    setIsConfirmationModalOpen(true);
-  };
-
-  const confirmSubmission = async (e) => {
-    e.preventDefault();
-    setStatus(null); // Reset status before the task
-    setIsConfirmationModalOpen(false); // Close modal
     try {
-      const responseText = await addProduct(productData);
-      const responseData = responseText ? JSON.parse(responseText) : null;
-      console.log("Response Data:", responseData);
+      await updateProduct(productData, updatedProduct);
+      setShowSuccessMessage(true);
 
-      if (!responseData) {
-        throw new Error("Failed to add product: Missing product ID");
-      }
-      const productId = responseData;
-      for (const color of selectedColors) {
-        const images = [color.mainImage, ...color.extraImages];
-        console.log(`Uploading images for colorId ${color.colorId}:`, images);
-        await uploadImages(images, productId, color.colorId);
-        console.log(`Images uploaded for colorId ${color.colorId}`);
-      }
-      setStatus("success"); // Mark as success
-      resetFields(); // Reset the form fields
+      setTimeout(() => setShowSuccessMessage(false), 3000);
     } catch (error) {
-      console.error("Error adding product:", error);
-      alert(`Error adding product: ${error.message}`);
-      setStatus("failure"); // Mark as failure
+      console.error("Error updating product:", error);
+      setShowErrorMessage(true);
+
+      setTimeout(() => setShowErrorMessage(false), 3000);
     }
-  };
-
-  const cancelSubmission = () => {
-    setIsConfirmationModalOpen(false); // Close modal without submitting
-    setStatus(null); // Reset the status
-  };
-  const handleDeleteColor = (colorId) => {
-    // Remove the color and its variants from selectedColors
-    setSelectedColors((prevColors) =>
-      prevColors.filter((color) => color.colorId !== colorId)
-    );
-  };
-
-  const resetFields = () => {
-    setName("");
-    setDescription("");
-    setIsActive(true);
-    setCollectionId(null);
-    setPrice(0);
-    setStartDate("");
-    setSelectedColors([]);
-    setColorToAdd(null);
-    setSizeToAdd(null);
-    setQuantityToAdd("");
-    setMainImage(null);
-    setExtraImages([]);
-    setParentCategoryId(null);
-    setChildCategoryId(null);
-    setCollapsedColors({});
   };
 
   return (
@@ -374,7 +136,7 @@ export default function AddProduct() {
             htmlFor="description-input"
             className="block text-sm font-medium mb-1"
           >
-            <strong>Description</strong>
+            <strong>Description</strong> 
           </label>
           <textarea
             id="description-input"
@@ -413,20 +175,35 @@ export default function AddProduct() {
             Start date
           </label>
           <SfInput
-            id="start-input"
+          id="start-input"
             label="Start Date"
-            type="date" // Enables date picker
-            value={startDate} // Controlled component value
-            onChange={handleStartDateChange} // Update handler
+            type="date"
+            value={startDate}
+            onChange={handleStartDateChange}
+            required
+          />
+        </div>
+        <div style={{ display: "flex", flexDirection: "column" }}>
+        {/* Start Date */}
+        <label
+            htmlFor="end-input"
+            style={{ marginBottom: "0.5rem", fontWeight: "bold" }}
+          >
+            End Date
+          </label>
+          <SfInput
+          id="end-input"
+            label="End Date"
+            type="date"
+            value={endDate}
+            onChange={handleEndDateChange}
             required
           />
         </div>
 
         {/* Active Switch */}
         <div className="flex justify-between items-center">
-          <span className="typography-label-sm">
-            <strong>Active</strong>{" "}
-          </span>
+          <span className="typography-label-sm"><strong>Active</strong> </span>
           <SfSwitch
             checked={isActive}
             onChange={() => {
@@ -476,42 +253,36 @@ export default function AddProduct() {
           <SfSelect
             label="Parent Category"
             value={parentCategoryId || ""}
-            onChange={(e) => {
-              const selectedId = e.target.value;
-              setParentCategoryId(e.target.value);
-              console.log("Selected Category ID:", selectedId);
-            }}
+            onChange={(e) => {const selectedId = e.target.value; setParentCategoryId(e.target.value); console.log("Selected Category ID:", selectedId);}}
           >
             <option value="">Select a Parent Category</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </SfSelect>
-
-          <SfSelect
-            label="Child Category"
-            value={childCategoryId || ""}
-            onChange={(e) => {
-              const selectedId = parseInt(e.target.value, 10); // Ensure it's an integer
-              setChildCategoryId(selectedId);
-              console.log("Selected Child Category ID:", selectedId);
-            }}
-            disabled={!parentCategoryId} // Only enable if a parent category is selected
-          >
-            <option value="">Select a Child Category</option>
             {categories
-              .filter(
-                (category) =>
-                  category.parentCategory?.id === parseInt(parentCategoryId, 10)
-              ) // Convert parentCategoryId to an integer
               .map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
                 </option>
               ))}
           </SfSelect>
+
+          <SfSelect
+  label="Child Category"
+  value={childCategoryId || ""}
+  onChange={(e) => {
+    const selectedId = parseInt(e.target.value, 10); // Ensure it's an integer
+    setChildCategoryId(selectedId);
+    console.log("Selected Child Category ID:", selectedId);
+  }}
+  disabled={!parentCategoryId} // Only enable if a parent category is selected
+>
+  <option value="">Select a Child Category</option>
+  {categories
+    .filter((category) => category.parentCategory?.id === parseInt(parentCategoryId, 10)) // Convert parentCategoryId to an integer
+    .map((category) => (
+      <option key={category.id} value={category.id}>
+        {category.name}
+      </option>
+    ))}
+</SfSelect>
 
           <SfButton //CLASS
             type="button"
@@ -534,6 +305,8 @@ export default function AddProduct() {
             )} // Filter only parent categories
           />
         )}
+
+
 
         <div>
           {/* Dropdown and Buttons */}
@@ -603,55 +376,52 @@ export default function AddProduct() {
               border: "1px solid #ccc",
             }}
           >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <h1 style={{ fontSize: "1.4rem", fontWeight: "bold" }}>
-                {color.colorName}
-              </h1>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "flex-end",
-                  gap: "5 rem",
-                }}
-              >
-                {/* Expand/Collapse Button */}
-                <SfButton
-                  type="button"
-                  onClick={() => handleToggleCollapse(color.colorId)}
-                  style={{
-                    backgroundColor: collapsedColors[color.colorId]
-                      ? "#007BFF"
-                      : "#6c757d",
-                    color: "white",
-                    padding: "0.5rem 1rem",
-                    borderRadius: "4px",
-                    border: "none",
-                  }}
-                >
-                  {collapsedColors[color.colorId] ? "Expand" : "Collapse"}
-                </SfButton>
+      <div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  }}
+>
+<h1 style={{ fontSize: '1.4rem', fontWeight: 'bold' }}>{color.colorName}</h1>
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "flex-end",
+      gap: "5 rem",
+    }}
+  >
+    {/* Expand/Collapse Button */}
+    <SfButton
+      type="button"
+      onClick={() => handleToggleCollapse(color.colorId)}
+      style={{
+        backgroundColor: collapsedColors[color.colorId] ? "#007BFF" : "#6c757d",
+        color: "white",
+        padding: "0.5rem 1rem",
+        borderRadius: "4px",
+        border: "none",
+      }}
+    >
+      {collapsedColors[color.colorId] ? "Expand" : "Collapse"}
+    </SfButton>
 
-                {/* Delete Button */}
-                <SfButton
-                  type="button"
-                  onClick={() => handleDeleteColor(color.colorId)}
-                  style={{
-                    backgroundColor: "red",
-                    color: "white",
-                    padding: "0.5rem 1rem",
-                    borderRadius: "4px",
-                  }}
-                >
-                  Delete
-                </SfButton>
-              </div>
-            </div>
+    {/* Delete Button */}
+    <SfButton
+      type="button"
+      onClick={() => handleDeleteColor(color.colorId)}
+      style={{
+        backgroundColor: "red",
+        color: "white",
+        padding: "0.5rem 1rem",
+        borderRadius: "4px",
+      }}
+    >
+      Delete
+    </SfButton>
+  </div>
+</div>
+
 
             {!collapsedColors[color.colorId] && (
               <>
@@ -924,8 +694,7 @@ export default function AddProduct() {
         isOpen={isConfirmationModalOpen}
         onClose={cancelSubmission}
         onConfirm={confirmSubmission}
-        message="Are you sure you want to add this product?"
-        status={status}
+        message="Are you sure you want to update this product?"
       />
     </div>
   );
