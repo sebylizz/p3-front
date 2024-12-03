@@ -1,6 +1,9 @@
 'use client';
 
-export default function SizeSelector({ sizes, onSizeSelect }) {
+export default function SizeSelector({ sizes, onSizeSelect, colorIndex, colors }) {
+    const selectedColor = colors[colorIndex];
+    const selectedVariant = (size) => selectedColor?.variants?.find((variant) => variant.size === size);
+    
     return (
         <div className="my-4">
             <label htmlFor="size" className="block text-neutral-600">Size:</label>
@@ -13,9 +16,18 @@ export default function SizeSelector({ sizes, onSizeSelect }) {
                 }}
             >
                 <option value="">Select size</option>
-                {sizes.map((size) => (
-                    <option key={size.id} value={size.id}>{size.name}</option>
-                ))}
+                {sizes.map((size) => {
+                    const variant = selectedVariant(size.name);
+                return (
+                <option
+                    key={size.id}
+                    value={size.id}
+                    disabled={!variant || variant.quantity < 1}
+                >
+                    {size.name} {variant && variant.quantity === 0 ? "*Out of Stock*" : ""}
+                </option>
+                );
+                })}
             </select>
         </div>
     );

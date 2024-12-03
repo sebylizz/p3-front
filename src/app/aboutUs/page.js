@@ -17,12 +17,12 @@ const aboutUs = () => {
                 <Typography variant="h4" sx={{ marginBottom: '20px', textAlign: 'center', fontSize: '24px', fontFamily: 'Zilla Slab, seri' }}>
                     Lorem Ipsum
                 </Typography>
-                <Typography variant="h4" sx={{ marginBottom: '20px', textAlign: 'center', fontSize: '16px', fontFamily: 'Zilla Slab, seri' }}>
+                <Typography variant="h4" sx={{ marginBottom: '20px', textAlign: 'center', fontSize: '16px'}}>
                 "Neque porro quisquam est qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit..."
                 <br></br>
                 "There is no one who loves pain itself, who seeks after it and wants to have it, simply because it is pain..."
                 </Typography>
-                <Typography variant="h4" sx={{ marginBottom: '100px', textAlign: 'center', fontSize: '16px', fontFamily: 'Zilla Slab, seri', padding: '20px', wordWrap: 'break-word'}}>
+                <Typography variant="h4" sx={{ marginBottom: '100px', textAlign: 'center', fontSize: '16px', padding: '20px', wordWrap: 'break-word'}}>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur finibus odio ut enim rutrum vestibulum. Nam odio mi, imperdiet quis
                 mollis at, fermentum nec lorem. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Maecenas blandit dictum imperdiet. Ut in bibendum arcu. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Cras vel erat nibh. Proin sed pellentesque lorem, ac pulvinar urna. Fusce scelerisque dolor et lacus dapibus mollis.
                 Duis sed rhoncus diam. Maecenas sed purus hendrerit arcu commodo dignissim. Pellentesque lobortis ultricies velit sit amet maximus. Mauris laoreet blandit ex at ornare. Pellentesque orci nunc, condimentum sed lacus vitae, volutpat egestas elit. Maecenas eu nunc augue. Phasellus viverra vitae nibh eget auctor. Curabitur rutrum mollis ante. Donec efficitur ipsum tortor, in dapibus sapien imperdiet et. Morbi consequat quis ante sed convallis. Quisque ultricies quam vitae fermentum facilisis.
