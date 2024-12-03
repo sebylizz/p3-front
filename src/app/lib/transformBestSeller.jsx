@@ -1,5 +1,6 @@
 function transformBestSellersToProductFormat(bestSellers) {
     const groupedProducts = {};
+    const productOrder = []; 
 
     bestSellers.forEach((item) => {
         if (!groupedProducts[item.productId]) {
@@ -9,6 +10,7 @@ function transformBestSellersToProductFormat(bestSellers) {
                 price: item.price,
                 colors: [],
             };
+            productOrder.push(item.productId);
         }
         groupedProducts[item.productId].colors.push({
             id: item.colorId,
@@ -18,7 +20,8 @@ function transformBestSellersToProductFormat(bestSellers) {
         });
     });
 
-    return Object.values(groupedProducts);
+
+    return productOrder.map((productId) => groupedProducts[productId]);
 }
 
 export default transformBestSellersToProductFormat;
