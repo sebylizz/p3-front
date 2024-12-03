@@ -10,6 +10,8 @@ export const POST = async (request) => {
     const folderName = formData.get("folderName"); 
     const uploadsDir = path.join(process.cwd(), `public/${folderName}`);
 
+    console.log("hej");
+
     // Check if the "public/uploads" directory exists; if not, create it
     if (!existsSync(uploadsDir)) {
       await mkdir(uploadsDir, { recursive: true }); // Create the directory, including parent directories if needed
@@ -29,7 +31,7 @@ export const POST = async (request) => {
         const filePath = path.join(uploadsDir, filename);
         await writeFile(filePath, buffer);
 
-        uploadedFiles.push(filename); // Save the filename for the response
+        uploadedFiles.push(`${folderName}/${filename}`); // Include the full path for the response
       }
     }
 

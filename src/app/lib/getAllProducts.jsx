@@ -1,25 +1,27 @@
 import getJWT from "./getJWT";
-async function customerFetcher(offset = 0, limit = 10) {
+
+async function allProducts() {
     try {
         const token = await getJWT();
         console.log(token)
-        const response = await fetch(`http://localhost:8080/customers/getcustomers?offset=${offset}&limit=${limit}`,{
+        const response = await fetch("http://localhost:8080/products/getAllAdmin", {
             method: "GET",
             headers: {
                 'Authorization': `Bearer ${token?.value}`
-            },
+            }
         });
 
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
 
-        const data = await response.json();
+        const data = await response.json(); 
         return data;
 
     } catch (error) {
         console.error('Error:', error);
+        throw error; 
     }
 }
 
-export default customerFetcher;
+export default allProducts;
