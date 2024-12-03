@@ -1,8 +1,8 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import cartSender from "../../lib/cartSender.js";
 import { useCart } from "../../context/cartContext";
-import fetchCustomer from "../../lib/fetchCustomer.js";
+import { loadStripe } from '@stripe/stripe-js';
 
 export default function CheckoutPage() {
     const { cart } = useCart();
@@ -15,30 +15,8 @@ export default function CheckoutPage() {
         email: "",
     });
 
-    const [fetchedCustomer, setFetchedCustomer] = useState(null);
     const [loading, setLoading] = useState(false);
-    const [stripePaymentLink, setStripePaymentLink] = useState("");
-
-    useEffect(() => {
-        const fetchCustomerData = async () => {
-            try {
-                const fetchedUser = await fetchCustomer();
-                setFetchedCustomer(fetchedUser);
-                setFormData({
-                    firstName: fetchedUser.firstName || "",
-                    lastName: fetchedUser.lastName || "",
-                    address: fetchedUser.address || "",
-                    postalCode: fetchedUser.postalCode || "",
-                    phoneNumber: fetchedUser.phoneNumber || "",
-                    email: fetchedUser.email || "",
-                });
-            } catch (error) {
-                console.error("Error fetching customer data:", error);
-            }
-        };
-
-        fetchCustomerData();
-    }, []);
+    const [sessionId, setSessionId] = useState(null);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -49,18 +27,14 @@ export default function CheckoutPage() {
         e.preventDefault();
         setLoading(true);
         try {
-            const stripeLink = await cartSender(cart);
-            if (stripeLink) {
-                if (stripeLink.includes("stripe")) {
-                    setStripePaymentLink(stripeLink);
-                    window.open(stripeLink, "_blank"); 
-                } else {
-                    setError("Invalid payment link. Please try again."); 
-                    setLoading(false); 
-                }
+            const sessionId = await cartSender(formData, cart);
+
+            if (sessionId) {
+                const stripe = await loadStripe("pk_test_51QA8WbCZh5mI9KbJuYzOgvILXehId4peiz0SZfAXviiEDTQpw9MJmUAfuQLgNY0NboEvnJTVO2bsbJ1RIHpaP9xQ00LmbXX7vj");
+                await stripe.redirectToCheckout({ sessionId: sessionId });
             } else {
-                alert("Failed to retrieve payment link");
-                setLoading(false); 
+                alert("Failed to retrieve payment session");
+                setLoading(false);
             }
         } catch (error) {
             alert("An error occurred while processing your payment.");
@@ -75,16 +49,6 @@ export default function CheckoutPage() {
                 <h1 className="text-2xl font-semibold text-center">
                     Please pay via Stripe to confirm payment.
                     <br />
-                    {stripePaymentLink && (
-                        <a
-                            href={stripePaymentLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-500 underline"
-                        >
-                            Click here if you were not redirected.
-                        </a>
-                    )}
                 </h1>
             </div>
         );
@@ -124,7 +88,7 @@ export default function CheckoutPage() {
 
                 {/* Address */}
                 <div>
-                    <label htmlFor="address" className="block text-gray-700">Delivery Address</label>
+                    <label htmlFor="address" className="block text-gray-700">Address</label>
                     <input
                         type="text"
                         id="address"
@@ -181,9 +145,8 @@ export default function CheckoutPage() {
                 {/* Pay Button */}
                 <button
                     type="submit"
-                    className={`w-full py-2 mt-4 rounded ${
-                        loading ? "bg-gray-400" : "bg-black text-white"
-                    }`}
+                    className={`w-full py-2 mt-4 rounded ${loading ? "bg-gray-400" : "bg-black text-white"
+                        }`}
                     disabled={loading}
                 >
                     {loading ? "Processing..." : "Pay"}

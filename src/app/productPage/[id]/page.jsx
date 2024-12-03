@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import ProductInfo from '../../components/ProductInfo';
 import SizeSelector from '../../components/SizeSelector';
 import AddToCartButton from '../../components/AddToCartButton';
+import quantityAddLimit from "../../lib/quantityAddLimit";
 import { useProducts } from '../../context/productContext';
 
 export default function ProductDetailsPage() {
@@ -114,7 +115,12 @@ export default function ProductDetailsPage() {
                     description = {product.description}
                 />
                 <SizeSelector sizes={sizes} onSizeSelect={setSelectedSize} colorIndex={currentColorIndex} colors={product.colors} />
-                <AddToCartButton productId={product.id} colorId={product.colors[currentColorIndex].id} selectedSize={selectedSize} />
+                <AddToCartButton 
+                    productId={product.id} 
+                    colorId={product.colors[currentColorIndex].id} 
+                    selectedSize={selectedSize} 
+                    products={products} 
+                />
                 <button
                     onClick={() => setShowDescription(!showDescription)}
                     className={`w-full p-4 mt-4 text-white ${showDescription ? 'bg-black' : 'bg-gray-400'}`}
