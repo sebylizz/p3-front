@@ -9,15 +9,15 @@ export default async function cartSender(info, cart) {
             },
             body: JSON.stringify({ details: info, productIds: cart }),
         });
-        if (!response.ok) {
-            return { success: false };
-        }
         const sessionId = await response.text();
-
+        console.log(sessionId);
+        if (!response.ok) {
+            console.log(response)
+            return -1;
+        }
         return sessionId;
-
     } catch (error) {
-        console.error('Error login:', error);
-        return { success: false };
+        console.error(error);
+        return -1;
     }
 }
