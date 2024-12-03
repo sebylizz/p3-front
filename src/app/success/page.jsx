@@ -19,7 +19,7 @@ export default function SuccessPage() {
         fetchStatus();
     }, []);
 
-    if(loading) {
+    if (loading) {
         return (
             <div className="flex justify-center items-center h-screen">
                 <h1 className="text-2xl font-semibold text-center">
@@ -30,8 +30,24 @@ export default function SuccessPage() {
         );
     }
     else {
-        return (
-            <h1>her: {answer.first_name}</h1>
-        )
+        if (answer.error) {
+            return (
+                <div className="flex justify-center items-center h-screen">
+                    <h1 className="text-2xl font-semibold text-center">
+                        Payment failed: {answer.error}
+                        <br />
+                    </h1>
+                </div>
+            );
+        } else {
+            return (
+                <div className="flex justify-center items-center h-screen">
+                    <h1 className="text-2xl font-semibold text-center">
+                        Order placed succesfully!
+                        <br />
+                    </h1>
+                </div>
+            )
+        }
     }
 }

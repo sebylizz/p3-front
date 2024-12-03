@@ -35,8 +35,36 @@
   background-color: #444; /* Darken on hover */
 }
 
+html,
 body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
     color: var(--foreground);
     background: var(--background);
     font-family: Arial, Helvetica, sans-serif;
+}
+
+button {
+  transition: all 0.2s ease-in-out;
+}
+
+button:active {
+  transform: scale(0.90);
+}
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+#__next {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+main {
+    flex: 1;
 }
