@@ -1,8 +1,9 @@
+import { useState } from "react";
+
 export default function ProductInfo({ id, name, price, discount, colors, onColorSelect, selectedSize, colorIndex }) { 
 
     const selectedColor = colors[colorIndex];
     const selectedVariant = selectedColor?.variants?.find((variant) => variant.id === selectedSize);
-
     return (
         <div>
             <h1 className="text-2xl font-bold">{name}</h1>
