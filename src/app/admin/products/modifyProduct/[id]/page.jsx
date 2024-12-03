@@ -1,6 +1,6 @@
 // ProductPage.jsx
 
-import productFetcherJSX from "@/app/lib/GetProducts";
+import getProductToModify from "@/app/lib/getProductToModify";
 import ModifyProduct from "../Modify";
 
 export const dynamicParams = true;
@@ -13,7 +13,8 @@ export async function getProduct(id) {
 
 export default async function ProductPage({ params }) {
   const { id } = await params;
-  const product = await getProduct(id);
+  const product = await getProductToModify(id);
+  console.log(product);
 
   // if (!product) {
   //   notFound();
