@@ -16,7 +16,6 @@ export default function CheckoutPage() {
     });
 
     const [loading, setLoading] = useState(false);
-    const [sessionId, setSessionId] = useState(null);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -29,15 +28,29 @@ export default function CheckoutPage() {
         try {
             const sessionId = await cartSender(formData, cart);
 
+            if (sessionId === -1) {
+                alert("Failed to create payment session");
+                setLoading(false);
+                return;
+            }
+
             if (sessionId) {
                 const stripe = await loadStripe("pk_test_51QA8WbCZh5mI9KbJuYzOgvILXehId4peiz0SZfAXviiEDTQpw9MJmUAfuQLgNY0NboEvnJTVO2bsbJ1RIHpaP9xQ00LmbXX7vj");
-                await stripe.redirectToCheckout({ sessionId: sessionId });
+                if (stripe) {
+                    const result = await stripe.redirectToCheckout({ sessionId: sessionId });
+                    if (result.error) {
+                        alert(`Error redirecting to checkout: ${result.error.message}`);
+                    }
+                } else {
+                    alert("Stripe failed to load.");
+                    setLoading(false);
+                }
             } else {
                 alert("Failed to retrieve payment session");
                 setLoading(false);
             }
         } catch (error) {
-            alert("An error occurred while processing your payment.");
+            alert("Payment error: " + error.message);
             console.error("Payment error:", error);
             setLoading(false);
         }

@@ -1,265 +1,1011 @@
 "use client";
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import uploadImages from '@/app/lib/uploadImages';
-import updateProduct from '@/app/lib/updateProduct';
-import removeImage from '@/app/lib/removeImage';
-import AlertError from '@/app/components/errorAlert';
-import AlertPositive from '@/app/components/okAlert';
+import React, { useState, useEffect } from "react";
+import {
+  SfButton,
+  SfInput,
+  SfSelect,
+  SfSwitch,
+  SfModal,
+} from "@storefront-ui/react";
+import colorFetcher from "@/app/lib/getColors";
+import sizeFetcher from "@/app/lib/getSizes";
+import categoryFetcher from "@/app/lib/getCategories";
+import collectionFetcher from "@/app/lib/getCollections";
+import uploadImages from "@/app/lib/uploadImages";
+import updateProduct from "@/app/lib/updateProduct";
+import AddCollectionModal from "@/app/components/admin/AddCollectionModal";
+import AddCategoryModal from "@/app/components/admin/AddCategoryModal";
+import AddColorModal from "@/app/components/admin/AddColorModal";
+import ConfirmationModal from "@/app/components/admin/ConfirmationModal";
+import AddSizeModal from "@/app/components/admin/AddSizeModal";
+import PriceList from "@/app/components/admin/PriceList";
+import deleteFiles from "@/app/lib/deleteFile";
+import { useRouter } from "next/navigation";
 
 export default function ModifyProduct({ productData }) {
   const router = useRouter();
+  const [name, setName] = useState(productData?.name || "");
+  const [description, setDescription] = useState(
+    productData?.description || ""
+  );
 
-  const [name, setName] = useState(productData.name || '');
-  const [size, setSize] = useState(productData.size || '');
-  const [price, setPrice] = useState(productData.price || 0);
-  const [images, setImages] = useState(productData.image ? productData.image.split(",") : []);
-  const [mainImage, setMainImage] = useState(productData.mainImage || null);
-  const [quantity, setQuantity] = useState(productData.quantity || 0);
-  const [newImages, setNewImages] = useState([]);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [showErrorMessage, setShowErrorMessage] = useState(false);
+  const [isActive, setIsActive] = useState(productData?.isActive || false);
 
-  const id= productData.id;
-  const initialMainImage = productData.mainImage || null;
+  const [collectionId, setCollectionId] = useState(
+    productData?.collectionId || null
+  );
 
-  // Handle main image selection and replacement
-  const handleMainImageChange = (e) => {
-    const file = e.target.files[0];
-    setMainImage(file); // Replace with the new file
-  };
-  const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    setNewImages((prevImages) => [...prevImages, ...files]);
-  };
-  const handleDeleteImage = (imageToDelete) => {
-    setNewImages((prevImages) =>
-      prevImages.filter((image) => image !== imageToDelete)
+  //categories
+  const [parentCategoryId, setParentCategoryId] = useState(null);
+  const [childCategoryId, setChildCategoryId] = useState(null);
+
+  const [colors, setColors] = useState([]);
+  const [selectedColors, setSelectedColors] = useState([]);
+  const [colorToAdd, setColorToAdd] = useState(null);
+
+  const [categories, setCategories] = useState([]);
+  const [collections, setCollections] = useState([]);
+  const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false);
+  const [isAddCollectionModalOpen, setIsAddCollectionModalOpen] =
+    useState(false);
+  const [isAddColorModalOpen, setIsAddColorModalOpen] = useState(false);
+
+  const [prices, setPrices] = useState(productData?.prices || []);
+  const [initialPrices, setInitialPrices] = useState(productData?.prices || []);
+  const [startDate, setStartDate] = useState("");
+
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
+  const [status, setStatus] = useState(null);
+
+  const [sizes, setSizes] = useState([]);
+
+  const [collapsedColors, setCollapsedColors] = useState(() => {
+    if (productData?.colors) {
+      return productData.colors.reduce((acc, color) => {
+        return {
+          ...acc,
+          [color.color]: true, 
+        };
+      }, {});
+    }
+    return {};
+  });
+
+  const [sizeToAdd, setSizeToAdd] = useState(null);
+  const [quantityToAdd, setQuantityToAdd] = useState("");
+  const [isAddSizeModalOpen, setIsAddSizeModalOpen] = useState(false);
+  const [mainImage, setMainImage] = useState(null);
+  const [extraImages, setExtraImages] = useState([]);
+  const [deletedImages, setDeletedImages] = useState([]);
+
+  const isDuplicateImage = (mainImage, extraImages, image) => {
+    const mainImageName =
+      mainImage instanceof File ? mainImage.name : mainImage;
+    const imageName = image instanceof File ? image.name : image;
+
+    return (
+      mainImageName === imageName ||
+      extraImages.some((img) => {
+        const extraImageName = img instanceof File ? img.name : img;
+        return extraImageName === imageName;
+      })
     );
   };
 
-
-  const handleRemoveImage = async (imageName) => {
-    const updatedImages = images.filter((image) => image !== imageName);
-    setImages(updatedImages);
-    await removeImage(imageName, id,images, setImages);
+  const handleColorAdded = (newColor) => {
+    setColors((prevColors) => [...prevColors, newColor]);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!name || name.length < 3) {
-      alert("Name must be at least 3 characters.");
-      return;
-    }
-    if (!size) {
-      alert("Size is required.");
-      return;
-    }
-    if (isNaN(price) || price <= 0) {
-      alert("Price must be a positive number.");
-      return;
-    }
-    if (isNaN(quantity) || quantity <= 0) {
-      alert("Quantity must be a positive integer.");
-      return;
-    }  
-  
-    if (images.length === 0 && newImages.length === 0) {
-      alert("Please select images before submitting.");
-      return;
-    }
-    if (!mainImage){
-      alert("Please select main image before submitting.");
-      return;
+  const handleSizeAdded = (newSize) => {
+    setSizes((prevSizes) => [...prevSizes, newSize]);
+  };
 
+  const handleMainImageChange = (colorId, e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setSelectedColors((prevColors) =>
+      prevColors.map((color) =>
+        color.colorId === colorId
+          ? { ...color, mainImage: file } 
+          : color
+      )
+    );
+  };
+
+  const handleMainImageDelete = (colorId) => {
+    setSelectedColors((prevColors) =>
+      prevColors.map((color) =>
+        color.colorId === colorId ? { ...color, mainImage: null } : color
+      )
+    );
+
+
+    const color = selectedColors.find((color) => color.colorId === colorId);
+    if (color?.mainImage && typeof color.mainImage === "string") {
+      setDeletedImages((prev) => [
+        ...prev,
+        { productId: productData.id, colorId, filename: color.mainImage },
+      ]);
     }
-    const mainImageName = mainImage instanceof File ? mainImage.name : mainImage;
-    console.log(mainImageName);
-    
-    const uniqueImages= images.filter((image) => image.name !== mainImageName);
-    const uniqueNewImages= newImages.filter((image)=>image.name !== mainImageName);
-    console.log(uniqueNewImages);
+  };
 
-    if (mainImage instanceof File && mainImage.name !== initialMainImage){
-      const files =await uploadImages([mainImage], id);
+  const handleExtraImagesChange = (colorId, e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
+
+    setSelectedColors((prevColors) =>
+      prevColors.map((color) =>
+        color.colorId === colorId
+          ? {
+              ...color,
+              extraImages: [
+                ...(color.extraImages || []),
+                ...files.filter(
+                  (file) =>
+                    !isDuplicateImage(color.mainImage, color.extraImages, file)
+                ),
+              ],
+            }
+          : color
+      )
+    );
+  };
+
+  const handleExtraImageDelete = (colorId, imageToDelete) => {
+    setSelectedColors((prevColors) =>
+      prevColors.map((color) =>
+        color.colorId === colorId
+          ? {
+              ...color,
+              extraImages: (color.extraImages || []).filter((image) => {
+                if (image instanceof File) {
+                  return image.name !== imageToDelete;
+                }
+                return image !== imageToDelete;
+              }),
+            }
+          : color
+      )
+    );
+    const color = selectedColors.find((color) => color.colorId === colorId);
+    if (
+      color?.extraImages?.includes(imageToDelete) &&
+      typeof imageToDelete === "string"
+    ) {
+      setDeletedImages((prev) => [
+        ...prev,
+        { productId: productData.id, colorId, filename: imageToDelete },
+      ]);
     }
-    if (uniqueNewImages.length>0){
-      const files = await uploadImages(uniqueNewImages, id);
-      var imagesString = files.join(",");
-      
-    }
+  };
 
-    var imageFilenamesOld=uniqueImages.join(",");
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        const [
+          fetchedColors,
+          fetchedSizes,
+          fetchedCollections,
+          fetchedCategories,
+        ] = await Promise.all([
+          colorFetcher(),
+          sizeFetcher(),
+          collectionFetcher(),
+          categoryFetcher(),
+        ]);
 
-    const imageFilenames = imageFilenamesOld && imagesString 
-    ? `${imageFilenamesOld},${imagesString}` 
-    : imageFilenamesOld || imagesString;
+        setColors(fetchedColors);
+        setCollections(fetchedCollections);
+        setCategories(fetchedCategories);
+        setSizes(fetchedSizes);
 
-      const updatedProduct = {
-      name,
-      size,
-      price: parseInt(price, 10),
-      image: imageFilenames,
-      mainImage: mainImage instanceof File ? mainImage.name : mainImage,
-      quantity: parseInt(quantity, 10),
+        if (productData.parentCategoryId === null) {
+          const parentCategory = fetchedCategories.find(
+            (cat) => cat.id === productData.categoryId
+          );
+          setParentCategoryId(parentCategory ? parentCategory.id : null);
+          setChildCategoryId(null);
+        } else {
+          const parentCategory = fetchedCategories.find(
+            (cat) => cat.id === productData.parentCategoryId
+          );
+          setParentCategoryId(parentCategory ? parentCategory.id : null);
+
+          const childCategory = fetchedCategories.find(
+            (cat) => cat.id === productData.categoryId
+          );
+          setChildCategoryId(childCategory ? childCategory.id : null);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
     };
-    try {
-      await updateProduct(productData, updatedProduct);
-      setShowSuccessMessage(true);
 
-      setTimeout(() => setShowSuccessMessage(false), 3000);
-    } catch (error) {
-      console.error("Error updating product:", error);
-      setShowErrorMessage(true);
+    fetchInitialData();
+  }, [productData]);
 
-      setTimeout(() => setShowErrorMessage(false), 3000);
+  useEffect(() => {
+    if (productData?.prices?.length) {
+      const currentDate = new Date();
+
+      const currentPrice = productData.prices.find((price) => {
+        const startDate = new Date(price.startDate);
+        const endDate = price.endDate ? new Date(price.endDate) : null;
+
+
+        return startDate <= currentDate && (!endDate || endDate >= currentDate);
+      });
+
+      if (currentPrice) {
+        setStartDate(currentPrice.startDate);
+      }
     }
+  }, [productData]);
+
+  useEffect(() => {
+    if (productData?.colors) {
+      const colorsData = productData.colors.map((color) => ({
+        id: color.id, 
+        colorId: color.color, 
+        colorName: colors.find((c) => c.id === color.color)?.name || "Unknown",
+        mainImage: color.mainImage || null, 
+        extraImages: color.images ? color.images.split(",") : [], 
+        totalSales: color.totalSales || 0,
+        variants: color.variants.map((variant) => ({
+          id: variant.id,
+          sizeId: variant.sizeId,
+          sizeName:
+            sizes.find((s) => s.id === variant.sizeId)?.name || "Unknown",
+          quantity: variant.quantity,
+        })),
+      }));
+      setSelectedColors(colorsData);
+    }
+  }, [productData, sizes, colors]);
+
+  const isStartDateInFuture = () => {
+    const today = new Date();
+    const selectedDate = new Date(startDate);
+    return selectedDate > today;
+  };
+
+  const handleAddColor = () => {
+    if (!colorToAdd) {
+      alert("Please select a color to add.");
+      return;
+    }
+
+    const colorAlreadyAdded = selectedColors.some(
+      (color) => color.colorId === colorToAdd
+    );
+    if (colorAlreadyAdded) {
+      alert("Color is already added.");
+      return;
+    }
+
+    const selectedColorDetails = colors.find(
+      (color) => color.id === colorToAdd
+    );
+
+    setSelectedColors((prevColors) => [
+      ...prevColors,
+      {
+        colorId: selectedColorDetails.id,
+        colorName: selectedColorDetails.name,
+        mainImage: null,
+        extraImages: [],
+        variants: [],
+      },
+    ]);
+
+    setColorToAdd(null);
+  };
+  const handleUpdateClick = (e) => {
+    e.preventDefault();
+    setIsConfirmationModalOpen(true); // Open the modal
+  };
+  
+
+
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    setIsConfirmationModalOpen(false); 
+
+    const updatedColors = selectedColors.map((color) => ({
+      id: color.id || null,
+      color: color.colorId,
+      mainImage:
+        typeof color.mainImage === "string"
+          ? color.mainImage
+          : color.mainImage?.name || null,
+      images:
+        color.extraImages
+          .map((img) => (typeof img === "string" ? img : img?.name)) 
+          .filter(Boolean) 
+          .join(",") || null,
+      totalSales: color.totalSales || 0,
+      variants: color.variants.map((variant) => ({
+        id: variant.id || null,
+        sizeId: variant.sizeId,
+        quantity: parseInt(variant.quantity, 10) || 0,
+      })),
+    }));
+
+
+    const transformedPrices = prices.map((price) => {
+      const isExistingPrice = initialPrices.some(
+        (initialPrice) => initialPrice.id === price.id
+      );
+
+      return {
+        id: isExistingPrice ? price.id : null, 
+        price: parseFloat(price.price) || 0,
+        isDiscount: !!price.isDiscount,
+        startDate: price.startDate,
+        endDate: price.endDate || null,
+      };
+    });
+
+    const updatedProduct = {
+      id: productData?.id,
+      name,
+      description,
+      isActive,
+      categoryId: childCategoryId || parentCategoryId || null,
+      parentCategoryId: parentCategoryId || null,
+      collectionId,
+      colors: updatedColors, 
+      prices: transformedPrices, 
+    };
+
+    console.log("Updated Product Payload:", updatedProduct);
+
+
+    try {
+ 
+      const response = await updateProduct(productData, updatedProduct);
+      console.log("Product updated:", response);
+
+      const productId = productData?.id;
+
+
+      for (const color of selectedColors) {
+       
+        const images = [color.mainImage, ...color.extraImages].filter(
+          (img) => img instanceof File
+        ); 
+
+
+        if (images.length > 0) {
+          console.log(`Uploading images for colorId ${color.colorId}:`, images);
+
+
+          const uniqueImages = Array.from(
+            new Set(images.map((img) => img.name))
+          ) 
+            .map((name) => images.find((img) => img.name === name)); 
+
+
+          await uploadImages(uniqueImages, productId, color.colorId);
+          console.log(`Images uploaded for colorId ${color.colorId}`);
+        }
+      }
+
+      console.log("Files uploaded successfully!");
+      if (deletedImages.length > 0) {
+        await deleteFiles(deletedImages);
+        setDeletedImages([]);
+      }
+      alert("success"); 
+      router.refresh();
+    } catch (error) {
+      console.error("Error updating product or uploading files:", error);
+      alert("failure");
+    }
+  };
+
+
+  const handleCategoryAdded = (newCategory) => {
+    setCategories((prevCategories) => [...prevCategories, newCategory]);
+  };
+
+
+  const handleCollectionAdded = (newCollection) => {
+    setCollections((prevCollections) => [...prevCollections, newCollection]);
+  };
+
+
+  const handlePricesUpdate = (updatedPrices) => {
+    setPrices(updatedPrices);
+  };
+  const handleToggleCollapse = (colorId) => {
+    setCollapsedColors((prev) => ({
+      ...prev,
+      [colorId]: !prev[colorId],
+    }));
+  };
+
+  const handleAddSizeAndQuantity = (colorId) => {
+    if (!sizeToAdd || !quantityToAdd || quantityToAdd <= 0) {
+      alert("Please select a size and enter a valid quantity.");
+      return;
+    }
+
+    setSelectedColors((prevColors) =>
+      prevColors.map((color) =>
+        color.colorId === colorId
+          ? {
+              ...color,
+              variants: [
+                ...color.variants,
+                {
+                  sizeId: sizeToAdd,
+                  sizeName: sizes.find((s) => s.id === sizeToAdd).name,
+                  quantity: parseInt(quantityToAdd, 10),
+                },
+              ],
+            }
+          : color
+      )
+    );
+
+    setSizeToAdd(null);
+    setQuantityToAdd("");
   };
 
   return (
-    <div className="modify-product-container">
-      <h2>Modify Product</h2>
-      {showSuccessMessage && <AlertPositive message="Product added successfully!" />}
-      {showErrorMessage && <AlertError message="An error ocurred, product could not be added. Please try again!" />}
-      <form onSubmit={handleSubmit} className="modify-product-form">
-        
-        {/* Name Input */}
-        <div>
-          <label>Name:
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
-          </label>
+    <div className="p-4">
+      <h1 className="mb-4 typography-headline-4 font-bold">Modify Product</h1>
+      <form onSubmit={handleFormSubmit} className="space-y-6">
+        {/* Active Switch */}
+        <div className="flex justify-between items-center">
+          <span className="typography-label-sm">
+            <strong>Active</strong>{" "}
+          </span>
+          <SfSwitch
+            checked={isActive}
+            onChange={() => {
+              if (isStartDateInFuture()) {
+                alert(
+                  "The start date is in the future. You cannot toggle this switch."
+                );
+                return; 
+              }
+              setIsActive(!isActive);
+            }}
+            disabled={false} 
+          />
         </div>
+        <SfInput
+          label="Product Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          placeholder="Product name"
+        />
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Product description"
+          className="w-full border border-gray-300 rounded-md p-2"
+          rows="4"
+        />
+        <SfSelect
+          label="Collection"
+          value={collectionId || ""}
+          onChange={(e) => setCollectionId(e.target.value || null)}
+        >
+          <option value="">Select a collection</option>
+          {collections.map((collection) => (
+            <option key={collection.id} value={collection.id}>
+              {collection.name}
+            </option>
+          ))}
+        </SfSelect>
+        <SfButton 
+          type="button"
+          onClick={() => setIsAddCollectionModalOpen(true)}
+          style={{
+            display: "block",
+            margin: "0.5rem auto",
+          }}
+        >
+          Add New Collection
+        </SfButton>
 
-        {/* Size Input */}
-        <div>
-          <label>Size:
-            <input type="text" value={size} onChange={(e) => setSize(e.target.value)} required />
-          </label>
-        </div>
-
-        {/* Price Input */}
-        <div>
-          <label>Price:
-            <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} required />
-          </label>
-        </div>
-           {/* Main Image Display and Upload */}
-           <div>
-          <label>Main Image:</label>
-          <div className="image-preview">
-            {mainImage && (
-              <div style={{ display: 'inline-block', margin: '5px', position: 'relative' }}>
-                <img
-                  src={mainImage instanceof File ? URL.createObjectURL(mainImage) : `/${productData.id}/${mainImage}`}
-                  alt="Main Image"
-                  style={{ width: '100px', height: 'auto' }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setMainImage(null)}
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    right: 0,
-                    background: 'red',
-                    color: 'white',
-                    border: 'none',
-                    cursor: 'pointer'
-                  }}
-                >
-                  X
-                </button>
-              </div>
-            )}
-          </div>
-          <input type="file" accept="image/*" onChange={handleMainImageChange} />
-        </div>
-
-        {/* Existing Images Display with Delete Option */}
-        <div>
-          <label>Current Images:</label>
-          <div className="image-preview">
-            {images.map((image, index) => (
-              <div key={index} style={{ display: 'inline-block', margin: '5px', position: 'relative' }}>
-                <img
-                  src={`/${productData.id}/${image}`} 
-                  alt={`Existing Image ${index}`}
-                  style={{ width: '100px', height: 'auto' }}
-                />
-                <button
-                  type="button"
-                  onClick={() => handleRemoveImage(image)}
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    right: 0,
-                    background: 'red',
-                    color: 'white',
-                    border: 'none',
-                    cursor: 'pointer'
-                  }}
-                >
-                  X
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* New Image Upload */}
-        <div>
-          <label>Upload New Images:
-            <input type="file" multiple accept="image/*" onChange={handleImageChange} />
-          </label>
-        </div>
-
-        {/* Quantity Input */}
-        <div>
-          <label>Quantity:
-            <input type="number" value={quantity} onChange={(e) => setQuantity(e.target.value)} required />
-          </label>
-        </div>
-
- {/* New Image Previews with Delete Option */}
- <div className="image-preview">
-        {images.length > 0 && (
-          <h3>Selected Images:</h3>
+        {/* Modal for Adding New Collection */}
+        {isAddCollectionModalOpen && (
+          <AddCollectionModal
+            closeModal={() => setIsAddCollectionModalOpen(false)}
+            onCollectionAdded={handleCollectionAdded}
+          />
         )}
-        <div className="image-thumbnails">
-          {newImages.map((image, index) => (
-            <div key={index} style={{ position: 'relative', display: 'inline-block', margin: '5px' }}>
-              <img
-                src={URL.createObjectURL(image)}
-                alt={`Preview ${index}`}
-                style={{ width: '100px', height: 'auto' }}
-              />
-              <button
+        <SfSelect
+          label="Parent Category"
+          value={parentCategoryId || ""}
+          onChange={(e) => setParentCategoryId(e.target.value || null)}
+        >
+          <option value="">Select a parent category</option>
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </SfSelect>
+
+        <SfSelect
+          label="Child Category"
+          value={childCategoryId || ""}
+          onChange={(e) => setChildCategoryId(parseInt(e.target.value, 10))}
+          disabled={!parentCategoryId}
+        >
+          <option value="">Select a child category</option>
+          {categories
+            .filter(
+              (category) =>
+                category.parentCategory?.id === parseInt(parentCategoryId, 10)
+            )
+            .map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+        </SfSelect>
+
+        <SfButton
+          style={{
+            display: "block",
+            margin: "0.5rem auto",
+          }}
+          type="button"
+          onClick={() => setIsAddCategoryModalOpen(true)}
+        >
+          Add New Category
+        </SfButton>
+        {isAddCategoryModalOpen && (
+          <AddCategoryModal
+            closeModal={() => setIsAddCategoryModalOpen(false)}
+            onCategoryAdded={handleCategoryAdded}
+            parentCategories={categories} 
+          />
+        )}
+
+        {/* Price List */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            flexDirection: "column",
+            marginTop: "2rem",
+          }}
+        >
+          <PriceList prices={prices} onPricesUpdate={handlePricesUpdate} />
+        </div>
+        <div>
+          {/* Dropdown and Buttons */}
+          <div style={{ position: "relative", marginBottom: "1rem" }}>
+            <SfSelect
+              label="Choose Color"
+              value={colorToAdd || ""}
+              onChange={(e) => setColorToAdd(parseInt(e.target.value, 10))}
+            >
+              <option value="">Select a Color</option>
+              {colors
+                .filter(
+                  (color) => !selectedColors.some((c) => c.colorId === color.id)
+                )
+                .map((color) => (
+                  <option key={color.id} value={color.id}>
+                    {color.name}
+                  </option>
+                ))}
+            </SfSelect>
+
+            {/* Buttons Container */}
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.5rem",
+                marginTop: "0.5rem",
+                alignItems: "center", 
+              }}
+            >
+              {/* Add New Color Button */}
+              <SfButton
                 type="button"
-                onClick={() => handleDeleteImage(image)}
+                onClick={() => setIsAddColorModalOpen(true)}
+                style={{ alignSelf: "flex-start" }} 
+              >
+                Add New Color
+              </SfButton>
+
+              {/* Add Variant Button */}
+              <SfButton
+                type="button"
+                onClick={handleAddColor}
+                style={{ alignSelf: "center" }}
+              >
+                Add Variant
+              </SfButton>
+            </div>
+          </div>
+        </div>
+
+        {/* Modal for Adding New Color */}
+        {isAddColorModalOpen && (
+          <AddColorModal
+            closeModal={() => setIsAddColorModalOpen(false)}
+            onColorAdded={handleColorAdded}
+          />
+        )}
+
+        {selectedColors.map((color, index) => (
+          <div
+            key={color.colorId}
+            style={{
+              marginTop: "20px",
+              padding: "10px",
+              border: "1px solid #ccc",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <h1
                 style={{
-                  position: 'absolute',
-                  top: 0,
-                  right: 0,
-                  background: 'red',
-                  color: 'white',
-                  border: 'none',
-                  cursor: 'pointer',
-                  borderRadius: '50%',
-                  width: '20px',
-                  height: '20px',
+                  fontSize: "1.4rem",
+                  fontWeight: "bold",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                 }}
               >
-                &times;
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
+                <strong>{color.colorName}</strong>
+                <span
+                  style={{
+                    fontSize: "1rem",
+                    fontWeight: "normal",
+                    marginLeft: "1rem",
+                    color: "#555",
+                  }}
+                >
+                  Total Sales: {color.totalSales}
+                </span>
+              </h1>
 
-        {/* Submit Button */}
-        <button type="submit" style={{ marginTop: '20px' }}>Update Product</button>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: "5 rem",
+                }}
+              >
+                {/* Expand/Collapse Button */}
+                <SfButton
+                  type="button"
+                  onClick={() => handleToggleCollapse(color.colorId)}
+                  style={{
+                    backgroundColor: collapsedColors[color.colorId]
+                      ? "#007BFF"
+                      : "#6c757d",
+                    color: "white",
+                    padding: "0.5rem 1rem",
+                    borderRadius: "4px",
+                    border: "none",
+                  }}
+                >
+                  {collapsedColors[color.colorId] ? "Expand" : "Collapse"}
+                </SfButton>
+              </div>
+            </div>
+
+            {!collapsedColors[color.colorId] && (
+              <>
+                {/* Main Image */}
+                <div>
+                  <label>
+                    Main Image:
+                    <SfInput
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleMainImageChange(color.colorId, e)}
+                    />
+                  </label>
+                  {color.mainImage && (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        border: "1px solid #ccc",
+                        borderRadius: "4px",
+                        padding: "1rem",
+                        width: "100%",
+                        boxSizing: "border-box",
+                      }}
+                    >
+                      {color.mainImage && (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            gap: "0.5rem",
+                          }}
+                        >
+                          <img
+                            src={
+                              color.mainImage instanceof File
+                                ? URL.createObjectURL(color.mainImage)
+                                : `/${productData.id}/${color.colorId}/${color.mainImage}`
+                            }
+                            alt="Main"
+                            style={{
+                              maxWidth: "150px",
+                              height: "auto",
+                              border: "1px solid #ddd",
+                              borderRadius: "4px",
+                            }}
+                          />
+                          <SfButton
+                            type="button"
+                            onClick={() => handleMainImageDelete(color.colorId)}
+                            style={{
+                              backgroundColor: "red",
+                              color: "white",
+                              borderColor: "red",
+                              padding: "0.5rem 1rem",
+                            }}
+                          >
+                            Delete
+                          </SfButton>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+                {/* Extra Images */}
+                <div>
+                  <label>
+                    Extra Images:
+                    <SfInput
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={(e) =>
+                        handleExtraImagesChange(color.colorId, e)
+                      }
+                    />
+                  </label>
+                  {color.extraImages && color.extraImages.length > 0 && (
+                    <div>
+                      <h4>Extra Images:</h4>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexWrap: "wrap",
+                          justifyContent: "center",
+                          gap: "1rem",
+                          margin: "1rem 0",
+                        }}
+                      >
+                        {color.extraImages.map((image, index) => (
+                          <div
+                            key={index}
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "center",
+                              maxWidth: "150px",
+                              textAlign: "center",
+                              height: "200px",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            <img
+                              src={
+                                image instanceof File
+                                  ? URL.createObjectURL(image)
+                                  : `/${productData.id}/${color.colorId}/${image}`
+                              }
+                              alt={`Extra ${index}`}
+                              style={{
+                                maxWidth: "100%",
+                                maxHeight: "120px",
+                                objectFit: "contain",
+                                border: "1px solid #ddd",
+                                borderRadius: "4px",
+                              }}
+                            />
+                            <SfButton
+                              type="button"
+                              onClick={() =>
+                                handleExtraImageDelete(
+                                  color.colorId,
+                                  image instanceof File ? image.name : image
+                                )
+                              }
+                              style={{
+                                backgroundColor: "red",
+                                color: "white",
+                                borderColor: "red",
+                                padding: "0.5rem 1rem",
+                              }}
+                            >
+                              Delete
+                            </SfButton>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div>
+                  <h3>Variants for {color.colorName}</h3>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "0.5rem",
+                      alignItems: "flex-start",
+                    }}
+                  >
+                    {/* Size and Quantity Inputs */}
+                    <div
+                      style={{ display: "flex", gap: "0.5rem", width: "100%" }}
+                    >
+                      <label style={{ flex: "1" }}>
+                        Size:
+                        <SfSelect
+                          value={sizeToAdd || ""}
+                          onChange={(e) =>
+                            setSizeToAdd(parseInt(e.target.value, 10))
+                          }
+                        >
+                          <option value="">Select a Size</option>
+                          {sizes
+                            .filter(
+                              (size) =>
+                                !color.variants.some(
+                                  (v) => v.sizeId === size.id
+                                )
+                            )
+                            .map((size) => (
+                              <option key={size.id} value={size.id}>
+                                {size.name}
+                              </option>
+                            ))}
+                        </SfSelect>
+                      </label>
+                      <label style={{ flex: "1" }}>
+                        Quantity:
+                        <SfInput
+                          type="number"
+                          value={quantityToAdd}
+                          onChange={(e) =>
+                            setQuantityToAdd(parseInt(e.target.value, 10))
+                          }
+                          placeholder="Enter Quantity"
+                        />
+                      </label>
+                    </div>
+
+                    {/* Add New Size Button */}
+                    <SfButton
+                      type="button"
+                      onClick={() => setIsAddSizeModalOpen(true)}
+                      style={{ alignSelf: "flex-start" }}
+                    >
+                      Add New Size
+                    </SfButton>
+
+                    {/* Add Size and Quantity Button */}
+                    <SfButton
+                      type="button"
+                      onClick={() => handleAddSizeAndQuantity(color.colorId)}
+                      style={{ alignSelf: "center" }}
+                    >
+                      Add Size and Quantity
+                    </SfButton>
+                  </div>
+
+                  {/* Modal for Adding New Size */}
+                  {isAddSizeModalOpen && (
+                    <AddSizeModal
+                      closeModal={() => setIsAddSizeModalOpen(false)}
+                      onSizeAdded={handleSizeAdded}
+                    />
+                  )}
+
+                  {/* Variants List */}
+                  <ul
+                    style={{ listStyle: "none", padding: 0, margin: "1rem 0" }}
+                  >
+                    {color.variants.map((variant, vIndex) => (
+                      <li
+                        key={vIndex}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          fontSize: "1.2rem",
+                          borderBottom: "1px solid #ccc",
+                          padding: "0.5rem 0",
+                        }}
+                      >
+                        <span>{variant.sizeName}</span>
+                        {/* Editable Quantity Input */}
+                        <SfInput
+                          type="number"
+                          value={variant.quantity}
+                          min="0"
+                          onChange={(e) => {
+                            const updatedQuantity = parseInt(
+                              e.target.value,
+                              10
+                            );
+                            if (!isNaN(updatedQuantity)) {
+                              setSelectedColors((prevColors) =>
+                                prevColors.map((colorItem) =>
+                                  colorItem.colorId === color.colorId
+                                    ? {
+                                        ...colorItem,
+                                        variants: colorItem.variants.map(
+                                          (v, index) =>
+                                            index === vIndex
+                                              ? {
+                                                  ...v,
+                                                  quantity: updatedQuantity,
+                                                }
+                                              : v
+                                        ),
+                                      }
+                                    : colorItem
+                                )
+                              );
+                            }
+                          }}
+                          style={{
+                            maxWidth: "60px",
+                            textAlign: "center",
+                          }}
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </>
+            )}
+          </div>
+        ))}
+
+        <SfButton
+          type="button"
+          style={{
+            display: "block",
+            margin: "1rem auto", 
+          }}
+          onClick={handleUpdateClick}
+        >
+          Update Product
+        </SfButton>
       </form>
+      <ConfirmationModal
+        isOpen={isConfirmationModalOpen}
+        onClose={() => setIsConfirmationModalOpen(false)}
+        onConfirm={handleFormSubmit}
+        message="Are you sure you want to update this product?"
+        status={status}
+      />
     </div>
   );
 }

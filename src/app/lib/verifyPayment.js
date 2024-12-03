@@ -9,6 +9,10 @@ export default async function verifyPayment(sessionId) {
             body: sessionId
         });
 
+        if (response.status === 409) {
+            return { error: "Order already handled" };
+        }
+
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
