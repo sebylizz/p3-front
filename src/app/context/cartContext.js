@@ -32,23 +32,35 @@ export const CartProvider = ({ children }) => {
 
     // Increase the quantity of a product
     const increaseQuantity = (product) => {
-        setCart((prevCart) => [...prevCart, product]); // Add product to cart
+        setCart((prevCart) => [...prevCart, product]);
     };
 
     // Decrease the quantity of a product
     const decreaseQuantity = (product) => {
         setCart((prevCart) => {
-            const index = prevCart.indexOf(product); // Ensure comparison uses integers
+            const index = prevCart.indexOf(product);
             if (index !== -1) {
                 const updatedCart = [...prevCart.slice(0, index), ...prevCart.slice(index + 1)];
                 return updatedCart;
             }
-            return prevCart; // Return unmodified cart if not found
+            return prevCart;
         });
     };
 
+    // Get the quantity of a specific product in the cart
+    const getProductQuantity = (productId) => {
+        return cart.filter((id) => id === productId).length;
+    };
+
     return (
-        <CartContext.Provider value={{ cart, setCart, addToCart, increaseQuantity, decreaseQuantity }}>
+        <CartContext.Provider value={{ 
+            cart, 
+            setCart, 
+            addToCart, 
+            increaseQuantity, 
+            decreaseQuantity, 
+            getProductQuantity 
+        }}>
             {children}
         </CartContext.Provider>
     );

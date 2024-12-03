@@ -3,12 +3,21 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useCart } from "../context/cartContext";
 import { useProducts } from "../context/productContext";
+import quantityAddLimit from "../lib/quantityAddLimit";
 
 export default function CartPage() {
     const router = useRouter();
     const { cart, increaseQuantity, decreaseQuantity } = useCart();
     const { products = [], isLoading: productsLoading } = useProducts();
     const [isLoading, setIsLoading] = useState(true);
+
+    const handleIncreaseQuantity = (productId, quantity) => {
+        if (quantityAddLimit(productId, quantity, products)) {
+            increaseQuantity(productId);
+        } else {
+            alert("Cannot add more of this product. Not enough stock.");
+        }
+    };
 
     const handleCardClick = (productId, colorId) => {
         const url = `/productPage/${productId}?colorId=${colorId}`
@@ -87,7 +96,7 @@ export default function CartPage() {
                         </button>
                         <p className="text-lg">{quantity}</p>
                         <button
-                            onClick={() => increaseQuantity(productId)}
+                            onClick={() => handleIncreaseQuantity(productId, quantity)}
                             className="text-xl text-gray-500"
                         >
                             +
