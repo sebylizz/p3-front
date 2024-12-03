@@ -25,7 +25,7 @@ const BrowseProductSlider = ({ filteredProducts }) => {
                             <ProductCard
                                 name={product.name}
                                 image={product.id + '/' + color.id + '/' + color.mainImage}
-                                price={product.price}
+                                price={(product.price / 100).toFixed(2)}
                                 productId={product.id}
                                 colorId={color.id}
                             />
