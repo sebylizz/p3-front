@@ -1,5 +1,3 @@
-import { useState } from "react";
-
 export default function ProductInfo({ id, name, price, discount, colors, onColorSelect, selectedSize, colorIndex }) { 
 
     const selectedColor = colors[colorIndex];
