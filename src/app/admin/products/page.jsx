@@ -1,27 +1,28 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import allProducts from '@/app/lib/getAllProducts';
-import Link from 'next/link';
+import React, { useState, useEffect } from "react";
+import allProducts from "@/app/lib/getAllProducts";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import sanitizeInput from '@/app/lib/sanitizeInput';
+import sanitizeInput from "@/app/lib/sanitizeInput";
 import { SfLoaderCircular } from "@storefront-ui/react";
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
   const [checkedItems, setCheckedItems] = useState({});
-  const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(true); 
+  const [searchQuery, setSearchQuery] = useState("");
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   const fetchProducts = async () => {
     try {
       const data = await allProducts();
       setProducts(data);
-    } catch (error) {
+      console.log(data);
+    } catch (error){ 
       console.error("Error fetching products:", error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -43,7 +44,6 @@ export default function AdminProducts() {
   );
 
   if (loading) {
-    // Display loader while loading
     return (
       <div className="flex items-center justify-center h-screen">
         <SfLoaderCircular size="xl" />
@@ -82,7 +82,16 @@ export default function AdminProducts() {
             {filteredProducts.map((product) => (
               <tr key={product.id}>
                 <td className="border border-gray-300 px-4 py-2">
-                  <p>image</p>
+                  <img
+                    src={
+                      product.colors &&
+                      product.colors[0] &&
+                      product.colors[0].mainImage
+                        ? `${product.id}/${product.colors[0].id}/${product.colors[0].mainImage}`
+                        : "default-image.jpg"
+                    }
+                    alt={product.name || "Product image"}
+                  />
                 </td>
                 <td className="border border-gray-300 px-4 py-2">
                   {product.name}

@@ -11,8 +11,11 @@ export default function HomePage() {
   const { products } = useProducts();
   const colors = flattenProductsByColors(products);
   const bestSellers = getTopSellingProductsUsingHeap(colors, 10);
+  console.log("behbwjshj")
+  console.log(bestSellers)
   const transformedBestSellers =
     transformBestSellersToProductFormat(bestSellers);
+    console.log(transformBestSellersToProductFormat(bestSellers));
 
   return (
     <main
