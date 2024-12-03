@@ -113,7 +113,7 @@ export default function ProductDetailsPage() {
                     onColorSelect={handleColorSelect}
                     description = {product.description}
                 />
-                <SizeSelector sizes={sizes} onSizeSelect={setSelectedSize} />
+                <SizeSelector sizes={sizes} onSizeSelect={setSelectedSize} colorIndex={currentColorIndex} colors={product.colors} />
                 <AddToCartButton productId={product.id} colorId={product.colors[currentColorIndex].id} selectedSize={selectedSize} />
                 <button
                     onClick={() => setShowDescription(!showDescription)}
