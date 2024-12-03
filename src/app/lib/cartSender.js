@@ -1,19 +1,20 @@
 "use server"
-export default async function cartSender(cart) {
-    console.log("cartsender called with id's " + cart);
+export default async function cartSender(info, cart) {
+    info.userId = "0";
     try {
-        const response = await fetch('http://localhost:8080/productpayment/carttest', {
+        const response = await fetch('http://localhost:8080/payment/generatesessionid', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(cart)
+            body: JSON.stringify({ details: info, productIds: cart }),
         });
         if (!response.ok) {
             return { success: false };
-        } 
-        const paymentLink = response.text();
-        return paymentLink;
+        }
+        const sessionId = await response.text();
+
+        return sessionId;
 
     } catch (error) {
         console.error('Error login:', error);

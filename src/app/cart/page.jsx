@@ -3,12 +3,21 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useCart } from "../context/cartContext";
 import { useProducts } from "../context/productContext";
+import quantityAddLimit from "../lib/quantityAddLimit";
 
 export default function CartPage() {
     const router = useRouter();
     const { cart, increaseQuantity, decreaseQuantity } = useCart();
     const { products = [], isLoading: productsLoading } = useProducts();
     const [isLoading, setIsLoading] = useState(true);
+
+    const handleIncreaseQuantity = (productId, quantity) => {
+        if (quantityAddLimit(productId, quantity, products)) {
+            increaseQuantity(productId);
+        } else {
+            alert("Cannot add more of this product. Not enough stock.");
+        }
+    };
 
     const handleCardClick = (productId, colorId) => {
         const url = `/productPage/${productId}?colorId=${colorId}`
@@ -39,7 +48,7 @@ export default function CartPage() {
         return Object.entries(cartSummary)
             .reduce((total, [productId, quantity]) => {
                 const product = products.find((p) => String(p.id) === String(productId.split('/')[0]));
-                return product ? total + (product.price / 100) * quantity : total;
+                return product ? total + (product.price / 100).toFixed(2) * quantity : total;
             }, 0)
             .toFixed(2);
     };
@@ -72,7 +81,7 @@ export default function CartPage() {
                         />
                         <div>
                             <p className="font-semibold">{product.name}</p>
-                            <p className="text-gray-500">{product.price / 100} Kr</p>
+                            <p className="text-gray-500">{(product.price / 100).toFixed(2)} Kr</p>
                             <p className="text-gray-500">{product.variant.size}</p>
                         </div>
                     </div>
@@ -87,7 +96,7 @@ export default function CartPage() {
                         </button>
                         <p className="text-lg">{quantity}</p>
                         <button
-                            onClick={() => increaseQuantity(productId)}
+                            onClick={() => handleIncreaseQuantity(productId, quantity)}
                             className="text-xl text-gray-500"
                         >
                             +

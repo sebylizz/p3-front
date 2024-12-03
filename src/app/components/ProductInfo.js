@@ -8,7 +8,7 @@ export default function ProductInfo({ id, name, price, discount, colors, onColor
             <h1 className="text-2xl font-bold">{name}</h1>
 
             <div className="flex items-center my-2">
-                <span className="text-3xl font-bold text-red-600">{price} kr</span>
+                <span className="text-3xl font-bold text-red-600">{(price/100).toFixed(2)} kr</span>
                 {discount && (
                     <span className="ml-2 text-sm text-gray-500 line-through">{discount.originalPrice} kr</span>
                 )}
