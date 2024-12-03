@@ -21,8 +21,10 @@ export default function LogOutButton({ onLogout }) {
                 padding: '10px',
                 fontSize: '16px',
                 cursor: 'pointer',
-                backgroundColor: '#d9534f',
+                width: '100%',
+                backgroundColor: 'red',
                 color: 'white',
+                borderRadius: '8px'
             }}
             onClick={handleLogout}
         >
