@@ -43,7 +43,6 @@ export default function AdminProducts() {
   );
 
   if (loading) {
-    // Display loader while loading
     return (
       <div className="flex items-center justify-center h-screen">
         <SfLoaderCircular size="xl" />
@@ -53,7 +52,6 @@ export default function AdminProducts() {
 
   return (
     <div>
-      {/* Search Bar */}
       <div className="flex justify-center mb-4">
         <div className="relative flex w-full max-w-md">
           <input
@@ -67,7 +65,6 @@ export default function AdminProducts() {
         </div>
       </div>
 
-      {/* Product Table */}
       <div className="my-2 mx-1 flex justify-center">
         <table className="table-auto border-collapse border border-gray-300">
           <thead className="bg-[#84B0CA] text-white">
@@ -104,7 +101,6 @@ export default function AdminProducts() {
         </table>
       </div>
 
-      {/* Add Product Button */}
       <div className="flex justify-center mt-4">
         <Link href="./products/addProduct">
           <button className="bg-green-500 text-white px-4 py-2 rounded">
