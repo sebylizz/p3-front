@@ -6,6 +6,7 @@ import getTopSellingProductsUsingHeap from "./lib/getBestSeller";
 import { useProducts } from "./context/productContext";
 import BrowseProductSlider from "./components/browseProductSlider";
 import transformBestSellersToProductFormat from "./lib/transformBestSeller";
+import PictureSlider from "./components/PictureSlider";
 
 export default function HomePage() {
   const { products } = useProducts();
@@ -15,6 +16,7 @@ export default function HomePage() {
     transformBestSellersToProductFormat(bestSellers);
 
   return (
+    
     <main
       style={{
         display: "flex",
@@ -25,6 +27,7 @@ export default function HomePage() {
         backgroundColor: "#f9f9f9",
       }}
     >
+      <PictureSlider />
       <section
         style={{
           display: "flex",
@@ -49,30 +52,6 @@ export default function HomePage() {
         <BrowseProductSlider
           filteredProducts={transformedBestSellers}
         ></BrowseProductSlider>
-      </section>
-
-      <section
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "1rem",
-          width: "100%",
-          maxWidth: "1200px",
-        }}
-      >
-        <h1
-          style={{
-            fontSize: "2.5rem",
-            fontWeight: "bold",
-            color: "#333",
-            textAlign: "center",
-            marginBottom: "1rem",
-          }}
-        >
-          All Active Products
-        </h1>
-        <ProductSlider />
       </section>
     </main>
   );

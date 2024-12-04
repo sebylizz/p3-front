@@ -34,7 +34,6 @@ export default function RightNav() {
 
     const { cart } = useCart();
     const nrItems = cart.length;
-    console.log(cart)
 
     if (loggedIn === null) {
         return;  

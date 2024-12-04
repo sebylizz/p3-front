@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import cartSender from "../../lib/cartSender.js";
+import fetchCustomer from "../../lib/fetchCustomer";
 import { useCart } from "../../context/cartContext";
 import { loadStripe } from '@stripe/stripe-js';
 
@@ -15,8 +16,24 @@ export default function CheckoutPage() {
         email: "",
     });
 
+    useEffect(() => {
+        async function loadCustomerData() {
+            const customer = await fetchCustomer();
+            if (customer) {
+                setFormData({
+                    firstName: customer.firstName || "",
+                    lastName: customer.lastName || "",
+                    address: customer.address || "",
+                    postalCode: customer.postalCode || "",
+                    phoneNumber: customer.phoneNumber || "",
+                    email: customer.email || "",
+                });
+            }
+        }
+        loadCustomerData();
+    }, []);
+
     const [loading, setLoading] = useState(false);
-    const [sessionId, setSessionId] = useState(null);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -29,15 +46,29 @@ export default function CheckoutPage() {
         try {
             const sessionId = await cartSender(formData, cart);
 
+            if (sessionId === -1) {
+                alert("Failed to create payment session");
+                setLoading(false);
+                return;
+            }
+
             if (sessionId) {
                 const stripe = await loadStripe("pk_test_51QA8WbCZh5mI9KbJuYzOgvILXehId4peiz0SZfAXviiEDTQpw9MJmUAfuQLgNY0NboEvnJTVO2bsbJ1RIHpaP9xQ00LmbXX7vj");
-                await stripe.redirectToCheckout({ sessionId: sessionId });
+                if (stripe) {
+                    const result = await stripe.redirectToCheckout({ sessionId: sessionId });
+                    if (result.error) {
+                        alert(`Error redirecting to checkout: ${result.error.message}`);
+                    }
+                } else {
+                    alert("Stripe failed to load.");
+                    setLoading(false);
+                }
             } else {
                 alert("Failed to retrieve payment session");
                 setLoading(false);
             }
         } catch (error) {
-            alert("An error occurred while processing your payment.");
+            alert("Payment error: " + error.message);
             console.error("Payment error:", error);
             setLoading(false);
         }
@@ -86,9 +117,9 @@ export default function CheckoutPage() {
                     />
                 </div>
 
-                {/* Address */}
+                {/* Delivery Address */}
                 <div>
-                    <label htmlFor="address" className="block text-gray-700">Address</label>
+                    <label htmlFor="address" className="block text-gray-700">Delivery Address</label>
                     <input
                         type="text"
                         id="address"

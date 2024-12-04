@@ -35,9 +35,6 @@ export default function SignUp() {
                 firstName: firstName,
                 lastName: lastName,
                 email: email,
-                telephone: telephone,
-                address: address,
-                postalCode: postalCode,
                 password: password
             };
 
