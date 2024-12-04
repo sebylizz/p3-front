@@ -22,6 +22,7 @@ import AddSizeModal from "@/app/components/admin/AddSizeModal";
 import PriceList from "@/app/components/admin/PriceList";
 import deleteFiles from "@/app/lib/deleteFile";
 import { useRouter } from "next/navigation";
+import truncateToTwoDecimals from "@/app/lib/truncateToTwoDecimals";
 
 export default function ModifyProduct({ productData }) {
   const router = useRouter();
@@ -51,8 +52,19 @@ export default function ModifyProduct({ productData }) {
     useState(false);
   const [isAddColorModalOpen, setIsAddColorModalOpen] = useState(false);
 
-  const [prices, setPrices] = useState(productData?.prices || []);
-  const [initialPrices, setInitialPrices] = useState(productData?.prices || []);
+  const [prices, setPrices] = useState(
+    productData?.prices?.map((price) => ({
+      ...price,
+      price: truncateToTwoDecimals(price.price / 1000),
+    })) || []
+  );
+
+  const [initialPrices, setInitialPrices] = useState(
+    productData?.prices?.map((price) => ({
+      ...price,
+      price: truncateToTwoDecimals(price.price / 1000),
+    })) || []
+  );
   const [startDate, setStartDate] = useState("");
 
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
@@ -65,7 +77,7 @@ export default function ModifyProduct({ productData }) {
       return productData.colors.reduce((acc, color) => {
         return {
           ...acc,
-          [color.color]: true, 
+          [color.color]: true,
         };
       }, {});
     }
@@ -75,8 +87,6 @@ export default function ModifyProduct({ productData }) {
   const [sizeToAdd, setSizeToAdd] = useState(null);
   const [quantityToAdd, setQuantityToAdd] = useState("");
   const [isAddSizeModalOpen, setIsAddSizeModalOpen] = useState(false);
-  const [mainImage, setMainImage] = useState(null);
-  const [extraImages, setExtraImages] = useState([]);
   const [deletedImages, setDeletedImages] = useState([]);
 
   const isDuplicateImage = (mainImage, extraImages, image) => {
@@ -107,9 +117,7 @@ export default function ModifyProduct({ productData }) {
 
     setSelectedColors((prevColors) =>
       prevColors.map((color) =>
-        color.colorId === colorId
-          ? { ...color, mainImage: file } 
-          : color
+        color.colorId === colorId ? { ...color, mainImage: file } : color
       )
     );
   };
@@ -120,13 +128,15 @@ export default function ModifyProduct({ productData }) {
         color.colorId === colorId ? { ...color, mainImage: null } : color
       )
     );
-
-
     const color = selectedColors.find((color) => color.colorId === colorId);
     if (color?.mainImage && typeof color.mainImage === "string") {
       setDeletedImages((prev) => [
         ...prev,
-        { productId: productData.id, colorId, filename: color.mainImage },
+        {
+          productId: productData.id,
+          colorId: color.id,
+          filename: color.mainImage,
+        },
       ]);
     }
   };
@@ -176,7 +186,11 @@ export default function ModifyProduct({ productData }) {
     ) {
       setDeletedImages((prev) => [
         ...prev,
-        { productId: productData.id, colorId, filename: imageToDelete },
+        {
+          productId: productData.id,
+          colorId: color.id,
+          filename: imageToDelete,
+        },
       ]);
     }
   };
@@ -218,6 +232,14 @@ export default function ModifyProduct({ productData }) {
           );
           setChildCategoryId(childCategory ? childCategory.id : null);
         }
+        if (productData?.prices) {
+          const normalizedPrices = productData.prices.map((price) => ({
+            ...price,
+            price: parseFloat((price.price / 1000).toFixed(2)),
+          }));
+          setPrices(normalizedPrices);
+          setInitialPrices(normalizedPrices);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -234,7 +256,6 @@ export default function ModifyProduct({ productData }) {
         const startDate = new Date(price.startDate);
         const endDate = price.endDate ? new Date(price.endDate) : null;
 
-
         return startDate <= currentDate && (!endDate || endDate >= currentDate);
       });
 
@@ -247,11 +268,11 @@ export default function ModifyProduct({ productData }) {
   useEffect(() => {
     if (productData?.colors) {
       const colorsData = productData.colors.map((color) => ({
-        id: color.id, 
-        colorId: color.color, 
+        id: color.id,
+        colorId: color.color,
         colorName: colors.find((c) => c.id === color.color)?.name || "Unknown",
-        mainImage: color.mainImage || null, 
-        extraImages: color.images ? color.images.split(",") : [], 
+        mainImage: color.mainImage || null,
+        extraImages: color.images ? color.images.split(",") : [],
         totalSales: color.totalSales || 0,
         variants: color.variants.map((variant) => ({
           id: variant.id,
@@ -304,14 +325,12 @@ export default function ModifyProduct({ productData }) {
   };
   const handleUpdateClick = (e) => {
     e.preventDefault();
-    setIsConfirmationModalOpen(true); // Open the modal
+    setIsConfirmationModalOpen(true);
   };
-  
-
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    setIsConfirmationModalOpen(false); 
+    setIsConfirmationModalOpen(false);
 
     const updatedColors = selectedColors.map((color) => ({
       id: color.id || null,
@@ -322,8 +341,8 @@ export default function ModifyProduct({ productData }) {
           : color.mainImage?.name || null,
       images:
         color.extraImages
-          .map((img) => (typeof img === "string" ? img : img?.name)) 
-          .filter(Boolean) 
+          .map((img) => (typeof img === "string" ? img : img?.name))
+          .filter(Boolean)
           .join(",") || null,
       totalSales: color.totalSales || 0,
       variants: color.variants.map((variant) => ({
@@ -333,15 +352,14 @@ export default function ModifyProduct({ productData }) {
       })),
     }));
 
-
     const transformedPrices = prices.map((price) => {
       const isExistingPrice = initialPrices.some(
         (initialPrice) => initialPrice.id === price.id
       );
 
       return {
-        id: isExistingPrice ? price.id : null, 
-        price: parseFloat(price.price) || 0,
+        id: isExistingPrice ? price.id : null,
+        price: parseFloat(price.price * 1000) || 0,
         isDiscount: !!price.isDiscount,
         startDate: price.startDate,
         endDate: price.endDate || null,
@@ -356,49 +374,38 @@ export default function ModifyProduct({ productData }) {
       categoryId: childCategoryId || parentCategoryId || null,
       parentCategoryId: parentCategoryId || null,
       collectionId,
-      colors: updatedColors, 
-      prices: transformedPrices, 
+      colors: updatedColors,
+      prices: transformedPrices,
     };
 
-    console.log("Updated Product Payload:", updatedProduct);
-
-
     try {
- 
-      const response = await updateProduct(productData, updatedProduct);
-      console.log("Product updated:", response);
-
-      const productId = productData?.id;
-
+      const newColorMapping = await updateProduct(productData, updatedProduct);
 
       for (const color of selectedColors) {
-       
-        const images = [color.mainImage, ...color.extraImages].filter(
-          (img) => img instanceof File
-        ); 
+        const colorId =
+          color.id ||
+          newColorMapping.find((c) => c.colorId === color.colorId)?.id;
 
+        if (colorId) {
+          const images = [color.mainImage, ...color.extraImages].filter(
+            (img) => img instanceof File
+          );
 
-        if (images.length > 0) {
-          console.log(`Uploading images for colorId ${color.colorId}:`, images);
+          if (images.length > 0) {
+            const uniqueImages = Array.from(
+              new Set(images.map((img) => img.name))
+            ).map((name) => images.find((img) => img.name === name));
 
-
-          const uniqueImages = Array.from(
-            new Set(images.map((img) => img.name))
-          ) 
-            .map((name) => images.find((img) => img.name === name)); 
-
-
-          await uploadImages(uniqueImages, productId, color.colorId);
-          console.log(`Images uploaded for colorId ${color.colorId}`);
+            await uploadImages(uniqueImages, productData.id, colorId);
+          }
         }
       }
 
-      console.log("Files uploaded successfully!");
       if (deletedImages.length > 0) {
         await deleteFiles(deletedImages);
         setDeletedImages([]);
       }
-      alert("success"); 
+      alert("success");
       router.refresh();
     } catch (error) {
       console.error("Error updating product or uploading files:", error);
@@ -406,16 +413,13 @@ export default function ModifyProduct({ productData }) {
     }
   };
 
-
   const handleCategoryAdded = (newCategory) => {
     setCategories((prevCategories) => [...prevCategories, newCategory]);
   };
 
-
   const handleCollectionAdded = (newCollection) => {
     setCollections((prevCollections) => [...prevCollections, newCollection]);
   };
-
 
   const handlePricesUpdate = (updatedPrices) => {
     setPrices(updatedPrices);
@@ -471,11 +475,11 @@ export default function ModifyProduct({ productData }) {
                 alert(
                   "The start date is in the future. You cannot toggle this switch."
                 );
-                return; 
+                return;
               }
               setIsActive(!isActive);
             }}
-            disabled={false} 
+            disabled={false}
           />
         </div>
         <SfInput
@@ -504,7 +508,7 @@ export default function ModifyProduct({ productData }) {
             </option>
           ))}
         </SfSelect>
-        <SfButton 
+        <SfButton
           type="button"
           onClick={() => setIsAddCollectionModalOpen(true)}
           style={{
@@ -568,7 +572,7 @@ export default function ModifyProduct({ productData }) {
           <AddCategoryModal
             closeModal={() => setIsAddCategoryModalOpen(false)}
             onCategoryAdded={handleCategoryAdded}
-            parentCategories={categories} 
+            parentCategories={categories}
           />
         )}
 
@@ -611,14 +615,14 @@ export default function ModifyProduct({ productData }) {
                 flexDirection: "column",
                 gap: "0.5rem",
                 marginTop: "0.5rem",
-                alignItems: "center", 
+                alignItems: "center",
               }}
             >
               {/* Add New Color Button */}
               <SfButton
                 type="button"
                 onClick={() => setIsAddColorModalOpen(true)}
-                style={{ alignSelf: "flex-start" }} 
+                style={{ alignSelf: "flex-start" }}
               >
                 Add New Color
               </SfButton>
@@ -745,7 +749,7 @@ export default function ModifyProduct({ productData }) {
                             src={
                               color.mainImage instanceof File
                                 ? URL.createObjectURL(color.mainImage)
-                                : `/${productData.id}/${color.colorId}/${color.mainImage}`
+                                : `/${productData.id}/${color.id}/${color.mainImage}`
                             }
                             alt="Main"
                             style={{
@@ -814,7 +818,7 @@ export default function ModifyProduct({ productData }) {
                               src={
                                 image instanceof File
                                   ? URL.createObjectURL(image)
-                                  : `/${productData.id}/${color.colorId}/${image}`
+                                  : `/${productData.id}/${color.id}/${image}`
                               }
                               alt={`Extra ${index}`}
                               style={{
@@ -992,7 +996,7 @@ export default function ModifyProduct({ productData }) {
           type="button"
           style={{
             display: "block",
-            margin: "1rem auto", 
+            margin: "1rem auto",
           }}
           onClick={handleUpdateClick}
         >

@@ -15,16 +15,18 @@ export default function ModifyCustomer({ customerData }) {
   const [postalCode, setPostalCode] = useState(customerData?.postalCode || "");
   const [telephone, setTelephone] = useState(customerData?.telephone || "");
   const [email, setEmail] = useState(customerData?.email || "");
-  const [newsletter, setNewsletter] = useState(customerData?.newsletter || false);
+  const [newsletter, setNewsletter] = useState(
+    customerData?.newsletter || false
+  );
   const [role, setRole] = useState(customerData?.role || "user");
-  const [isSubmittingForm, setIsSubmittingForm] = useState(false); 
-  const [isSendingReset, setIsSendingReset] = useState(false); 
+  const [isSubmittingForm, setIsSubmittingForm] = useState(false);
+  const [isSendingReset, setIsSendingReset] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-  const [pendingRole, setPendingRole] = useState(role); 
+  const [pendingRole, setPendingRole] = useState(role);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
 
   const forgotPassword = async () => {
-    setIsSendingReset(true); 
+    setIsSendingReset(true);
     try {
       const result = await loginFunction({ email });
       if (result.success) {
@@ -50,7 +52,7 @@ export default function ModifyCustomer({ customerData }) {
 
   const handlePasswordConfirm = async (password) => {
     setIsPasswordModalOpen(false); // Close the modal
-  
+
     try {
       const isPasswordValid = await matchPassword(password); // Pass the entered password
       if (isPasswordValid) {
@@ -67,29 +69,38 @@ export default function ModifyCustomer({ customerData }) {
 
   const getChangesSummary = () => {
     const changes = [];
-    if (firstName !== customerData.firstName) changes.push(`First Name: ${customerData.firstName} → ${firstName}`);
-    if (lastName !== customerData.lastName) changes.push(`Last Name: ${customerData.lastName} → ${lastName}`);
-    if (address !== customerData.address) changes.push(`Address: ${customerData.address} → ${address}`);
-    if (postalCode !== customerData.postalCode) changes.push(`Postal Code: ${customerData.postalCode} → ${postalCode}`);
-    if (telephone !== customerData.telephone) changes.push(`Telephone: ${customerData.telephone} → ${telephone}`);
-    if (email !== customerData.email) changes.push(`Email: ${customerData.email} → ${email}`);
-    if (newsletter !== customerData.newsletter) changes.push(`Newsletter Subscription: ${customerData.newsletter ? "Yes" : "No"} → ${newsletter ? "Yes" : "No"}`);
-    if (role !== customerData.role) changes.push(`Role: ${customerData.role} → ${role}`);
-  
-    return changes.length > 0 ? (
-      changes.map((change, index) => (
-        <React.Fragment key={index}>
-          {change}
-          <br />
-        </React.Fragment>
-      ))
-    ) : (
-      "No changes made."
-    );
-  };
-  
+    if (firstName !== customerData.firstName)
+      changes.push(`First Name: ${customerData.firstName} → ${firstName}`);
+    if (lastName !== customerData.lastName)
+      changes.push(`Last Name: ${customerData.lastName} → ${lastName}`);
+    if (address !== customerData.address)
+      changes.push(`Address: ${customerData.address} → ${address}`);
+    if (postalCode !== customerData.postalCode)
+      changes.push(`Postal Code: ${customerData.postalCode} → ${postalCode}`);
+    if (telephone !== customerData.telephone)
+      changes.push(`Telephone: ${customerData.telephone} → ${telephone}`);
+    if (email !== customerData.email)
+      changes.push(`Email: ${customerData.email} → ${email}`);
+    if (newsletter !== customerData.newsletter)
+      changes.push(
+        `Newsletter Subscription: ${customerData.newsletter ? "Yes" : "No"} → ${
+          newsletter ? "Yes" : "No"
+        }`
+      );
+    if (role !== customerData.role)
+      changes.push(`Role: ${customerData.role} → ${role}`);
 
- const handleSubmit = async (e) => {
+    return changes.length > 0
+      ? changes.map((change, index) => (
+          <React.Fragment key={index}>
+            {change}
+            <br />
+          </React.Fragment>
+        ))
+      : "No changes made.";
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsConfirmationModalOpen(true); // Show confirmation modal before submitting
   };
@@ -207,7 +218,13 @@ export default function ModifyCustomer({ customerData }) {
         </div>
 
         {/* Forgot Password */}
-        <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "1rem",
+          }}
+        >
           <SfButton
             type="button"
             className={`w-1/3 py-4 text-lg font-bold rounded-md ${
@@ -235,7 +252,13 @@ export default function ModifyCustomer({ customerData }) {
         </div>
 
         {/* Submit Button */}
-        <div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "1rem",
+          }}
+        >
           <SfButton
             type="submit"
             className={`w-1/3 py-4 text-lg font-bold rounded-md ${

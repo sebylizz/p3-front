@@ -18,12 +18,12 @@ export default function Search({ onSearchChange }) {
       params.delete("query");
     }
 
-    router.replace(`${pathName}?${params.toString()}`); // Update the URL
+    router.replace(`${pathName}?${params.toString()}`); 
 
     if (onSearchChange) {
-      onSearchChange(term.trim()); // Notify parent of query change
+      onSearchChange(term.trim()); 
     }
-  },500);
+  }, 500);
 
   return (
     <SfInput
@@ -33,8 +33,8 @@ export default function Search({ onSearchChange }) {
       onChange={(e) => handleSearch(e.target.value)}
       wrapperClassName="w-full"
       style={{
-        padding: "0.5rem", // Padding for the search input
-        maxWidth: "100%", // Allow full use of available space in the container
+        padding: "0.5rem", 
+        maxWidth: "100%", 
       }}
       defaultValue={searchParams.get("query") || ""}
     />

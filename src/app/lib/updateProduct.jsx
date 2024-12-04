@@ -15,8 +15,9 @@ async function updateProduct(productData, updatedProduct) {
 
 
     if (response.ok) {
-      console.log("Product updated successfully!");
-      return true;
+      const newColorMapping = await response.json(); 
+      console.log("Product updated successfully with new color mapping:", newColorMapping);
+      return newColorMapping; 
     } else {
       const contentType = response.headers.get("Content-Type");
       if (contentType && contentType.includes("application/json")) {

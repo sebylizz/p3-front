@@ -25,7 +25,7 @@ export default function CustomerPage() {
   const [currentCustomer, setCurrentCustomer] = useState(null);
 
   const fetchCustomers = async (query, reset = false) => {
-    if (loading) return; 
+    if (loading) return;
     setLoading(true);
 
     try {
@@ -117,25 +117,26 @@ export default function CustomerPage() {
         onConfirm={handleConfirmDelete}
         message={
           <>
-            You are deleting the user: <strong>{currentCustomer?.firstName}</strong>{" "}
+            You are deleting the user:{" "}
+            <strong>{currentCustomer?.firstName}</strong>{" "}
             <strong>{currentCustomer?.lastName}</strong>. Are you sure?
           </>
         }
       />
 
-<ConfirmationModal
-  isOpen={isModalOpen}
-  onClose={() => setIsModalOpen(false)}
-  onConfirm={handleConfirmDelete}
-  message={
-    <>
-    You are deleting the user: <strong>{currentCustomer?.firstName}</strong>{" "}
-    <strong>{currentCustomer?.lastName}</strong>. <br />
-    Are you sure?
-  </>
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={handleConfirmDelete}
+        message={
+          <>
+            You are deleting the user:{" "}
+            <strong>{currentCustomer?.firstName}</strong>{" "}
+            <strong>{currentCustomer?.lastName}</strong>. <br />
+            Are you sure?
+          </>
         }
-/>
-
+      />
 
       <div className="flex justify-center items-center mt-4 mb-4">
         <div
@@ -222,27 +223,25 @@ export default function CustomerPage() {
                 {customer.role}
               </div>
               <div
-  className="flex flex-col md:flex-row gap-2 px-4 py-2"
-  style={{ flex: 1 }}
->
-  <button
-    type="button"
-    onClick={() => confirmDelete(customer)}
-    className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-md w-full md:w-auto"
-  >
-    Delete
-  </button>
-  <Link href={`./customers/modifyCustomer/${customer.id}`}>
-    <button
-      type="button"
-      className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-md w-full md:w-auto"
-    >
-      Modify
-    </button>
-  </Link>
-</div>
-
-
+                className="flex flex-col md:flex-row gap-2 px-4 py-2"
+                style={{ flex: 1 }}
+              >
+                <button
+                  type="button"
+                  onClick={() => confirmDelete(customer)}
+                  className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-md w-full md:w-auto"
+                >
+                  Delete
+                </button>
+                <Link href={`./customers/modifyCustomer/${customer.id}`}>
+                  <button
+                    type="button"
+                    className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-md w-full md:w-auto"
+                  >
+                    Modify
+                  </button>
+                </Link>
+              </div>
             </div>
           ))}
         </div>

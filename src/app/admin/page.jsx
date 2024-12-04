@@ -23,7 +23,6 @@ export default function AdminPage() {
           </div>
         </Link>
 
-
         <Link href="/admin/customers">
           <div className="bg-white shadow-lg rounded-lg p-6 hover:bg-green-100 transition duration-200 cursor-pointer">
             <div className="flex items-center space-x-4">
