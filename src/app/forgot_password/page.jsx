@@ -1,65 +1,86 @@
 'use client';
-import React from 'react';
-import emailSender from '../lib/forgotPasswordFetcher';
+
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Box, TextField, Button, Typography } from '@mui/material';
+import resetPassword from '../lib/resetPasswordFetcher';
 
-export default function ForgotPassword() {
-    const handleSubmit = (e) => {
-        e.preventDefault();
+function ResetPasswordForm() {
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token');
+  const [password, setPassword] = useState('');
 
-        const email = {email: document.getElementById("Email").value};
-        emailSender(email);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await resetPassword({ token, password });
+      alert('Password has been reset successfully!');
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Error resetting password:', error);
+      alert('Failed to reset password.');
+    }
+  };
 
-        window.location.href = '/';
+  if (!token) {
+    return <Typography variant="h6">Invalid or missing token.</Typography>;
+  }
 
-        alert("If customer with email address: " + email.email + " exists, an email has been sent to reset the password.");
-
-    };
-
-    return (
-        <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            height="100vh"
-            bgcolor="#f5f5f5"
+  return (
+    <Box
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      height="100vh"
+      bgcolor="#f5f5f5"
+    >
+      <Box
+        p={4}
+        bgcolor="white"
+        borderRadius={2}
+        boxShadow={3}
+        width="100%"
+        maxWidth="400px"
+      >
+        <Typography
+          variant="h5"
+          component="h1"
+          gutterBottom
+          align="center"
+          sx={{ fontWeight: 'bold', color: 'black' }}
         >
-            <Box
-                p={4}
-                bgcolor="white"
-                borderRadius={2}
-                boxShadow={3}
-                width="100%"
-                maxWidth="400px"
-            >
-                <Typography variant="h5" component="h1" gutterBottom align="center" sx={{ fontWeight: 'bold', color: 'black' }}>
-                    Submit Email for password reset
-                </Typography>
+          Reset Your Password
+        </Typography>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="New Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            variant="outlined"
+            fullWidth
+            margin="normal"
+            required
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            fullWidth
+            type="submit"
+            sx={{ mt: 2 }}
+          >
+            Reset Password
+          </Button>
+        </form>
+      </Box>
+    </Box>
+  );
+}
 
-                <form onSubmit={handleSubmit}>
-                    {/* Email Field */}
-                    <TextField
-                        id="Email"
-                        label="Email"
-                        type="email"
-                        variant="outlined"
-                        fullWidth
-                        margin="normal"
-                        required
-                    />
-
-                    {/* Submit Button */}
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                        type="submit"
-                        sx={{ mt: 2 }}
-                    >
-                        Submit
-                    </Button>
-                </form>
-            </Box>
-        </Box>
-    );
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<p>Loading reset token...</p>}>
+      <ResetPasswordForm />
+    </Suspense>
+  );
 }

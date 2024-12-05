@@ -1,11 +1,12 @@
-"use client";
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import resetPassword from '../lib/resetPasswordFetcher';
 import { Box, TextField, Button, Typography } from '@mui/material';
 import { useSearchParams } from 'next/navigation';
 
-export default function ResetPassword() {
+// This is the core ResetPassword logic
+function ResetPasswordComponent() {
     const [passwordError, setPasswordError] = useState(false);
     const [resetToken, setResetToken] = useState(null);
     const searchParams = useSearchParams();
@@ -30,7 +31,7 @@ export default function ResetPassword() {
             const response = await resetPassword(data);
             if (response.success) {
                 window.location.href = '/';
-                alert("Password reset succesfull!")
+                alert("Password reset successful!");
             } else {
                 alert("Failed to reset password. Please resubmit email for password reset.");
             }
@@ -96,5 +97,14 @@ export default function ResetPassword() {
                 </form>
             </Box>
         </Box>
+    );
+}
+
+// Wrapper component for Suspense boundary
+export default function ResetPassword() {
+    return (
+        <React.Suspense fallback={<p>Loading reset password form...</p>}>
+            <ResetPasswordComponent />
+        </React.Suspense>
     );
 }

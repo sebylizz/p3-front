@@ -1,28 +1,42 @@
 'use client';
 
-import verifyFetcher from '../lib/verifyFetcher';
+import React, { useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import verifyFetcher from '../lib/verifyFetcher';
 
-export default function Verification() {
+function VerificationComponent() {
     const searchParams = useSearchParams();
     const token = searchParams.get('token');
 
     useEffect(() => {
         const verifyToken = async () => {
-            const response = await verifyFetcher(token);
-            if (response.success === true) {
-                alert("Verified!");
-            } else {
-                alert("Verification failed.");
+            if (token) {
+                try {
+                    const response = await verifyFetcher(token);
+                    if (response.success) {
+                        alert("Verified!");
+                    } else {
+                        alert("Verification failed.");
+                    }
+                } catch (error) {
+                    console.error("Error during verification:", error);
+                    alert("An unexpected error occurred.");
+                } finally {
+                    window.location.href = '/';
+                }
             }
-            window.location.href = '/';
         };
 
-        if (token) {
-            verifyToken();
-        }
+        verifyToken();
     }, [token]);
 
     return null;
+}
+
+export default function VerificationPage() {
+    return (
+        <React.Suspense fallback={<p>Loading verification...</p>}>
+            <VerificationComponent />
+        </React.Suspense>
+    );
 }

@@ -1,39 +1,38 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
+import React, { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import productFetcher from '../lib/GetProducts';
+import productFetcher from "../lib/GetProducts";
 
-export default function SearchPage() {
+function SearchComponent() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
-  const query = searchParams.get('q');
+  const query = searchParams.get("q");
 
   useEffect(() => {
     if (query) {
       const fetchAndFilterProducts = async () => {
         setLoading(true);
         try {
-          const allProducts = await productFetcher(); 
+          const allProducts = await productFetcher();
           const searchedProducts = allProducts.filter((product) =>
             product.name.toLowerCase().includes(query.toLowerCase())
           );
           setProducts(searchedProducts);
         } catch (error) {
-          console.error('Error fetching products:', error);
+          console.error("Error fetching products:", error);
         } finally {
           setLoading(false);
         }
       };
-      fetchAndFilterProducts(); 
+      fetchAndFilterProducts();
     } else {
-      setProducts([]); 
-      setLoading(false); 
+      setProducts([]);
+      setLoading(false);
     }
   }, [query]);
-
 
   return (
     <div>
@@ -43,7 +42,10 @@ export default function SearchPage() {
       ) : products.length > 0 ? (
         <div className="product-list">
           {products.map((product) => (
-            <div className="border border-neutral-200 rounded-md hover:shadow-lg max-w-[300px]" key={product.id}>
+            <div
+              className="border border-neutral-200 rounded-md hover:shadow-lg max-w-[300px]"
+              key={product.id}
+            >
               <Link href={`/products/${product.id}`}>
                 <div className="relative">
                   <img
@@ -56,7 +58,9 @@ export default function SearchPage() {
                 </div>
                 <div className="p-4 border-t border-neutral-200">
                   <span className="block no-underline">{product.name}</span>
-                  <span className="block pb-2 font-bold typography-text-lg">{product.price}</span>
+                  <span className="block pb-2 font-bold typography-text-lg">
+                    {product.price}
+                  </span>
                 </div>
               </Link>
             </div>
@@ -66,5 +70,13 @@ export default function SearchPage() {
         <p>No products found.</p>
       )}
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<p>Loading search parameters...</p>}>
+      <SearchComponent />
+    </Suspense>
   );
 }
