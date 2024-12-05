@@ -103,6 +103,9 @@ export default function ModifyProduct({ productData }) {
     );
   };
 
+  useEffect(() => {
+    router.refresh();
+  }, [router]);
   const handleColorAdded = (newColor) => {
     setColors((prevColors) => [...prevColors, newColor]);
   };

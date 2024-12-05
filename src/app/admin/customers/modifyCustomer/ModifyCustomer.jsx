@@ -45,18 +45,18 @@ export default function ModifyCustomer({ customerData }) {
   };
   const handleRoleChange = (newRole) => {
     if (newRole !== role) {
-      setPendingRole(newRole); // Set the role to be applied after confirmation
-      setIsPasswordModalOpen(true); // Open password modal
+      setPendingRole(newRole); 
+      setIsPasswordModalOpen(true); 
     }
   };
 
   const handlePasswordConfirm = async (password) => {
-    setIsPasswordModalOpen(false); // Close the modal
+    setIsPasswordModalOpen(false); 
 
     try {
-      const isPasswordValid = await matchPassword(password); // Pass the entered password
+      const isPasswordValid = await matchPassword(password); 
       if (isPasswordValid) {
-        setRole(pendingRole); // Apply the pending role if the password is valid
+        setRole(pendingRole); 
         alert("Password confirmed. Role changed successfully.");
       } else {
         alert("Password is incorrect. Role change aborted.");
@@ -102,7 +102,7 @@ export default function ModifyCustomer({ customerData }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsConfirmationModalOpen(true); // Show confirmation modal before submitting
+    setIsConfirmationModalOpen(true); 
   };
 
   const handleConfirmSubmission = async () => {

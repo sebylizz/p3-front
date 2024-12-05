@@ -81,6 +81,9 @@ export default function AddProduct() {
       )
     );
   };
+  useEffect(() => {
+    router.refresh();
+  }, [router]);
 
   useEffect(() => {
     const fetchInitialData = async () => {

@@ -1,10 +1,11 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import addCustomerAdmin from "@/app/lib/addCustomerAdmin";
 import validatePassword from "@/app/lib/passwordChecker";
 import ConfirmationModal from "@/app/components/admin/ConfirmationModal";
 import PasswordModal from "@/app/components/admin/PasswordModal";
 import matchPassword from "@/app/lib/matchPassword";
+import { useRouter } from "next/navigation";
 
 import { useState } from "react";
 import {
@@ -32,7 +33,10 @@ export default function addCustomer() {
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [pendingRole, setPendingRole] = useState("user");
-
+  const router = useRouter();
+  useEffect(() => {
+    router.refresh();
+  }, [router]);
   const handlePasswordChange = (e) => {
     const newPassword = e.target.value || null; // Allow null for unchanged passwords
     setPassword(newPassword);
@@ -45,6 +49,7 @@ export default function addCustomer() {
       setPasswordErrors([]);
     }
   };
+
 
   const handleRoleChange = (newRole) => {
     if (newRole === "admin" && role !== "admin") {

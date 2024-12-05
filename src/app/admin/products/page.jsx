@@ -27,7 +27,10 @@ export default function AdminProducts() {
       setLoading(false);
     }
   };
-
+  useEffect(() => {
+    router.refresh();
+  }, [router]);
+  
   useEffect(() => {
     fetchProducts();
   }, []);

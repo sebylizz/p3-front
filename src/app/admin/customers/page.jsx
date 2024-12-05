@@ -11,6 +11,7 @@ import Search from "./search";
 import Link from "next/link";
 import PasswordModal from "@/app/components/admin/PasswordModal";
 import ConfirmationModal from "@/app/components/admin/ConfirmationModal";
+import matchPassword from "@/app/lib/matchPassword";
 
 export default function CustomerPage() {
   const [customers, setCustomers] = useState([]);
@@ -23,7 +24,10 @@ export default function CustomerPage() {
   const searchParams = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentCustomer, setCurrentCustomer] = useState(null);
-
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+  useEffect(() => {
+    router.refresh();
+  }, [router]);
   const fetchCustomers = async (query, reset = false) => {
     if (loading) return;
     setLoading(true);
@@ -87,11 +91,35 @@ export default function CustomerPage() {
   };
 
   const handleConfirmDelete = () => {
-    if (currentCustomer) {
+    if (currentCustomer?.role === "admin") {
+      setIsPasswordModalOpen(true);
+      setIsModalOpen(false); 
+    } else if (currentCustomer) {
       handleDelete(currentCustomer.id);
+      setIsModalOpen(false);
     }
-    setIsModalOpen(false);
   };
+  
+
+  const handlePasswordConfirm = async (password) => {
+    setIsPasswordModalOpen(false); 
+  
+    try {
+      const isPasswordValid = await matchPassword(password); 
+      if (isPasswordValid) {
+        if (currentCustomer) {
+          await handleDelete(currentCustomer.id); 
+          alert("Admin user deleted successfully.");
+        }
+      } else {
+        alert("Password is incorrect. Deletion aborted.");
+      }
+    } catch (error) {
+      console.error("Error verifying password:", error);
+      alert("An error occurred while verifying the password.");
+    }
+  };
+  
 
   const handleDelete = async (id) => {
     try {
@@ -262,6 +290,12 @@ export default function CustomerPage() {
           {loading ? "Loading..." : "Load More"}
         </button>
       </div>
+      <PasswordModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+        onConfirm={handlePasswordConfirm}
+        message="Please confirm your password to delete the user."
+      />
     </div>
   );
 }
