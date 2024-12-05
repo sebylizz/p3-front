@@ -1,27 +1,12 @@
 import AccountLayout from '../components/AccountLayout';
 import logOut from '../lib/logOut';
-import getJWT from '../lib/getJWT';
+import getCustomer from '../lib/fetchCustomer';
 
 export default async function Account() {
-    try {
-        const token = await getJWT();
-
-        const response = await fetch('http://localhost:8080/customers/getsinglecustomer', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': '*/*',
-                'Authorization': `Bearer ${token.value}`
-            }
-        });
-        const data = await response.json();
-        
-        if (!response.ok) {
+        data = await getCustomer();
+        if (!data.ok) {
             return <h1>Not logged in</h1>;
         }
         return <AccountLayout userName={data.firstName} onLogout={logOut} />;
-    } catch (error) {
-        console.log('Error:', error);
-        return <p>Error occurred: {error.message}</p>;
-    }
+     
 }
