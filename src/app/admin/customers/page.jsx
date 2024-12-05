@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 import { SfButton, SfIconAdd } from "@storefront-ui/react";
 import Search from "./search";
 import Link from "next/link";
-import PasswordModal from "@/app/components/admin/PasswordModal";
 import ConfirmationModal from "@/app/components/admin/ConfirmationModal";
 
 export default function CustomerPage() {
@@ -18,7 +17,6 @@ export default function CustomerPage() {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [total, setTotal] = useState(0);
-  const router = useRouter();
   const BATCH_SIZE = 2;
   const searchParams = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
