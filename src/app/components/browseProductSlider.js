@@ -1,21 +1,22 @@
 // ProductSlider.jsx
 'use client';
 
-import React from 'react';
-import { Grid2, CircularProgress } from '@mui/material';
-import ProductCard from './ProductCard';
-import { useProducts } from '@/app/context/productContext';
+import React from "react";
+import { Grid2, CircularProgress } from "@mui/material";
+import ProductCard from "./ProductCard";
+import { useProducts } from "@/app/context/productContext";
 
 const BrowseProductSlider = ({ filteredProducts }) => {
     const { products, loading } = useProducts();
 
     // Use filtered products if provided, otherwise fall back to all products
     const productsToDisplay = filteredProducts || products;
+    console.log("hbefhebh");
+    console.log(productsToDisplay);
 
     if (loading) {
         return <CircularProgress />;
     }
-
     return (
         <div style={{ minHeight: '70vh', paddingTop: '20px', paddingBottom: '20px', marginLeft: '10%', marginRight: '10%' }}>
             <Grid2 container spacing={2}>
