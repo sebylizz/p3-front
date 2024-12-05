@@ -62,23 +62,25 @@ export default function AddProduct() {
 
   const [collapsedColors, setCollapsedColors] = useState({});
 
-  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false); // Modal state
+  const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
 
-  const [productData, setProductData] = useState(null); // Temporarily hold data for submission
+  const [productData, setProductData] = useState(null);
 
-  const [status, setStatus] = useState(null); // Tracks success or failure
+  const [status, setStatus] = useState(null);
   const handleDeleteVariant = (colorId, variantIndex) => {
-  setSelectedColors((prevColors) =>
-    prevColors.map((color) =>
-      color.colorId === colorId
-        ? {
-            ...color,
-            variants: color.variants.filter((_, index) => index !== variantIndex),
-          }
-        : color
-    )
-  );
-}
+    setSelectedColors((prevColors) =>
+      prevColors.map((color) =>
+        color.colorId === colorId
+          ? {
+              ...color,
+              variants: color.variants.filter(
+                (_, index) => index !== variantIndex
+              ),
+            }
+          : color
+      )
+    );
+  };
 
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -107,22 +109,11 @@ export default function AddProduct() {
     fetchInitialData();
   }, []);
 
-  // Handle startDate changes
   const handleStartDateChange = (e) => {
-    const date = e.target.value; // Extract the date from the event
-    setStartDate(date); // Update the startDate state
-    setIsActive(!isStartDateInFuture(date)); // Update isActive based on the date
+    const date = e.target.value;
+    setStartDate(date);
+    setIsActive(!isStartDateInFuture(date));
   };
-
-  // useEffect(() => {
-  //   // Check if startDate is in the future
-  //   const today = new Date();
-  //   const selectedDate = new Date(startDate);
-
-  //   if (selectedDate > today) {
-  //     setIsActive(false); // Automatically set to false
-  //   }
-  // }, [startDate]);
 
   const isStartDateInFuture = () => {
     const today = new Date();
@@ -273,26 +264,25 @@ export default function AddProduct() {
       isActive: !isStartDateInFuture,
       collectionId,
       categoryId: childCategoryId || parentCategoryId,
-      price: {
-        price,
-        isDiscount: false,
-        startDate,
-        endDate: null,
-      },
+      prices: [
+        {
+          price: price * 1000,
+          isDiscount: false,
+          startDate,
+          endDate: null,
+        },
+      ],
       colors: selectedColors.map((color) => ({
-        colorId: color.colorId,
+        color: color.colorId,
         mainImage: color.mainImage ? color.mainImage.name : null,
         images: color.extraImages
           ? color.extraImages.map((img) => img.name).join(",")
           : "",
-      })),
-      variants: selectedColors.flatMap((color) =>
-        color.variants.map((variant) => ({
-          colorId: color.colorId,
+        variants: color.variants.map((variant) => ({
           sizeId: variant.sizeId,
           quantity: variant.quantity,
-        }))
-      ),
+        })),
+      })),
     };
     setProductData(data);
     setIsConfirmationModalOpen(true);
@@ -300,38 +290,31 @@ export default function AddProduct() {
 
   const confirmSubmission = async (e) => {
     e.preventDefault();
-    setStatus(null); // Reset status before the task
-    setIsConfirmationModalOpen(false); // Close modal
+    setStatus(null);
+    setIsConfirmationModalOpen(false);
     try {
-      const responseText = await addProduct(productData);
-      const responseData = responseText ? JSON.parse(responseText) : null;
-      console.log("Response Data:", responseData);
+      const { productId, colorIds } = await addProduct(productData);
 
-      if (!responseData) {
-        throw new Error("Failed to add product: Missing product ID");
-      }
-      const productId = responseData;
-      for (const color of selectedColors) {
+      for (let i = 0; i < selectedColors.length; i++) {
+        const color = selectedColors[i];
+        const colorId = colorIds[i];
         const images = [color.mainImage, ...color.extraImages];
-        console.log(`Uploading images for colorId ${color.colorId}:`, images);
-        await uploadImages(images, productId, color.colorId);
-        console.log(`Images uploaded for colorId ${color.colorId}`);
+        await uploadImages(images, productId, colorId);
       }
-      setStatus("success"); // Mark as success
-      resetFields(); // Reset the form fields
+      setStatus("success");
+      resetFields();
     } catch (error) {
       console.error("Error adding product:", error);
       alert(`Error adding product: ${error.message}`);
-      setStatus("failure"); // Mark as failure
+      setStatus("failure");
     }
   };
 
   const cancelSubmission = () => {
-    setIsConfirmationModalOpen(false); // Close modal without submitting
-    setStatus(null); // Reset the status
+    setIsConfirmationModalOpen(false);
+    setStatus(null);
   };
   const handleDeleteColor = (colorId) => {
-    // Remove the color and its variants from selectedColors
     setSelectedColors((prevColors) =>
       prevColors.filter((color) => color.colorId !== colorId)
     );
@@ -415,9 +398,9 @@ export default function AddProduct() {
           <SfInput
             id="start-input"
             label="Start Date"
-            type="date" // Enables date picker
-            value={startDate} // Controlled component value
-            onChange={handleStartDateChange} // Update handler
+            type="date"
+            value={startDate}
+            onChange={handleStartDateChange}
             required
           />
         </div>
@@ -434,7 +417,7 @@ export default function AddProduct() {
                 setIsActive(!isActive);
               }
             }}
-            disabled={isStartDateInFuture()} // Disable if startDate is in the future
+            disabled={isStartDateInFuture()}
           />
         </div>
         {/* Collections */}
@@ -451,7 +434,7 @@ export default function AddProduct() {
               </option>
             ))}
           </SfSelect>
-          <SfButton //CLASS
+          <SfButton
             type="button"
             onClick={() => setIsAddCollectionModalOpen(true)}
             style={{
@@ -479,7 +462,6 @@ export default function AddProduct() {
             onChange={(e) => {
               const selectedId = e.target.value;
               setParentCategoryId(e.target.value);
-              console.log("Selected Category ID:", selectedId);
             }}
           >
             <option value="">Select a Parent Category</option>
@@ -494,18 +476,17 @@ export default function AddProduct() {
             label="Child Category"
             value={childCategoryId || ""}
             onChange={(e) => {
-              const selectedId = parseInt(e.target.value, 10); // Ensure it's an integer
+              const selectedId = parseInt(e.target.value, 10);
               setChildCategoryId(selectedId);
-              console.log("Selected Child Category ID:", selectedId);
             }}
-            disabled={!parentCategoryId} // Only enable if a parent category is selected
+            disabled={!parentCategoryId}
           >
             <option value="">Select a Child Category</option>
             {categories
               .filter(
                 (category) =>
                   category.parentCategory?.id === parseInt(parentCategoryId, 10)
-              ) // Convert parentCategoryId to an integer
+              )
               .map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
@@ -513,7 +494,7 @@ export default function AddProduct() {
               ))}
           </SfSelect>
 
-          <SfButton //CLASS
+          <SfButton
             type="button"
             onClick={() => setIsAddCategoryModalOpen(true)}
             style={{
@@ -531,7 +512,7 @@ export default function AddProduct() {
             onCategoryAdded={handleCategoryAdded}
             parentCategories={categories.filter(
               (category) => !category.parentCategory
-            )} // Filter only parent categories
+            )}
           />
         )}
 
@@ -562,14 +543,14 @@ export default function AddProduct() {
                 flexDirection: "column",
                 gap: "0.5rem",
                 marginTop: "0.5rem",
-                alignItems: "center", // Center the "Add Variant" button horizontally
+                alignItems: "center",
               }}
             >
               {/* Add New Color Button */}
               <SfButton
                 type="button"
                 onClick={() => setIsAddColorModalOpen(true)}
-                style={{ alignSelf: "flex-start" }} // Align to the left
+                style={{ alignSelf: "flex-start" }}
               >
                 Add New Color
               </SfButton>
@@ -578,7 +559,7 @@ export default function AddProduct() {
               <SfButton
                 type="button"
                 onClick={handleAddColor}
-                style={{ alignSelf: "center" }} // Center this button
+                style={{ alignSelf: "center" }}
               >
                 Add Variant
               </SfButton>

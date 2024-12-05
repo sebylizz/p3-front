@@ -124,12 +124,16 @@ export default function PriceList({ prices: initialPrices, onPricesUpdate }) {
     setPrices(updatedPrices);
     onPricesUpdate(updatedPrices);
   };
-  const isCurrentNonDiscount = (price) => {
-    return (
-      !price.isDiscount &&
-      new Date(price.startDate) <= currentDate &&
-      (!price.endDate || new Date(price.endDate) >= currentDate)
-    );
+  const isNonEditablePrice = (price) => {
+    const today = new Date();
+    const startDate = new Date(price.startDate);
+    const endDate = price.endDate ? new Date(price.endDate) : null;
+
+    const isCurrentNonDiscount =
+      !price.discount && startDate <= today && (!endDate || endDate >= today);
+
+    const isHistoricalPrice = endDate && endDate < today;
+    return isCurrentNonDiscount || isHistoricalPrice;
   };
 
   return (
@@ -137,7 +141,7 @@ export default function PriceList({ prices: initialPrices, onPricesUpdate }) {
       <h1 className="mb-4 text-1xl font-bold">Prices</h1>
 
       {prices.map((price) => {
-        const canModifyOrDelete = !isCurrentNonDiscount;
+        const canModifyOrDelete = !isNonEditablePrice(price);
 
         return (
           <div
@@ -156,20 +160,20 @@ export default function PriceList({ prices: initialPrices, onPricesUpdate }) {
                 <SfInput
                   type="number"
                   label="Price"
-                  value={newPrice}
+                  value={newPrice ?? ""}
                   onChange={(e) => setNewPrice(parseFloat(e.target.value))}
                   placeholder="Price"
                 />
                 <SfInput
                   type="date"
                   label="Start Date"
-                  value={newStartDate}
+                  value={newStartDate ?? ""}
                   onChange={(e) => setNewStartDate(e.target.value)}
                 />
                 <SfInput
                   type="date"
                   label="End Date"
-                  value={newEndDate}
+                  value={newEndDate ?? ""}
                   onChange={(e) => setNewEndDate(e.target.value)}
                 />
                 <SfButton onClick={() => handleSaveClick(price.id)}>
@@ -222,6 +226,8 @@ export default function PriceList({ prices: initialPrices, onPricesUpdate }) {
           </div>
         );
       })}
+
+      {/* Modal for adding a new price */}
       <div
         style={{
           display: "flex",

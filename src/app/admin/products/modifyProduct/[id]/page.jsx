@@ -6,7 +6,7 @@ import ModifyProduct from "../Modify";
 export const dynamicParams = true;
 
 export async function getProduct(id) {
-  const allProducts = await productFetcherJSX(); 
+  const allProducts = await productFetcherJSX();
   const idProduct = allProducts.find((product) => product.id.toString() === id);
   return idProduct;
 }

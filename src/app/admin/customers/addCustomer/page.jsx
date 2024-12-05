@@ -1,21 +1,21 @@
-"use client"
-import React from 'react'
-import addCustomerAdmin from '@/app/lib/addCustomerAdmin';
+"use client";
+import React from "react";
+import addCustomerAdmin from "@/app/lib/addCustomerAdmin";
 import validatePassword from "@/app/lib/passwordChecker";
-import ConfirmationModal from '@/app/components/admin/ConfirmationModal';
-import PasswordModal from '@/app/components/admin/PasswordModal';
-import matchPassword from '@/app/lib/matchPassword';
+import ConfirmationModal from "@/app/components/admin/ConfirmationModal";
+import PasswordModal from "@/app/components/admin/PasswordModal";
+import matchPassword from "@/app/lib/matchPassword";
 
 import { useState } from "react";
 import {
-    SfButton,
-    SfInput,
-    SfSelect,
-    SfSwitch,
-    SfCheckbox,
-    SfListItem,
-    SfModal,
-  } from "@storefront-ui/react";
+  SfButton,
+  SfInput,
+  SfSelect,
+  SfSwitch,
+  SfCheckbox,
+  SfListItem,
+  SfModal,
+} from "@storefront-ui/react";
 
 export default function addCustomer() {
   const [firstName, setFirstName] = useState("");
@@ -33,8 +33,6 @@ export default function addCustomer() {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [pendingRole, setPendingRole] = useState("user");
 
-
-
   const handlePasswordChange = (e) => {
     const newPassword = e.target.value || null; // Allow null for unchanged passwords
     setPassword(newPassword);
@@ -48,7 +46,6 @@ export default function addCustomer() {
     }
   };
 
-
   const handleRoleChange = (newRole) => {
     if (newRole === "admin" && role !== "admin") {
       setPendingRole(newRole);
@@ -58,10 +55,9 @@ export default function addCustomer() {
     }
   };
 
-
   const handlePasswordConfirm = async (password) => {
     setIsPasswordModalOpen(false); // Close the modal
-  
+
     try {
       const isPasswordValid = await matchPassword(password); // Pass the entered password
       if (isPasswordValid) {
@@ -75,8 +71,6 @@ export default function addCustomer() {
       alert("An error occurred while verifying the password.");
     }
   };
-
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -203,79 +197,80 @@ export default function addCustomer() {
         </div>
 
         {/* Password */}
-<div>
-  <SfInput
-    label="Password"
-    type="password"
-    value={password || ""} // Ensure the value is always a string
-    onChange={handlePasswordChange}
-    required
-    placeholder="Enter password"
-  />
+        <div>
+          <SfInput
+            label="Password"
+            type="password"
+            value={password || ""} // Ensure the value is always a string
+            onChange={handlePasswordChange}
+            required
+            placeholder="Enter password"
+          />
 
-  {/* Error Messages */}
-  <div className="mt-2">
-    {passwordErrors.length > 0 && (
-      <ul className="text-red-500 text-sm">
-        {passwordErrors.map((error, index) => (
-          <li key={index}>{error}</li>
-        ))}
-      </ul>
-    )}
-  </div>
-      {/* Confirm Password */}
-      <SfInput
-          label="Confirm Password"
-          type="password"
-          value={confirmPassword || ""}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          required
-          placeholder="Confirm password"
-        />
-        {/* Error Messages */}
-        {password===""&& confirmPassword!=""&& (
-      <p className="text-red-500 text-sm">
-        Enter password first!
-      </p>
-    )}
-  <div className="mt-2">
-    {password!=confirmPassword && confirmPassword!="">0&& (
-      <p className="text-red-500 text-sm">
-        The passwords do not match!
-      </p>
-    )}
-
-
-  </div>
-</div>
-
+          {/* Error Messages */}
+          <div className="mt-2">
+            {passwordErrors.length > 0 && (
+              <ul className="text-red-500 text-sm">
+                {passwordErrors.map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+          {/* Confirm Password */}
+          <SfInput
+            label="Confirm Password"
+            type="password"
+            value={confirmPassword || ""}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            placeholder="Confirm password"
+          />
+          {/* Error Messages */}
+          {password === "" && confirmPassword != "" && (
+            <p className="text-red-500 text-sm">Enter password first!</p>
+          )}
+          <div className="mt-2">
+            {password != confirmPassword && confirmPassword != "" > 0 && (
+              <p className="text-red-500 text-sm">
+                The passwords do not match!
+              </p>
+            )}
+          </div>
+        </div>
 
         {/* Role */}
         <div>
-        <SfSelect
-          label="Role"
-          value={role}
-          onChange={(e) => handleRoleChange(e.target.value)}
-        >
-          <option value="user">User</option>
-          <option value="admin">Admin</option>
-        </SfSelect>
+          <SfSelect
+            label="Role"
+            value={role}
+            onChange={(e) => handleRoleChange(e.target.value)}
+          >
+            <option value="user">User</option>
+            <option value="admin">Admin</option>
+          </SfSelect>
         </div>
 
-       {/* Submit Button */}
-<div style={{ display: "flex", justifyContent: "center", marginTop: "1rem" }}>
-  <SfButton
-    type="submit"
-    disabled={(passwordErrors?.length > 0 && password) || isSubmitting}
-    className={`w-1/3 py-4 text-lg font-bold ${
-      isSubmitting || (passwordErrors?.length > 0 && password)
-        ? "bg-gray-500 cursor-not-allowed"
-        : "bg-green-600 hover:bg-green-700 text-white"
-    } rounded-md`}
-  >
-    {isSubmitting ? "Submitting..." : "Add Customer"}
-  </SfButton>
-</div>
+        {/* Submit Button */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginTop: "1rem",
+          }}
+        >
+          <SfButton
+            type="submit"
+            disabled={(passwordErrors?.length > 0 && password) || isSubmitting}
+            className={`w-1/3 py-4 text-lg font-bold ${
+              isSubmitting || (passwordErrors?.length > 0 && password)
+                ? "bg-gray-500 cursor-not-allowed"
+                : "bg-green-600 hover:bg-green-700 text-white"
+            } rounded-md`}
+          >
+            {isSubmitting ? "Submitting..." : "Add Customer"}
+          </SfButton>
+        </div>
       </form>
       <PasswordModal
         isOpen={isPasswordModalOpen}
@@ -292,4 +287,3 @@ export default function addCustomer() {
     </div>
   );
 }
-
