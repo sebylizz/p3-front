@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import customerFetcher from "@/app/lib/getCustomers";
 import deleteCustomerAdmin from "@/app/lib/deleteCustomer";
@@ -11,7 +11,7 @@ import Search from "./search";
 import Link from "next/link";
 import ConfirmationModal from "@/app/components/admin/ConfirmationModal";
 
-export default function CustomerPage() {
+function CustomerPage() {
   const [customers, setCustomers] = useState([]);
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -118,20 +118,6 @@ export default function CustomerPage() {
             You are deleting the user:{" "}
             <strong>{currentCustomer?.firstName}</strong>{" "}
             <strong>{currentCustomer?.lastName}</strong>. Are you sure?
-          </>
-        }
-      />
-
-      <ConfirmationModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onConfirm={handleConfirmDelete}
-        message={
-          <>
-            You are deleting the user:{" "}
-            <strong>{currentCustomer?.firstName}</strong>{" "}
-            <strong>{currentCustomer?.lastName}</strong>. <br />
-            Are you sure?
           </>
         }
       />
@@ -261,5 +247,13 @@ export default function CustomerPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function AdminCustomersPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CustomerPage />
+    </Suspense>
   );
 }
