@@ -1,7 +1,6 @@
 'use client';
 import { useRouter } from "next/navigation";
 
-
 export default function RightNavButton({ item }) {
     const router = useRouter();
 
