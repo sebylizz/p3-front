@@ -1,3 +1,6 @@
+'use client';
+
+import RightNav from './RightNav';
 import Link from 'next/link';
 
 export default function NavBar() {
