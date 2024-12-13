@@ -27,7 +27,6 @@ export default function ProductDetailsPage() {
       );
       if (colorIndex !== -1) {
         setCurrentColorIndex(colorIndex);
-        //console.log("Test Quantity: " + product.colors[currentColorIndex].variants[selectedSize].quantity);
       }
     }
   }, [product, colorIdFromQuery]);
