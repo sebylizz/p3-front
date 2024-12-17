@@ -40,7 +40,7 @@ export default function ModifyCustomer({ customerData }) {
       console.error("Error sending reset password link:", error);
       alert("An error occurred while sending the reset password link.");
     } finally {
-      setIsSendingReset(false); // Reset submission complete
+      setIsSendingReset(false); 
     }
   };
   const handleRoleChange = (newRole) => {
@@ -233,7 +233,7 @@ export default function ModifyCustomer({ customerData }) {
                 : "bg-blue-600 hover:bg-blue-700 text-white"
             }`}
             onClick={forgotPassword}
-            disabled={!email || isSendingReset} // Disable button if email is empty or already sending
+            disabled={!email || isSendingReset} 
           >
             {isSendingReset ? "Sending..." : "Send Reset Password Link"}
           </SfButton>

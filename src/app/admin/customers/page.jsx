@@ -11,7 +11,7 @@ import Search from "./search";
 import Link from "next/link";
 import PasswordModal from "@/app/components/admin/PasswordModal";
 import ConfirmationModal from "@/app/components/admin/ConfirmationModal";
-import matchPassword from "@/app/lib/matchPassword";
+import handlePasswordConfirmation from "@/app/lib/handleConfirmPassword";
 
 export default function CustomerPage() {
   const [customers, setCustomers] = useState([]);
@@ -19,15 +19,13 @@ export default function CustomerPage() {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [total, setTotal] = useState(0);
-  const router = useRouter();
-  const BATCH_SIZE = 2;
+  const BATCH_SIZE = 10;
   const searchParams = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentCustomer, setCurrentCustomer] = useState(null);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-  useEffect(() => {
-    router.refresh();
-  }, [router]);
+  
+
   const fetchCustomers = async (query, reset = false) => {
     if (loading) return;
     setLoading(true);
@@ -101,57 +99,32 @@ export default function CustomerPage() {
   };
   
 
-  const handlePasswordConfirm = async (password) => {
-    setIsPasswordModalOpen(false); 
-  
+  const handleDeleteCustomer = async (password) => {
     try {
-      const isPasswordValid = await matchPassword(password); 
-      if (isPasswordValid) {
-        if (currentCustomer) {
-          await handleDelete(currentCustomer.id); 
-          alert("Admin user deleted successfully.");
-        }
-      } else {
-        alert("Password is incorrect. Deletion aborted.");
-      }
+      setIsPasswordModalOpen(false);
+      await handlePasswordConfirmation({
+        password,
+        action: async () => {
+          await deleteCustomerAdmin(currentCustomer.id);
+          setCustomers((prev) =>
+            prev.filter((customer) => customer.id !== currentCustomer.id)
+          );
+        },
+        successMessage: "Customer deleted successfully.",
+      });
     } catch (error) {
-      console.error("Error verifying password:", error);
-      alert("An error occurred while verifying the password.");
+      console.error("Error during customer deletion:", error);
     }
   };
   
+  
+  
 
-  const handleDelete = async (id) => {
-    try {
-      await deleteCustomerAdmin(id);
-      setCustomers((prevCustomers) =>
-        prevCustomers.filter((customer) => customer.id !== id)
-      );
-      alert("Customer deleted successfully!");
-    } catch (error) {
-      alert(`Error deleting customer: ${error.message}`);
-    }
-  };
+  
 
-  const handleModify = (id) => {
-    useRouter.push(`/customers/modify/${id}`);
-  };
 
   return (
     <div>
-      <ConfirmationModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onConfirm={handleConfirmDelete}
-        message={
-          <>
-            You are deleting the user:{" "}
-            <strong>{currentCustomer?.firstName}</strong>{" "}
-            <strong>{currentCustomer?.lastName}</strong>. Are you sure?
-          </>
-        }
-      />
-
       <ConfirmationModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -172,14 +145,7 @@ export default function CustomerPage() {
           style={{ width: "50%", padding: "0.5rem" }}
         >
           <Search
-            onSearchChange={(query) => {
-              const params = new URLSearchParams(searchParams);
-              if (query.trim()) {
-                params.set("query", query.trim());
-              } else {
-                params.delete("query");
-              }
-            }}
+            placeholder="Search For Customers"
           />
           <Link href={"./customers/addCustomer"}>
             <SfButton
@@ -257,19 +223,33 @@ export default function CustomerPage() {
                 <button
                   type="button"
                   onClick={() => confirmDelete(customer)}
-                  className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-md w-full md:w-auto"
+                  className={`${
+                    customer.id === 0
+                      ? "bg-gray-500 cursor-not-allowed"
+                      : "bg-red-500 hover:bg-red-700"
+                  } text-white px-4 py-2 rounded-md w-full md:w-auto`}
+                  disabled={customer.id === 0} 
                 >
                   Delete
                 </button>
-                <Link href={`./customers/modifyCustomer/${customer.id}`}>
+                <Link
+                  href={`./customers/modifyCustomer/${customer.id}`}
+                  className={customer.id === 0 ? "pointer-events-none" : ""}
+                >
                   <button
                     type="button"
-                    className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-md w-full md:w-auto"
+                    className={`${
+                      customer.id === 0
+                        ? "bg-gray-500 cursor-not-allowed"
+                        : "bg-blue-500 hover:bg-blue-700"
+                    } text-white px-4 py-2 rounded-md w-full md:w-auto`}
+                    disabled={customer.id === 0}
                   >
                     Modify
                   </button>
                 </Link>
               </div>
+
             </div>
           ))}
         </div>
@@ -293,9 +273,10 @@ export default function CustomerPage() {
       <PasswordModal
         isOpen={isPasswordModalOpen}
         onClose={() => setIsPasswordModalOpen(false)}
-        onConfirm={handlePasswordConfirm}
+        onConfirm={handleDeleteCustomer} 
         message="Please confirm your password to delete the user."
       />
+
     </div>
   );
 }

@@ -2,7 +2,7 @@ import getJWT from "./getJWT";
 const matchPassword = async (password) => {
     try {
       const token = await getJWT();
-      console.log(token); // Ensure this logs a valid JWT
+      console.log(token); 
       const response = await fetch("http://localhost:8080/customers/matchPassword", {
         method: "POST",
         headers: {
@@ -17,7 +17,7 @@ const matchPassword = async (password) => {
         throw new Error(error || "Failed to verify password.");
       }
   
-      return await response.json(); // Expect a direct boolean: true/false
+      return await response.json(); 
     } catch (error) {
       console.error("Error matching password:", error);
       throw error;

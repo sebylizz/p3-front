@@ -45,18 +45,18 @@ export default function AddProduct() {
   const [mainImage, setMainImage] = useState(null);
   const [extraImages, setExtraImages] = useState([]);
 
-  //collection
+
   const [isAddCollectionModalOpen, setIsAddCollectionModalOpen] =
     useState(false);
   const [collections, setCollections] = useState([]);
 
-  //categories
+
   const [parentCategoryId, setParentCategoryId] = useState(null);
   const [childCategoryId, setChildCategoryId] = useState(null);
   const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
 
-  //variant
+
   const [isAddColorModalOpen, setIsAddColorModalOpen] = useState(false);
   const [isAddSizeModalOpen, setIsAddSizeModalOpen] = useState(false);
 
@@ -67,6 +67,8 @@ export default function AddProduct() {
   const [productData, setProductData] = useState(null);
 
   const [status, setStatus] = useState(null);
+
+
   const handleDeleteVariant = (colorId, variantIndex) => {
     setSelectedColors((prevColors) =>
       prevColors.map((color) =>
@@ -81,10 +83,6 @@ export default function AddProduct() {
       )
     );
   };
-  useEffect(() => {
-    router.refresh();
-  }, [router]);
-
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -260,7 +258,6 @@ export default function AddProduct() {
       alert("Start Date is required.");
       return;
     }
-
     const data = {
       name,
       description,
@@ -463,7 +460,6 @@ export default function AddProduct() {
             label="Parent Category"
             value={parentCategoryId || ""}
             onChange={(e) => {
-              const selectedId = e.target.value;
               setParentCategoryId(e.target.value);
             }}
           >

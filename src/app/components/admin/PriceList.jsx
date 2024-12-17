@@ -17,51 +17,77 @@ export default function PriceList({ prices: initialPrices, onPricesUpdate }) {
       alert("Price and Start Date are required.");
       return;
     }
-
+  
     const newStart = new Date(newStartDate);
     const newEnd = newEndDate ? new Date(newEndDate) : null;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); 
+  
 
-    if (isDiscount && newEnd && newEnd <= newStart) {
-      alert("End Date must be after the Start Date.");
+    if (newStart < today) {
+      alert("Start Date cannot be before today.");
       return;
     }
-
-    if (
-      prices.some((price) => {
-        const priceStart = new Date(price.startDate);
-        const priceEnd = price.endDate ? new Date(price.endDate) : null;
-
-        return (
-          newStart >= priceStart &&
-          (priceEnd ? newStart <= priceEnd : newStart <= currentDate)
-        );
-      })
-    ) {
-      alert("Dates cannot overlap with existing prices.");
+    if (isDiscount && newEnd && newEnd < today) {
+      alert("End Date cannot be before today.");
       return;
     }
+  
 
     if (isDiscount && !newEndDate) {
       alert("Discounts must have an End Date.");
       return;
     }
+  
 
-    if (!isDiscount) {
-      const currentNonDiscount = prices.find(
-        (p) => !p.isDiscount && !p.endDate
-      );
-      if (currentNonDiscount) {
-        currentNonDiscount.endDate = newStart.toISOString().split("T")[0];
+    if (isDiscount) {
+      for (const price of prices) {
+        const priceStart = new Date(price.startDate);
+        const priceEnd = price.endDate ? new Date(price.endDate) : null;
+  
+        if (
+          newStart.getTime() === priceStart.getTime() ||
+          (priceEnd && newStart.getTime() === priceEnd.getTime()) ||
+          newEnd.getTime() === priceStart.getTime() ||
+          (priceEnd && newEnd.getTime() === priceEnd.getTime())
+        ) {
+          alert("Discount start or end date cannot match any existing price dates.");
+          return;
+        }
       }
     }
+  
+
+    if (!isDiscount) {
+      for (const price of prices) {
+        const priceStart = new Date(price.startDate);
+        const priceEnd = price.endDate ? new Date(price.endDate) : null;
+  
+        if (newStart <= priceStart || (priceEnd && newStart <= priceEnd)) {
+          alert("Non-discount price cannot overlap with any existing price.");
+          return;
+        }
+      }
+    }
+  
+    const currentNonDiscount = prices.find((p) => !p.isDiscount && !p.endDate);
+  
+
+    if (!isDiscount && currentNonDiscount) {
+      const dayBeforeNewStart = new Date(newStart);
+      dayBeforeNewStart.setDate(newStart.getDate() - 1);
+      currentNonDiscount.endDate = dayBeforeNewStart.toISOString().split("T")[0];
+    }
+  
 
     const newPriceEntry = {
       id: prices.length + 1,
       price: newPrice,
       startDate: newStartDate,
-      endDate: newEndDate || null,
+      endDate: isDiscount ? newEndDate : null,
       isDiscount,
     };
+  
 
     setPrices((prevPrices) => [...prevPrices, newPriceEntry]);
     setIsModalOpen(false);
@@ -71,7 +97,7 @@ export default function PriceList({ prices: initialPrices, onPricesUpdate }) {
     setIsDiscount(false);
     onPricesUpdate([...prices, newPriceEntry]);
   };
-
+  
   const handleModifyClick = (price) => {
     setEditingPriceId(price.id);
     setNewPrice(price.price);
@@ -259,7 +285,7 @@ export default function PriceList({ prices: initialPrices, onPricesUpdate }) {
           <SfInput
             type="number"
             label="Price"
-            value={newPrice}
+            value={newPrice || ""}
             onChange={(e) => setNewPrice(parseFloat(e.target.value))}
             placeholder="Enter price"
             style={{ marginBottom: "1rem" }}

@@ -89,6 +89,8 @@ export default function ModifyProduct({ productData }) {
   const [isAddSizeModalOpen, setIsAddSizeModalOpen] = useState(false);
   const [deletedImages, setDeletedImages] = useState([]);
 
+
+
   const isDuplicateImage = (mainImage, extraImages, image) => {
     const mainImageName =
       mainImage instanceof File ? mainImage.name : mainImage;
@@ -103,9 +105,8 @@ export default function ModifyProduct({ productData }) {
     );
   };
 
-  useEffect(() => {
-    router.refresh();
-  }, [router]);
+
+
   const handleColorAdded = (newColor) => {
     setColors((prevColors) => [...prevColors, newColor]);
   };
@@ -427,6 +428,7 @@ export default function ModifyProduct({ productData }) {
   const handlePricesUpdate = (updatedPrices) => {
     setPrices(updatedPrices);
   };
+  
   const handleToggleCollapse = (colorId) => {
     setCollapsedColors((prev) => ({
       ...prev,
