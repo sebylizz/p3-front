@@ -51,6 +51,21 @@ export default function ModifyProduct({ productData }) {
   const [isAddCollectionModalOpen, setIsAddCollectionModalOpen] =
     useState(false);
   const [isAddColorModalOpen, setIsAddColorModalOpen] = useState(false);
+  const [errors, setErrors] = useState({}); // Track errors
+
+  const validateForm = () => {
+    const validationErrors = {};
+
+    // Check required fields
+    if (!name.trim()) validationErrors.name = "Product name is required.";
+    if (!description.trim()) validationErrors.description = "Description is required.";
+    if (!parentCategoryId) validationErrors.parentCategoryId = "Parent category is required.";
+    if (selectedColors.length === 0) validationErrors.colors = "At least one color must be added.";
+    if (prices.length === 0) validationErrors.prices = "At least one price must be set.";
+
+    setErrors(validationErrors);
+    return Object.keys(validationErrors).length === 0; // Return true if no errors
+  };
 
   const [prices, setPrices] = useState(
     productData?.prices?.map((price) => ({
@@ -334,7 +349,12 @@ export default function ModifyProduct({ productData }) {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+
     setIsConfirmationModalOpen(false);
+    if (!validateForm()) {
+      alert("Please fill all required fields.");
+      return;
+    }
 
     const updatedColors = selectedColors.map((color) => ({
       id: color.id || null,
@@ -502,6 +522,7 @@ export default function ModifyProduct({ productData }) {
           rows="4"
         />
         <SfSelect
+          aria-label="Collection" 
           label="Collection"
           value={collectionId || ""}
           onChange={(e) => setCollectionId(e.target.value || null)}
@@ -532,6 +553,7 @@ export default function ModifyProduct({ productData }) {
           />
         )}
         <SfSelect
+          aria-label="Parent Category" 
           label="Parent Category"
           value={parentCategoryId || ""}
           onChange={(e) => setParentCategoryId(e.target.value || null)}
@@ -545,6 +567,7 @@ export default function ModifyProduct({ productData }) {
         </SfSelect>
 
         <SfSelect
+         aria-label="Child Category" 
           label="Child Category"
           value={childCategoryId || ""}
           onChange={(e) => setChildCategoryId(parseInt(e.target.value, 10))}
@@ -564,6 +587,7 @@ export default function ModifyProduct({ productData }) {
         </SfSelect>
 
         <SfButton
+        aria-label="Add New Category"
           style={{
             display: "block",
             margin: "0.5rem auto",
@@ -597,6 +621,7 @@ export default function ModifyProduct({ productData }) {
           {/* Dropdown and Buttons */}
           <div style={{ position: "relative", marginBottom: "1rem" }}>
             <SfSelect
+             aria-label="Choose Color" 
               label="Choose Color"
               value={colorToAdd || ""}
               onChange={(e) => setColorToAdd(parseInt(e.target.value, 10))}
@@ -625,6 +650,7 @@ export default function ModifyProduct({ productData }) {
             >
               {/* Add New Color Button */}
               <SfButton
+              aria-label="Add New Color"
                 type="button"
                 onClick={() => setIsAddColorModalOpen(true)}
                 style={{ alignSelf: "flex-start" }}
@@ -634,6 +660,7 @@ export default function ModifyProduct({ productData }) {
 
               {/* Add Variant Button */}
               <SfButton
+              aria-label="Add Variant"
                 type="button"
                 onClick={handleAddColor}
                 style={{ alignSelf: "center" }}
@@ -699,6 +726,7 @@ export default function ModifyProduct({ productData }) {
               >
                 {/* Expand/Collapse Button */}
                 <SfButton
+                  aria-label="Toogle Collapse"
                   type="button"
                   onClick={() => handleToggleCollapse(color.colorId)}
                   style={{
@@ -765,6 +793,7 @@ export default function ModifyProduct({ productData }) {
                             }}
                           />
                           <SfButton
+                          aria-label="Delete Main Image"
                             type="button"
                             onClick={() => handleMainImageDelete(color.colorId)}
                             style={{
@@ -835,6 +864,7 @@ export default function ModifyProduct({ productData }) {
                               }}
                             />
                             <SfButton
+                            aria-label="Delete Extra Image"
                               type="button"
                               onClick={() =>
                                 handleExtraImageDelete(
@@ -875,6 +905,7 @@ export default function ModifyProduct({ productData }) {
                       <label style={{ flex: "1" }}>
                         Size:
                         <SfSelect
+                          aria-label="Size" 
                           value={sizeToAdd || ""}
                           onChange={(e) =>
                             setSizeToAdd(parseInt(e.target.value, 10))
@@ -910,6 +941,7 @@ export default function ModifyProduct({ productData }) {
 
                     {/* Add New Size Button */}
                     <SfButton
+                    aria-label="Add New Size"
                       type="button"
                       onClick={() => setIsAddSizeModalOpen(true)}
                       style={{ alignSelf: "flex-start" }}
@@ -919,6 +951,7 @@ export default function ModifyProduct({ productData }) {
 
                     {/* Add Size and Quantity Button */}
                     <SfButton
+                    aria-label="Add Size and Quantity"
                       type="button"
                       onClick={() => handleAddSizeAndQuantity(color.colorId)}
                       style={{ alignSelf: "center" }}
@@ -998,6 +1031,7 @@ export default function ModifyProduct({ productData }) {
         ))}
 
         <SfButton
+        aria-label="Update Product"
           type="button"
           style={{
             display: "block",

@@ -1,4 +1,4 @@
-// sortProducts.js
+
 
 function sortProducts (products, sortOption){
     return products.slice().sort((a, b) => {
@@ -14,7 +14,7 @@ function sortProducts (products, sortOption){
         case 'quantity low to high':
           return a.quantity - b.quantity;
         default:
-          return 0; // Default to no sorting
+          return 0; 
       }
     });
   };

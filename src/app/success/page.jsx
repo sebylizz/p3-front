@@ -2,6 +2,7 @@
 import { useSearchParams } from "next/navigation";
 import React, { useState, useEffect } from 'react';
 import verifyPayment from '../lib/verifyPayment.js';
+import { useCart } from "../context/cartContext"; // Import useCart
 
 export default function SuccessPage() {
     const [loading, setLoading] = useState(true);
@@ -14,10 +15,11 @@ export default function SuccessPage() {
             const response = await verifyPayment(sessionId);
             setAnswer(response);
             setLoading(false);
+
         };
 
         fetchStatus();
-    }, []);
+    }, [sessionId]);
 
     if (loading) {
         return (
@@ -28,8 +30,7 @@ export default function SuccessPage() {
                 </h1>
             </div>
         );
-    }
-    else {
+    } else {
         if (answer.error) {
             return (
                 <div className="flex justify-center items-center h-screen">
@@ -43,11 +44,11 @@ export default function SuccessPage() {
             return (
                 <div className="flex justify-center items-center h-screen">
                     <h1 className="text-2xl font-semibold text-center">
-                        Order placed succesfully!
+                        Order placed successfully!
                         <br />
                     </h1>
                 </div>
-            )
+            );
         }
     }
 }

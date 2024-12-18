@@ -39,7 +39,7 @@ export default function RightNav() {
         return;  
     }
     const rightNavItems = [
-        { icon: <SfIconShoppingCart />, label: <>Cart (<span style={{color: "orange"}}>{nrItems}</span>)</>, ariaLabel: 'Cart', role: 'cart' },
+        { icon: <SfIconShoppingCart />, label: <>Cart (<span style={{color: "orange" }} data-testid="cart-count">{nrItems}</span>)</>, ariaLabel: 'Cart', role: 'cart',  },
         loggedIn ? { icon: <SfIconPerson />, label: 'Account', ariaLabel: 'Account', role: 'account' } : { icon: <SfIconPerson />, label: 'Log in', ariaLabel: 'Log in', role: 'login' }
     ];
 

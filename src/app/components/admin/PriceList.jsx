@@ -44,12 +44,10 @@ export default function PriceList({ prices: initialPrices, onPricesUpdate }) {
       for (const price of prices) {
         const priceStart = new Date(price.startDate);
         const priceEnd = price.endDate ? new Date(price.endDate) : null;
-  
+    
         if (
-          newStart.getTime() === priceStart.getTime() ||
-          (priceEnd && newStart.getTime() === priceEnd.getTime()) ||
-          newEnd.getTime() === priceStart.getTime() ||
-          (priceEnd && newEnd.getTime() === priceEnd.getTime())
+          (newStart >= priceStart && (!priceEnd || newStart <= priceEnd)) ||
+          (newEnd && newEnd >= priceStart && (!priceEnd || newEnd <= priceEnd))
         ) {
           alert("Discount start or end date cannot match any existing price dates.");
           return;
@@ -89,13 +87,13 @@ export default function PriceList({ prices: initialPrices, onPricesUpdate }) {
     };
   
 
-    setPrices((prevPrices) => [...prevPrices, newPriceEntry]);
-    setIsModalOpen(false);
-    setNewPrice("");
-    setNewStartDate("");
-    setNewEndDate("");
-    setIsDiscount(false);
-    onPricesUpdate([...prices, newPriceEntry]);
+      setPrices((prevPrices) => [...prevPrices, newPriceEntry]);
+      setIsModalOpen(false);
+      setNewPrice("");
+      setNewStartDate("");
+      setNewEndDate("");
+      setIsDiscount(false);
+      onPricesUpdate([...prices, newPriceEntry]);
   };
   
   const handleModifyClick = (price) => {
@@ -184,6 +182,7 @@ export default function PriceList({ prices: initialPrices, onPricesUpdate }) {
             {editingPriceId === price.id ? (
               <>
                 <SfInput
+                  aria-label="Edit Price"
                   type="number"
                   label="Price"
                   value={newPrice ?? ""}
@@ -191,30 +190,32 @@ export default function PriceList({ prices: initialPrices, onPricesUpdate }) {
                   placeholder="Price"
                 />
                 <SfInput
+                aria-label="Edit Start Date"
                   type="date"
                   label="Start Date"
                   value={newStartDate ?? ""}
                   onChange={(e) => setNewStartDate(e.target.value)}
                 />
                 <SfInput
+                aria-label="Edit End Date"
                   type="date"
                   label="End Date"
                   value={newEndDate ?? ""}
                   onChange={(e) => setNewEndDate(e.target.value)}
                 />
-                <SfButton onClick={() => handleSaveClick(price.id)}>
+                <SfButton  aria-label="Save Edit" onClick={() => handleSaveClick(price.id)}>
                   Save
                 </SfButton>
               </>
             ) : (
               <>
-                <span>
+                <span aria-label="Final Price">
                   <strong>Price:</strong> {price.price}
                 </span>
-                <span>
+                <span  aria-label="Final Start Date" >
                   <strong>Start Date:</strong> {price.startDate}
                 </span>
-                <span>
+                <span aria-label="Final End Date">
                   <strong>End Date:</strong> {price.endDate || "Ongoing"}
                 </span>
                 <div
@@ -227,6 +228,7 @@ export default function PriceList({ prices: initialPrices, onPricesUpdate }) {
                 >
                   <SfButton
                     type="button"
+                    aria-label={`Modify Price ${price.id}`}
                     style={{ flex: "1 1 auto", maxWidth: "100%" }}
                     disabled={!canModifyOrDelete}
                     onClick={() => handleModifyClick(price)}
@@ -243,6 +245,7 @@ export default function PriceList({ prices: initialPrices, onPricesUpdate }) {
                     }}
                     disabled={!canModifyOrDelete}
                     onClick={() => handleDeleteClick(price.id)}
+                    aria-label={`Delete Price ${price.id}`}
                   >
                     Delete
                   </SfButton>
@@ -264,6 +267,7 @@ export default function PriceList({ prices: initialPrices, onPricesUpdate }) {
       >
         <SfButton
           type="button"
+          aria-label="Add Price Button"
           onClick={() => setIsModalOpen(true)}
           style={{ marginBottom: "1rem" }}
         >
@@ -283,6 +287,7 @@ export default function PriceList({ prices: initialPrices, onPricesUpdate }) {
         >
           <h3 style={{ marginBottom: "1rem" }}>Add New Price</h3>
           <SfInput
+          aria-label="Add New Price"
             type="number"
             label="Price"
             value={newPrice || ""}
@@ -309,6 +314,7 @@ export default function PriceList({ prices: initialPrices, onPricesUpdate }) {
               Is Discount?
             </label>
             <SfSwitch
+            aria-label="Discount Switch"
               id="isDiscountSwitch"
               checked={isDiscount}
               onChange={(e) => setIsDiscount(e.target.checked)}
@@ -317,12 +323,14 @@ export default function PriceList({ prices: initialPrices, onPricesUpdate }) {
           <SfInput
             type="date"
             label="Start Date"
+            aria-label="Start Date"
             value={newStartDate}
             onChange={(e) => setNewStartDate(e.target.value)}
             style={{ marginBottom: "1rem" }}
           />
           {isDiscount && (
             <SfInput
+            aria-label="End Date"
               type="date"
               label="End Date"
               value={newEndDate}
@@ -333,10 +341,10 @@ export default function PriceList({ prices: initialPrices, onPricesUpdate }) {
           <div
             style={{ display: "flex", justifyContent: "flex-end", gap: "1rem" }}
           >
-            <SfButton type="button" onClick={handleAddPrice}>
+            <SfButton aria-label="Confirm Price" type="button" onClick={handleAddPrice}>
               Add Price
             </SfButton>
-            <SfButton type="button" onClick={() => setIsModalOpen(false)}>
+            <SfButton aria-label="Cancel" type="button" onClick={() => setIsModalOpen(false)}>
               Cancel
             </SfButton>
           </div>

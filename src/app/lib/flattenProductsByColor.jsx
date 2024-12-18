@@ -5,7 +5,7 @@ function extractColorsWithSales(products) {
             productName: product.name,
             colorId: color.id,
             colorName: color.name,
-            totalSales: color.totalSales || 0, // Default to 0 if undefined
+            totalSales: color.totalSales || 0, 
             price: product.price,
             mainImage: color.mainImage,
         }))

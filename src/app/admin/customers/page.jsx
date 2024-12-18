@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import customerFetcher from "@/app/lib/getCustomers";
 import deleteCustomerAdmin from "@/app/lib/deleteCustomer";
 import getSearch from "@/app/lib/getSearchCustomers";
-import { useRouter } from "next/navigation";
 import { SfButton, SfIconAdd } from "@storefront-ui/react";
 import Search from "./search";
 import Link from "next/link";
@@ -13,18 +12,16 @@ import PasswordModal from "@/app/components/admin/PasswordModal";
 import ConfirmationModal from "@/app/components/admin/ConfirmationModal";
 import handlePasswordConfirmation from "@/app/lib/handleConfirmPassword";
 
-export default function CustomerPage() {
+function CustomerContent({ searchParams }) {
   const [customers, setCustomers] = useState([]);
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [total, setTotal] = useState(0);
   const BATCH_SIZE = 10;
-  const searchParams = useSearchParams();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentCustomer, setCurrentCustomer] = useState(null);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
-  
 
   const fetchCustomers = async (query, reset = false) => {
     if (loading) return;
@@ -91,13 +88,12 @@ export default function CustomerPage() {
   const handleConfirmDelete = () => {
     if (currentCustomer?.role === "admin") {
       setIsPasswordModalOpen(true);
-      setIsModalOpen(false); 
+      setIsModalOpen(false);
     } else if (currentCustomer) {
       handleDelete(currentCustomer.id);
       setIsModalOpen(false);
     }
   };
-  
 
   const handleDeleteCustomer = async (password) => {
     try {
@@ -116,12 +112,6 @@ export default function CustomerPage() {
       console.error("Error during customer deletion:", error);
     }
   };
-  
-  
-  
-
-  
-
 
   return (
     <div>
@@ -144,9 +134,7 @@ export default function CustomerPage() {
           className="flex items-center gap-2"
           style={{ width: "50%", padding: "0.5rem" }}
         >
-          <Search
-            placeholder="Search For Customers"
-          />
+          <Search placeholder="Search For Customers" />
           <Link href={"./customers/addCustomer"}>
             <SfButton
               variant="primary"
@@ -228,7 +216,7 @@ export default function CustomerPage() {
                       ? "bg-gray-500 cursor-not-allowed"
                       : "bg-red-500 hover:bg-red-700"
                   } text-white px-4 py-2 rounded-md w-full md:w-auto`}
-                  disabled={customer.id === 0} 
+                  disabled={customer.id === 0}
                 >
                   Delete
                 </button>
@@ -249,7 +237,6 @@ export default function CustomerPage() {
                   </button>
                 </Link>
               </div>
-
             </div>
           ))}
         </div>
@@ -273,10 +260,19 @@ export default function CustomerPage() {
       <PasswordModal
         isOpen={isPasswordModalOpen}
         onClose={() => setIsPasswordModalOpen(false)}
-        onConfirm={handleDeleteCustomer} 
+        onConfirm={handleDeleteCustomer}
         message="Please confirm your password to delete the user."
       />
-
     </div>
+  );
+}
+
+export default function CustomerPage() {
+  const searchParams = useSearchParams();
+
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CustomerContent searchParams={searchParams} />
+    </Suspense>
   );
 }

@@ -18,7 +18,7 @@ const BrowseProductSlider = ({ filteredProducts }) => {
         return <CircularProgress />;
     }
     return (
-        <div style={{ minHeight: '70vh', paddingTop: '20px', paddingBottom: '20px', marginLeft: '10%', marginRight: '10%' }}>
+        <div style={{ minHeight: '70vh', paddingTop: '20px', paddingBottom: '20px', marginLeft: '10%', marginRight: '10%' }} data-testid="browse-product-slider" >
             <Grid2 container spacing={2}>
                 {productsToDisplay.map((product) => (
                     product?.colors?.map((color) => (

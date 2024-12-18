@@ -1,6 +1,5 @@
 "use client";
 
-import ProductSlider from "./components/ProductSlider";
 import flattenProductsByColors from "./lib/flattenProductsByColor";
 import getTopSellingProductsUsingHeap from "./lib/getBestSeller";
 import { useProducts } from "./context/productContext";

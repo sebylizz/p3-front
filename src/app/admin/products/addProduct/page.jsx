@@ -781,6 +781,7 @@ export default function AddProduct() {
                       <label style={{ flex: "1" }}>
                         Size:
                         <SfSelect
+                        label="Size"
                           value={sizeToAdd || ""}
                           onChange={(e) =>
                             setSizeToAdd(parseInt(e.target.value, 10))
@@ -804,6 +805,7 @@ export default function AddProduct() {
                       <label style={{ flex: "1" }}>
                         Quantity:
                         <SfInput
+                        label="Quantity"
                           type="number"
                           value={quantityToAdd}
                           onChange={(e) =>
@@ -906,6 +908,7 @@ export default function AddProduct() {
         onConfirm={confirmSubmission}
         message="Are you sure you want to add this product?"
         status={status}
+        label="Confirm"
       />
     </div>
   );

@@ -1,5 +1,8 @@
 "use server"
 export default async function cartSender(info, cart) {
+    // if (typeof Cypress !== "undefined" && Cypress.env("NODE_ENV") === "test") {
+    //     return "mock_session_id";
+    // }
     info.userId = "0";
     try {
         const response = await fetch('http://localhost:8080/payment/generatesessionid', {
