@@ -3,7 +3,6 @@ import getJWT from "./getJWT";
 async function allProducts() {
     try {
         const token = await getJWT();
-        console.log(token)
         const response = await fetch("http://localhost:8080/products/getAllAdmin", {
             method: "GET",
             headers: {

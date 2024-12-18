@@ -1,11 +1,9 @@
-// components/AccountLayout.jsx
 import React from 'react';
 import LogOutButton from './LogOutButton';
 
 export default function AccountLayout({ userName, onEdit = '/account/edit', onViewOrders = '/account/orders', onLogout }) {
     return (
         <>
-            {/* Display user's name */}
             <header style={{ marginBottom: '20px', color: 'black', fontSize: '4rem', fontWeight: 'bold', textAlign: 'center', padding: '50px' }}>
                 <h1>
                     Welcome, {userName}
@@ -14,7 +12,6 @@ export default function AccountLayout({ userName, onEdit = '/account/edit', onVi
 
             <div style={{ maxWidth: '30%', margin: '0 auto', textAlign: 'center' }}>
 
-                {/* Action buttons */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '20px' }}>
                     <form action={onEdit} method="GET">
                         <button
@@ -34,7 +31,6 @@ export default function AccountLayout({ userName, onEdit = '/account/edit', onVi
                         </button>
                     </form>
 
-                    {/* Pass onLogout as a prop to LogOutButton */}
                     <LogOutButton onLogout={onLogout} />
                 </div>
             </div>

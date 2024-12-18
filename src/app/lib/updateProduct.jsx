@@ -3,7 +3,6 @@ async function updateProduct(productData, updatedProduct) {
   console.log("Payload for PUT request:", updatedProduct);
 
   const token = await getJWT();
-  console.log(token);
   try {
     const response = await fetch(`http://localhost:8080/products/updateProduct/${productData.id}`, {
       method: 'PUT',

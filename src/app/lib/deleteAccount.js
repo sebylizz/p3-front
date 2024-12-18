@@ -2,7 +2,6 @@
 import { cookies } from 'next/headers';
 
 export default async function deleteAccount(Id) {
-    console.log("delete Account called with Id " + Id);
     try {
         const cookieStore = await cookies();
         const token = cookieStore.get('token');

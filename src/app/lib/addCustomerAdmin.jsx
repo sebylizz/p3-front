@@ -2,7 +2,6 @@ import getJWT from "./getJWT";
 async function addCustomerAdmin(data) {
   try {
     const token = await getJWT();
-    console.log(token);
     const response = await fetch(
       "http://localhost:8080/customers/addCustomerAdmin",
       {
@@ -22,7 +21,6 @@ async function addCustomerAdmin(data) {
 
 
     if (response.status === 201) {
-      console.log("Customer added successfully");
       return { message: "Customer added successfully" };
     }
 
