@@ -1,5 +1,3 @@
-// removeImage.js
-
 async function removeImage(imageName,id) {
     try {
       const response = await fetch("/lib/delete", {

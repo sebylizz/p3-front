@@ -8,21 +8,12 @@ async function updateProduct(productData, updatedProduct) {
   console.log("Payload for PUT request:", updatedProduct);
 
   const token = await getJWT();
-  if (!token?.value) {
-    throw new Error("Authorization token is missing.");
-  }
-
-  console.log("JWT Token:", token.value);
-
-  const endpoint = `http://localhost:8080/products/updateProduct/${productData.id}`;
-
   try {
-    const response = await fetch(endpoint, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token.value}`,
-      },
+    const response = await fetch(`http://localhost:8080/products/updateProduct/${productData.id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token?.value}`
+       },
       body: JSON.stringify(updatedProduct),
     });
 

@@ -3,7 +3,6 @@ import getJWT from "./getJWT";
 async function deleteCustomerAdmin(id) {
     try {
         const token = await getJWT();
-        console.log(token)
         const response = await fetch(`http://localhost:8080/customers/deleteCustomer/${id}`, {
             method: "DELETE",
             headers: {

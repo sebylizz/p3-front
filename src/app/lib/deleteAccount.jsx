@@ -2,7 +2,6 @@
 import { cookies } from 'next/headers';
 
 export default async function deleteAccount(Id) {
-    console.log("delete Account called with Id " + Id);
     try {
         const cookieStore = await cookies();
         const token = cookieStore.get('token');
@@ -14,7 +13,7 @@ export default async function deleteAccount(Id) {
             },
         });
         if (!response.ok) {
-            console.log("repsonse was not ok: " + response);
+            console.log("Repsonse was not ok: " + response);
             return false;
         } 
     } catch (error) {

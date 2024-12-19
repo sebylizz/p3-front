@@ -13,9 +13,7 @@ export default async function cartSender(info, cart) {
             body: JSON.stringify({ details: info, productIds: cart }),
         });
         const sessionId = await response.text();
-        console.log(sessionId);
         if (!response.ok) {
-            console.log(response)
             return -1;
         }
         return sessionId;

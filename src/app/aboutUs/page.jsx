@@ -1,7 +1,6 @@
 'use client';
 
-import React from 'react';
-import { MenuItem, Select, FormControl, InputLabel, Box, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 
 const aboutUs = () => {
     return (
