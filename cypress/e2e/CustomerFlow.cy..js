@@ -1,4 +1,4 @@
-describe("Checkout Process", () => {
+describe("Customer flow", () => {
   beforeEach(() => {
     Cypress.env("NODE_ENV", "test");
     cy.mockStripeSession();

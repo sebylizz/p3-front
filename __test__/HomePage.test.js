@@ -127,7 +127,7 @@ describe("productFetcher", () => {
     consoleErrorSpy.mockRestore();
   });
 
-  test("handles network errors gracefully", async () => {
+  test("handles network errors", async () => {
     fetch.mockRejectedValueOnce(new Error("Network error"));
 
     const consoleErrorSpy = jest

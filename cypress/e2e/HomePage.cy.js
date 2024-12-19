@@ -1,5 +1,5 @@
 describe("Navigate to Random Product", () => {
-  it("should navigate to a random product page", () => {
+  it("should navigate to homepage signup and then login", () => {
     cy.navigateToRandomProduct();
 
     cy.navigateToHomePage();
