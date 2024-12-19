@@ -30,7 +30,6 @@ export default function CartPage() {
         }
     }, [productsLoading]);
 
-    // Count occurrences of each product ID in the cart
     const getCartSummary = () => {
         const cartSummary = {};
         cart.forEach((productId) => {
@@ -67,7 +66,6 @@ export default function CartPage() {
                     key={productId}
                     className="flex justify-between items-center border-b py-4"
                 >
-                    {/* Product Information */}
                     <div 
                         className="flex items-center"
                         onClick={() => handleCardClick(product.id, product.color.id)}
@@ -86,7 +84,6 @@ export default function CartPage() {
                         </div>
                     </div>
 
-                    {/* Quantity Management */}
                     <div className="flex items-center space-x-2">
                         <button
                             onClick={() => decreaseQuantity(productId)}

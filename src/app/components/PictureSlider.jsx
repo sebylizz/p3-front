@@ -8,13 +8,13 @@ export default function PictureSlider() {
         style={{
           marginLeft: '10%',
           marginRight: '10%',
-          height: '500px', // Ensures both sections have the same height
+          height: '500px',
         }}
       >
-        {/* Left Section: Image with "Leghetto" Text */}
+        
         <div
           style={{
-            flex: 2, // Allocates more space to the image section
+            flex: 2,
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -22,7 +22,6 @@ export default function PictureSlider() {
             overflow: 'hidden',
           }}
         >
-          {/* Image */}
           <img
             src="/homePagePictures/homePagePicture.png"
             alt="Leghetto Basketball"
@@ -34,22 +33,21 @@ export default function PictureSlider() {
           />
         </div>
   
-        {/* Right Section: Orange Block */}
         <div
           className="flex flex-col items-center justify-center bg-orange-500 p-8 rounded-lg shadow-md"
           style={{
-            flex: 1.5, // Allocates less space to the orange block
-            height: '100%', // Matches the height of the left image
-            display: 'flex', // Ensures content is centered
-            alignItems: 'center', // Horizontal centering
-            justifyContent: 'center', // Vertical centering
+            flex: 1.5, 
+            height: '100%', 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
           }}
         >
           <h2
             className="text-6xl font-bold text-black text-center"
             style={{
                 fontFamily: 'Newsreader, serif',
-                marginBottom: '1.5rem', // Adds spacing between the text and button
+                marginBottom: '1.5rem', 
             }}
           >
             Changing the Culture of Basketball

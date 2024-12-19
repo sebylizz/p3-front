@@ -2,7 +2,6 @@ import getJWT from "./getJWT";
 const matchPassword = async (password) => {
     try {
       const token = await getJWT();
-      console.log(token); 
       const response = await fetch("http://localhost:8080/customers/matchPassword", {
         method: "POST",
         headers: {

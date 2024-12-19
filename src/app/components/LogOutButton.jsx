@@ -5,13 +5,11 @@ import React, { useCallback } from 'react';
 export default function LogOutButton({ onLogout }) {
 
     const handleLogout = useCallback(async (e) => {
-        e.preventDefault(); // Prevent form submission behavior
+        e.preventDefault(); 
 
-        // Call the onLogout function (which deletes the token)
         await onLogout();
 
-        // Now handle redirection on the client-side
-        window.location.href = '/'; // Redirect to the login page after logging out
+        window.location.href = '/'; 
     }, [onLogout]);
 
     return (

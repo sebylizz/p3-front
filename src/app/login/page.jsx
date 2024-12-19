@@ -1,8 +1,7 @@
 "use client"
-import React from 'react';
 import { useState } from 'react';
 import { Box, TextField, Button, Typography, Link } from '@mui/material';
-import loginFunction from '../lib/loginFunction.js';
+import loginFunction from '../lib/loginFunction';
 
 export default function Login() {
     // State hooks for email, password, and error message
@@ -20,13 +19,11 @@ export default function Login() {
 
             // If login is successful, redirect to the main page
             if (result.success) {
-                window.location.href = '/'; // Redirect to main page
+                window.location.href = '/';
             } else {
-                // Set error message if login fails
                 setErrorMessage("Password or email was not correct");
             }
         } catch (error) {
-            // Set error message if login fails due to other issues
             console.log(error);
             setErrorMessage("Password or email was not correct");
         }
@@ -49,7 +46,6 @@ export default function Login() {
             >
 
                 <form onSubmit={handleLogin}>
-                    {/* Email Field */}
                     <TextField
                     name="email"
                         label="Email"
@@ -59,10 +55,9 @@ export default function Login() {
                         margin="normal"
                         required
                         value={email}
-                        onChange={(e) => setEmail(e.target.value)} // Update email state
+                        onChange={(e) => setEmail(e.target.value)}
                     />
 
-                    {/* Password Field */}
                     <TextField
                     name="password"
                         label="Password"
@@ -72,17 +67,15 @@ export default function Login() {
                         margin="normal"
                         required
                         value={password}
-                        onChange={(e) => setPassword(e.target.value)} // Update password state
+                        onChange={(e) => setPassword(e.target.value)}
                     />
 
-                    {/* Error Message */}
                     {errorMessage && (
                         <Typography color="error" variant="body2" sx={{ mt: 1 }}>
                             {errorMessage}
                         </Typography>
                     )}
 
-                    {/* Login Button */}
                     <Button
                         variant="contained"
                         color="primary"
@@ -95,7 +88,6 @@ export default function Login() {
                     </Button>
                 </form>
 
-                {/* Forgot Password and Sign Up Links */}
                 <Box display="flex" justifyContent="space-between" mt={2}>
                     <Link href="/forgot_password" underline="hover">
                         Forgot Password?

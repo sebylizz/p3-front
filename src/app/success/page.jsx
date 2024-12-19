@@ -1,8 +1,7 @@
 'use client'
 import { useSearchParams } from "next/navigation";
 import React, { useState, useEffect } from 'react';
-import verifyPayment from '../lib/verifyPayment.js';
-import { useCart } from "../context/cartContext"; // Import useCart
+import verifyPayment from '../lib/verifyPayment';
 
 export default function SuccessPage() {
     const [loading, setLoading] = useState(true);

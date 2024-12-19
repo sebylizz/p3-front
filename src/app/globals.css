@@ -1,4 +1,3 @@
-/* src/styles/global.css */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -21,10 +20,10 @@
   cursor: pointer;
   background-color: black;
   color: white;
-  padding: 12px 20px; /* Increased padding for a bigger button */
+  padding: 12px 20px; 
   font-size: 16px;
-  height: 40px; /* Matches the height of the input fields */
-  width: 50px; /* Adjust width as needed */
+  height: 40px; 
+  width: 50px; 
   display: flex;
   align-items: center;
   justify-content: center;
@@ -32,7 +31,7 @@
   transition: background-color 0.3s ease;
 }
 .account-edit-editbutton:hover {
-  background-color: #444; /* Darken on hover */
+  background-color: #444; 
 }
 
 html,
@@ -51,8 +50,8 @@ button {
 }
 
 input {
-  border: 2px solid #FB923C; /* Orange border color */
-  border-radius: 8px;        /* Rounded corners */
+  border: 2px solid #FB923C; 
+  border-radius: 8px;        
 }
 
 button:active {

@@ -2,7 +2,6 @@ import getJWT from "./getJWT";
 async function customerFetcher(offset = 0, limit = 10) {
     try {
         const token = await getJWT();
-        console.log(token)
         const response = await fetch(`http://localhost:8080/customers/getcustomers?offset=${offset}&limit=${limit}`,{
             method: "GET",
             headers: {

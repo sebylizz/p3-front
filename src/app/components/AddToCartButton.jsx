@@ -10,7 +10,6 @@ export default function AddToCartButton({ selectedSize, productId, colorId, prod
             const variantId = `${productId}/${colorId}/${selectedSize}`;
             const currentQuantity = getProductQuantity(variantId);
 
-            // Validate stock availability
             if (quantityAddLimit(variantId, currentQuantity, products)) {
                 addToCart(variantId);
             } else {
