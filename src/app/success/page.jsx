@@ -1,7 +1,7 @@
 'use client'
 import { useSearchParams } from "next/navigation";
 import React, { useState, useEffect } from 'react';
-import verifyPayment from '../lib/verifyPayment.jsx';
+import verifyPayment from '../lib/verifyPayment';
 
 export default function SuccessPage() {
     const [loading, setLoading] = useState(true);

@@ -1,10 +1,10 @@
 'use client'
 
 import { SfIconShoppingCart, SfIconPerson } from '@storefront-ui/react';
-import isLoggedIn from '../lib/isTokenValid.jsx';
+import isLoggedIn from '../lib/isTokenValid';
 import { useEffect, useState } from 'react';
-import RightNavButton from './RightNavButton.jsx';
-import { useCart } from '../context/cartContext.jsx';
+import RightNavButton from './RightNavButton';
+import { useCart } from '../context/cartContext';
 import getJWT from '../lib/getJWT';
 import AdminPanelSettingsOutlinedIcon from '@mui/icons-material/AdminPanelSettingsOutlined';
 

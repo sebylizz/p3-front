@@ -1,7 +1,7 @@
 "use client"
 import { useState } from 'react';
 import { Box, TextField, Button, Typography, Link } from '@mui/material';
-import loginFunction from '../lib/loginFunction.jsx';
+import loginFunction from '../lib/loginFunction';
 
 export default function Login() {
     // State hooks for email, password, and error message

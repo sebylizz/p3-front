@@ -13,7 +13,7 @@ export default async function deleteAccount(Id) {
             },
         });
         if (!response.ok) {
-            console.log("repsonse was not ok: " + response);
+            console.log("Repsonse was not ok: " + response);
             return false;
         } 
     } catch (error) {
