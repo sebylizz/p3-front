@@ -10,7 +10,6 @@ async function removeImage(imageName,id) {
         throw new Error("Failed to delete image on server");
       }
   
-      console.log("Image deleted from server:", imageName);
     } catch (error) {
       console.error("Error deleting image:", error);
     }

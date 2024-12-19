@@ -1,7 +1,6 @@
 import DeleteFolder from "./DeleteFolder";
 
 async function HandleDelete(idsToDelete){
-  console.log("Deleting IDs:", idsToDelete);
 
 
   try {
@@ -10,7 +9,7 @@ async function HandleDelete(idsToDelete){
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(idsToDelete), // Send array of IDs as JSON
+      body: JSON.stringify(idsToDelete), 
     });
       DeleteFolder(idsToDelete);
     if (response.ok) {

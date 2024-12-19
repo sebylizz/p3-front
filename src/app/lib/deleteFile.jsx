@@ -4,7 +4,6 @@ const deleteFiles = async (filesToDelete) => {
     filesToDelete.forEach(({ productId, colorId, filename }) => {
       formData.append("file", filename);
       formData.append("folderName", `${productId}/${colorId}`);
-      console.log(productId,colorId,filename)
     });
 
     const response = await fetch("/lib/delete", {

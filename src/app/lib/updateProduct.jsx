@@ -5,7 +5,7 @@ async function updateProduct(productData, updatedProduct) {
     throw new Error("Invalid product data: 'id' is required.");
   }
 
-  console.log("Payload for PUT request:", updatedProduct);
+
 
   const token = await getJWT();
   try {
@@ -19,7 +19,6 @@ async function updateProduct(productData, updatedProduct) {
 
     if (response.ok) {
       const newColorMapping = await response.json();
-      console.log("Product updated successfully with new color mapping:", newColorMapping);
 
       if (!Array.isArray(newColorMapping)) {
         console.warn("Unexpected format for newColorMapping:", newColorMapping);

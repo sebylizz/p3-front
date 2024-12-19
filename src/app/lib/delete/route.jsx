@@ -6,11 +6,11 @@ export async function POST(request) {
   try {
     const formData = await request.formData();
 
-    // Get all "file" and "folderName" entries
+
     const files = formData.getAll("file");
     const folderNames = formData.getAll("folderName");
 
-    // Validate lengths
+
     if (files.length !== folderNames.length) {
       return NextResponse.json(
         { success: false, error: "Mismatch between files and folderNames" },
@@ -18,12 +18,12 @@ export async function POST(request) {
       );
     }
 
-    // Process each file and folder pair
+
     const results = await Promise.all(
       files.map(async (filename, index) => {
         try {
           const folderName = folderNames[index];
-          const sanitizedFolderName = path.normalize(folderName).replace(/^(\.\.[/\\])+/, ""); // Prevent directory traversal
+          const sanitizedFolderName = path.normalize(folderName).replace(/^(\.\.[/\\])+/, ""); 
           const sanitizedFilename = path.basename(filename);
 
           const filePath = path.join(
@@ -32,8 +32,6 @@ export async function POST(request) {
             sanitizedFolderName,
             sanitizedFilename
           );
-
-          console.log("Attempting to delete file at:", filePath);
 
           await unlink(filePath);
 
@@ -45,7 +43,7 @@ export async function POST(request) {
       })
     );
 
-    // Check for failures
+
     const failedDeletions = results.filter((res) => !res.success);
 
     if (failedDeletions.length > 0) {
