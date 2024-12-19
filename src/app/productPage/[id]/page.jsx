@@ -5,7 +5,6 @@ import { useState, useEffect } from "react";
 import ProductInfo from "../../components/ProductInfo";
 import SizeSelector from "../../components/SizeSelector";
 import AddToCartButton from "../../components/AddToCartButton";
-import quantityAddLimit from "../../lib/quantityAddLimit";
 import { useProducts } from "../../context/productContext";
 
 export default function ProductDetailsPage() {
@@ -27,7 +26,6 @@ export default function ProductDetailsPage() {
       );
       if (colorIndex !== -1) {
         setCurrentColorIndex(colorIndex);
-        //console.log("Test Quantity: " + product.colors[currentColorIndex].variants[selectedSize].quantity);
       }
     }
   }, [product, colorIdFromQuery]);
@@ -76,7 +74,6 @@ export default function ProductDetailsPage() {
 
   return (
     <div className="flex p-8">
-      {/* Left Column: Image Viewer with Arrows */}
       <div className="w-1/2 flex justify-center items-center relative">
         {/* Left Arrow */}
         <button
@@ -84,7 +81,7 @@ export default function ProductDetailsPage() {
           className="absolute left-0 px-2 py-1 bg-gray-500 bg-opacity-50 text-white rounded-full hover:bg-opacity-80"
           style={{ zIndex: 10 }}
         >
-          &#10094; {/* Left arrow symbol */}
+          &#10094;
         </button>
 
         <img
@@ -104,7 +101,7 @@ export default function ProductDetailsPage() {
           className="absolute right-0 px-2 py-1 bg-gray-500 bg-opacity-50 text-white rounded-full hover:bg-opacity-80"
           style={{ zIndex: 10 }}
         >
-          &#10095; {/* Right arrow symbol */}
+          &#10095; 
         </button>
       </div>
 
@@ -141,7 +138,6 @@ export default function ProductDetailsPage() {
           {showDescription ? "Hide Description" : "Show Description"}
         </button>
 
-        {/* Description Text */}
         {showDescription && (
           <p className="mt-4 text-gray-700">{product.description}</p>
         )}

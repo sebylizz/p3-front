@@ -8,7 +8,6 @@ import { MenuItem, Select, FormControl, InputLabel, Box, Typography } from '@mui
 
 export default function BrowseProductsPage() {
     const { products } = useProducts();
-
     const [categories, setCategories] = useState([]);
     const [filteredProducts, setFilteredProducts] = useState(products);
     const [category, setCategory] = useState('all');

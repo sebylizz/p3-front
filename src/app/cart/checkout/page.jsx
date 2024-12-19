@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import cartSender from "../../lib/cartSender.js";
+import cartSender from "../../lib/cartSender";
 import fetchCustomer from "../../lib/fetchCustomer";
 import { useCart } from "../../context/cartContext";
 import { loadStripe } from '@stripe/stripe-js';

@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import productFetcherJSX from '../lib/GetProducts';
 import Link from "next/link";
-// import BouncingBall from '../loader';
 
 export default function Products() {
     const [products, setProducts] = useState([]);

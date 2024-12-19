@@ -17,19 +17,17 @@ export default function SignUp() {
         const password = document.getElementById("Password").value;
         const confirmPassword = document.getElementById("ConfirmPassword").value;
 
-        // Email validation
         const pattern = RegExp("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
         const isEmailValid = pattern.test(email);
         if (!isEmailValid) {
             setEmailError(true);
             return;
         } else {
-            setEmailError(false); // Reset email error
+            setEmailError(false);
         }
 
-        // Password validation
         if (password === confirmPassword) {
-            setPasswordError(false); // Reset password error
+            setPasswordError(false);
 
             const newSignUp = {
                 firstName: firstName,
@@ -39,10 +37,10 @@ export default function SignUp() {
             };
 
             await addCustomer(newSignUp);
-            window.location.href = '/'; // Redirect to main page
+            window.location.href = '/';
 
         } else {
-            setPasswordError(true); // Show password mismatch error
+            setPasswordError(true);
         }
     }
 
@@ -65,7 +63,6 @@ export default function SignUp() {
                 sx={{ height: 'auto' }}
             >
                 <form onSubmit={passData}>
-                    {/* First Name Field */}
                     <TextField
                         id="FirstName"
                         label="First Name"
@@ -76,7 +73,6 @@ export default function SignUp() {
                         required
                     />
 
-                    {/* Last Name Field */}
                     <TextField
                         id="LastName"
                         label="Last Name"
@@ -87,7 +83,6 @@ export default function SignUp() {
                         required
                     />
 
-                    {/* Email Field */}
                     <TextField
                         id="Email"
                         label="Email"
@@ -100,7 +95,6 @@ export default function SignUp() {
                         helperText={emailError ? "Please enter a valid email address" : ""}
                     />
 
-                    {/* Password Field */}
                     <TextField
                         autoComplete="new-password"
                         id="Password"
@@ -112,7 +106,6 @@ export default function SignUp() {
                         required
                     />
 
-                    {/* Confirm Password Field */}
                     <TextField
                         id="ConfirmPassword"
                         label="Confirm Password"
@@ -125,7 +118,6 @@ export default function SignUp() {
                         helperText={passwordError ? "Passwords do not match" : ""}
                     />
 
-                    {/* Sign Up Button */}
                     <Button
                         variant="contained"
                         color="primary"
@@ -137,7 +129,6 @@ export default function SignUp() {
                     </Button>
                 </form>
 
-                {/* Link to Login Page */}
                 <Box mt={2} textAlign="center">
                     <Typography variant="body2">
                         Already have an account?{' '}

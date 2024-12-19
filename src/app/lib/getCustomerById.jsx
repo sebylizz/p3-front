@@ -2,7 +2,6 @@ import getJWT from "./getJWT";
 async function customerFetcherId(id) {
     try {
         const token = await getJWT();
-        console.log(token)
         const response = await fetch(`http://localhost:8080/customers/getCustomerById/${id}`, {
             method: "GET",
             headers: {

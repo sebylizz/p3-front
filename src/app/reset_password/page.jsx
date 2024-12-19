@@ -21,9 +21,8 @@ export default function ResetPassword() {
         const password = document.getElementById("Password").value;
         const confirmPassword = document.getElementById("ConfirmPassword").value;
 
-        // Password validation
         if (password === confirmPassword) {
-            setPasswordError(false); // Reset password error
+            setPasswordError(false);
 
             const data = { token: resetToken, password: password };
 
@@ -35,7 +34,7 @@ export default function ResetPassword() {
                 alert("Failed to reset password. Please resubmit email for password reset.");
             }
         } else {
-            setPasswordError(true); // Show password mismatch error
+            setPasswordError(true); 
         }
     }
 
@@ -59,7 +58,6 @@ export default function ResetPassword() {
                     Reset Password
                 </Typography>
                 <form onSubmit={passData}>
-                    {/* Password Field */}
                     <TextField
                         id="Password"
                         label="New password"
@@ -70,7 +68,6 @@ export default function ResetPassword() {
                         required
                     />
 
-                    {/* Confirm Password Field */}
                     <TextField
                         id="ConfirmPassword"
                         label="Confirm new password"
@@ -83,7 +80,6 @@ export default function ResetPassword() {
                         helperText={passwordError ? "Passwords do not match" : ""}
                     />
 
-                    {/* Reset Password Button */}
                     <Button
                         variant="contained"
                         color="primary"

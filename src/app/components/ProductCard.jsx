@@ -22,7 +22,7 @@ export default function ProductCard({ name, image, price, productId, colorId }) 
         <img
           src={image}
           alt={name}
-          onError={(e) => (e.target.src = 'placeholder.jpg')} // Fallback image
+          onError={(e) => (e.target.src = 'placeholder.jpg')}
           className="object-cover h-auto rounded-md aspect-square"
           width="300"
           height="300"

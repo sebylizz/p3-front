@@ -6,7 +6,6 @@ async function getSearch(query, offset = 0, limit = 10) {
   url.searchParams.append("limit", limit);
 
   const token = await getJWT();
-  console.log(token);
   const response = await fetch(url.toString(), {
     method: "GET",
     headers: {

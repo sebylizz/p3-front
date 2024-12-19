@@ -1,14 +1,11 @@
-import React from 'react';
-
 async function DeleteFolder(idsToDelete){
     try {
-        // Send an array of folder names as JSON
         const response = await fetch("/lib/deleteFolder", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ folderNames: idsToDelete }),  // Use JSON.stringify to send the array directly
+            body: JSON.stringify({ folderNames: idsToDelete }), 
         });
 
         if (response.ok) {
