@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { use } from 'react';
 
 export default function ProductDetail({ params }) {
-  const { id } = use(params); // Unwrap params with `use`
+  const { id } = use(params);
   const { products, loading } = useProducts();
   const [product, setProduct] = useState(null);
   const router = useRouter();
@@ -17,7 +17,7 @@ export default function ProductDetail({ params }) {
       if (selectedProduct) {
         setProduct(selectedProduct);
       } else {
-        router.push('/404'); // Navigate to a 404 page if not found
+        router.push('/404');
       }
     }
   }, [id, products, loading, router]);

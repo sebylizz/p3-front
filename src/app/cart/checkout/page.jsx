@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
-import cartSender from "../../lib/cartSender.js";
+import cartSender from "../../lib/cartSender";
 import fetchCustomer from "../../lib/fetchCustomer";
-import { useCart } from "../../context/cartContext";
+import { useCart } from "../../context/cartContext.jsx";
 import { loadStripe } from '@stripe/stripe-js';
 
 export default function CheckoutPage() {

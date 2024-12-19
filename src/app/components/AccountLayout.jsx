@@ -1,4 +1,3 @@
-import React from 'react';
 import LogOutButton from './LogOutButton';
 
 export default function AccountLayout({ userName, onEdit = '/account/edit', onViewOrders = '/account/orders', onLogout }) {

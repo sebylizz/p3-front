@@ -10,8 +10,6 @@ const BrowseProductSlider = ({ filteredProducts }) => {
     const { products, loading } = useProducts();
 
     const productsToDisplay = filteredProducts || products;
-    console.log("hbefhebh");
-    console.log(productsToDisplay);
 
     if (loading) {
         return <CircularProgress />;
