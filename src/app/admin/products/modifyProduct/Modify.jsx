@@ -51,20 +51,19 @@ export default function ModifyProduct({ productData }) {
   const [isAddCollectionModalOpen, setIsAddCollectionModalOpen] =
     useState(false);
   const [isAddColorModalOpen, setIsAddColorModalOpen] = useState(false);
-  const [errors, setErrors] = useState({}); // Track errors
+  const [errors, setErrors] = useState({}); 
 
   const validateForm = () => {
     const validationErrors = {};
 
-    // Check required fields
     if (!name.trim()) validationErrors.name = "Product name is required.";
     if (!description.trim()) validationErrors.description = "Description is required.";
-    if (!parentCategoryId) validationErrors.parentCategoryId = "Parent category is required.";
-    if (selectedColors.length === 0) validationErrors.colors = "At least one color must be added.";
-    if (prices.length === 0) validationErrors.prices = "At least one price must be set.";
+    // if (!parentCategoryId) validationErrors.parentCategoryId = "Parent category is required.";
+    // if (selectedColors.length === 0) validationErrors.colors = "At least one color must be added.";
+    // if (prices.length === 0) validationErrors.prices = "At least one price must be set.";
 
     setErrors(validationErrors);
-    return Object.keys(validationErrors).length === 0; // Return true if no errors
+    return Object.keys(validationErrors).length === 0; 
   };
 
   const [prices, setPrices] = useState(
