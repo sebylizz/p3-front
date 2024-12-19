@@ -7,12 +7,11 @@ import { useRouter } from "next/navigation";
 import sanitizeInput from "@/app/lib/sanitizeInput";
 import { SfLoaderCircular } from "@storefront-ui/react";
 import truncateToTwoDecimals from "@/app/lib/truncateToTwoDecimals";
-import AddIcon from "@mui/icons-material/Add";
 import { SfButton, SfIconAdd } from "@storefront-ui/react";
+import Search from "../customers/search";
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
-  const [checkedItems, setCheckedItems] = useState({});
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -27,7 +26,10 @@ export default function AdminProducts() {
       setLoading(false);
     }
   };
-
+  useEffect(() => {
+    router.refresh();
+  }, [router]);
+  
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -56,31 +58,22 @@ export default function AdminProducts() {
   return (
     <div>
       {/* Search and Add Button */}
-      <div className="flex justify-center items-center mt-4 mb-4">
-        <div
-          className="flex items-center gap-2"
-          style={{ width: "50%", padding: "0.5rem" }}
-        >
-          <input
-            type="search"
-            className="border border-gray-300 rounded-lg px-4 py-2 w-full"
-            placeholder="Search"
-            aria-label="Search"
-            value={searchQuery}
-            onChange={handleSearchChange}
-          />
-          <Link href={"./products/addProduct"}>
-            <SfButton
-              variant="primary"
-              className="flex items-center justify-center"
-              style={{
-                padding: "0.5rem",
-              }}
-            >
-              <SfIconAdd className="text-white" />
-            </SfButton>
-          </Link>
-        </div>
+      <div className="flex justify-between items-center mt-4 mb-4 px-4">
+        <Search
+          placeholder="Search For Products"
+          onSearchChange={(term) => setSearchQuery(sanitizeInput(term))}
+        />
+        <Link href={"./products/addProduct"}>
+          <SfButton
+            variant="primary"
+            className="flex items-center justify-center"
+            style={{
+              padding: "0.5rem",
+            }}
+          >
+            <SfIconAdd className="text-white" />
+          </SfButton>
+        </Link>
       </div>
 
       {/* Products Table */}

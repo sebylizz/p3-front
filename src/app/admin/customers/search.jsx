@@ -5,7 +5,7 @@ import { SfInput } from "@storefront-ui/react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
 
-export default function Search({ onSearchChange }) {
+export default function Search({ onSearchChange, placeholder = "Search"  }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathName = usePathname();
@@ -17,9 +17,7 @@ export default function Search({ onSearchChange }) {
     } else {
       params.delete("query");
     }
-
     router.replace(`${pathName}?${params.toString()}`); 
-
     if (onSearchChange) {
       onSearchChange(term.trim()); 
     }
@@ -28,7 +26,7 @@ export default function Search({ onSearchChange }) {
   return (
     <SfInput
       type="search"
-      placeholder="Search for customers"
+      placeholder={placeholder}
       aria-label="Search"
       onChange={(e) => handleSearch(e.target.value)}
       wrapperClassName="w-full"

@@ -18,8 +18,10 @@ export default function SizeSelector({ sizes, onSizeSelect, colorIndex, colors }
                 <option value="">Select size</option>
                 {sizes.map((size) => {
                     const variant = selectedVariant(size.name);
+                    testId: `size-option-${size.id}`
                 return (
                 <option
+                    data-testid="size-option"
                     key={size.id}
                     value={size.id}
                     disabled={!variant || variant.quantity < 1}

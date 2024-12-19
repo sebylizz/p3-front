@@ -1,20 +1,17 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import addCustomerAdmin from "@/app/lib/addCustomerAdmin";
 import validatePassword from "@/app/lib/passwordChecker";
 import ConfirmationModal from "@/app/components/admin/ConfirmationModal";
 import PasswordModal from "@/app/components/admin/PasswordModal";
-import matchPassword from "@/app/lib/matchPassword";
+import handlePasswordConfirmation from "@/app/lib/handleConfirmPassword";
+import { useRouter } from "next/navigation";
 
 import { useState } from "react";
 import {
   SfButton,
   SfInput,
   SfSelect,
-  SfSwitch,
-  SfCheckbox,
-  SfListItem,
-  SfModal,
 } from "@storefront-ui/react";
 
 export default function addCustomer() {
@@ -27,24 +24,25 @@ export default function addCustomer() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState("user");
   const [passwordErrors, setPasswordErrors] = useState([]);
-  const [confirmPassword, setConfirmPassword] = useState(""); // New state for confirm password
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false);
   const [pendingRole, setPendingRole] = useState("user");
+  const router = useRouter();
+  
 
   const handlePasswordChange = (e) => {
-    const newPassword = e.target.value || null; // Allow null for unchanged passwords
+    const newPassword = e.target.value || null; 
     setPassword(newPassword);
-
     if (newPassword) {
       const { isValid, errors } = validatePassword(newPassword);
       setPasswordErrors(errors);
     } else {
-      // Clear errors if password is null (not changed)
       setPasswordErrors([]);
     }
   };
+
 
   const handleRoleChange = (newRole) => {
     if (newRole === "admin" && role !== "admin") {
@@ -56,35 +54,49 @@ export default function addCustomer() {
   };
 
   const handlePasswordConfirm = async (password) => {
-    setIsPasswordModalOpen(false); // Close the modal
-
     try {
-      const isPasswordValid = await matchPassword(password); // Pass the entered password
-      if (isPasswordValid) {
-        setRole(pendingRole); // Apply the pending role if the password is valid
-        alert("Password confirmed. Role changed successfully.");
-      } else {
-        alert("Password is incorrect. Role change aborted.");
-      }
+      setIsPasswordModalOpen(false); 
+      await handlePasswordConfirmation({
+        password,
+        action: () => {
+          setRole(pendingRole); 
+        },
+        successMessage: "Password confirmed. Role changed successfully.",
+      });
     } catch (error) {
       console.error("Error verifying password:", error);
-      alert("An error occurred while verifying the password.");
     }
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    const requiredFields = [
+      { name: "First Name", value: firstName },
+      { name: "Last Name", value: lastName },
+      { name: "Email", value: email },
+      { name: "Telephone", value: telephone },
+      { name: "Address", value: address },
+      { name: "Postal Code", value: postalCode },
+      { name: "Password", value: password },
+      { name: "Confirm Password", value: confirmPassword },
+    ];
+  
+    const emptyFields = requiredFields.filter((field) => !field.value.trim());
+  
+    if (emptyFields.length > 0) {
+      alert(`Please fill in the following fields: ${emptyFields.map((field) => field.name).join(", ")}`);
+      return;
+    }
+    
     if (passwordErrors.length > 0) {
       alert("Password does not meet security requirements.");
       return;
     }
-
     if (password !== confirmPassword) {
       alert("Passwords do not match.");
       return;
     }
-
     setIsConfirmationModalOpen(true);
   };
 
@@ -201,7 +213,7 @@ export default function addCustomer() {
           <SfInput
             label="Password"
             type="password"
-            value={password || ""} // Ensure the value is always a string
+            value={password || ""} 
             onChange={handlePasswordChange}
             required
             placeholder="Enter password"
@@ -278,6 +290,7 @@ export default function addCustomer() {
         onConfirm={handlePasswordConfirm}
         message="Please confirm your password to change the role to admin."
       />
+
       <ConfirmationModal
         isOpen={isConfirmationModalOpen}
         onClose={() => setIsConfirmationModalOpen(false)}

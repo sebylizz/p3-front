@@ -16,7 +16,7 @@ const matchPassword = async (password) => {
         throw new Error(error || "Failed to verify password.");
       }
   
-      return await response.json(); // Expect a direct boolean: true/false
+      return await response.json(); 
     } catch (error) {
       console.error("Error matching password:", error);
       throw error;

@@ -1,28 +1,27 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import customerFetcher from "@/app/lib/getCustomers";
 import deleteCustomerAdmin from "@/app/lib/deleteCustomer";
 import getSearch from "@/app/lib/getSearchCustomers";
-import { useRouter } from "next/navigation";
 import { SfButton, SfIconAdd } from "@storefront-ui/react";
 import Search from "./search";
 import Link from "next/link";
 import PasswordModal from "@/app/components/admin/PasswordModal";
 import ConfirmationModal from "@/app/components/admin/ConfirmationModal";
+import handlePasswordConfirmation from "@/app/lib/handleConfirmPassword";
 
-export default function CustomerPage() {
+function CustomerContent({ searchParams }) {
   const [customers, setCustomers] = useState([]);
   const [offset, setOffset] = useState(0);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [total, setTotal] = useState(0);
-  const router = useRouter();
-  const BATCH_SIZE = 2;
-  const searchParams = useSearchParams();
+  const BATCH_SIZE = 10;
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [currentCustomer, setCurrentCustomer] = useState(null);
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
 
   const fetchCustomers = async (query, reset = false) => {
     if (loading) return;
@@ -87,43 +86,35 @@ export default function CustomerPage() {
   };
 
   const handleConfirmDelete = () => {
-    if (currentCustomer) {
+    if (currentCustomer?.role === "admin") {
+      setIsPasswordModalOpen(true);
+      setIsModalOpen(false);
+    } else if (currentCustomer) {
       handleDelete(currentCustomer.id);
+      setIsModalOpen(false);
     }
-    setIsModalOpen(false);
   };
 
-  const handleDelete = async (id) => {
+  const handleDeleteCustomer = async (password) => {
     try {
-      await deleteCustomerAdmin(id);
-      setCustomers((prevCustomers) =>
-        prevCustomers.filter((customer) => customer.id !== id)
-      );
-      alert("Customer deleted successfully!");
+      setIsPasswordModalOpen(false);
+      await handlePasswordConfirmation({
+        password,
+        action: async () => {
+          await deleteCustomerAdmin(currentCustomer.id);
+          setCustomers((prev) =>
+            prev.filter((customer) => customer.id !== currentCustomer.id)
+          );
+        },
+        successMessage: "Customer deleted successfully.",
+      });
     } catch (error) {
-      alert(`Error deleting customer: ${error.message}`);
+      console.error("Error during customer deletion:", error);
     }
-  };
-
-  const handleModify = (id) => {
-    useRouter.push(`/customers/modify/${id}`);
   };
 
   return (
     <div>
-      <ConfirmationModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onConfirm={handleConfirmDelete}
-        message={
-          <>
-            You are deleting the user:{" "}
-            <strong>{currentCustomer?.firstName}</strong>{" "}
-            <strong>{currentCustomer?.lastName}</strong>. Are you sure?
-          </>
-        }
-      />
-
       <ConfirmationModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -143,16 +134,7 @@ export default function CustomerPage() {
           className="flex items-center gap-2"
           style={{ width: "50%", padding: "0.5rem" }}
         >
-          <Search
-            onSearchChange={(query) => {
-              const params = new URLSearchParams(searchParams);
-              if (query.trim()) {
-                params.set("query", query.trim());
-              } else {
-                params.delete("query");
-              }
-            }}
-          />
+          <Search placeholder="Search For Customers" />
           <Link href={"./customers/addCustomer"}>
             <SfButton
               variant="primary"
@@ -229,14 +211,27 @@ export default function CustomerPage() {
                 <button
                   type="button"
                   onClick={() => confirmDelete(customer)}
-                  className="bg-red-500 hover:bg-red-700 text-white px-4 py-2 rounded-md w-full md:w-auto"
+                  className={`${
+                    customer.id === 0
+                      ? "bg-gray-500 cursor-not-allowed"
+                      : "bg-red-500 hover:bg-red-700"
+                  } text-white px-4 py-2 rounded-md w-full md:w-auto`}
+                  disabled={customer.id === 0}
                 >
                   Delete
                 </button>
-                <Link href={`./customers/modifyCustomer/${customer.id}`}>
+                <Link
+                  href={`./customers/modifyCustomer/${customer.id}`}
+                  className={customer.id === 0 ? "pointer-events-none" : ""}
+                >
                   <button
                     type="button"
-                    className="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 rounded-md w-full md:w-auto"
+                    className={`${
+                      customer.id === 0
+                        ? "bg-gray-500 cursor-not-allowed"
+                        : "bg-blue-500 hover:bg-blue-700"
+                    } text-white px-4 py-2 rounded-md w-full md:w-auto`}
+                    disabled={customer.id === 0}
                   >
                     Modify
                   </button>
@@ -262,6 +257,22 @@ export default function CustomerPage() {
           {loading ? "Loading..." : "Load More"}
         </button>
       </div>
+      <PasswordModal
+        isOpen={isPasswordModalOpen}
+        onClose={() => setIsPasswordModalOpen(false)}
+        onConfirm={handleDeleteCustomer}
+        message="Please confirm your password to delete the user."
+      />
     </div>
+  );
+}
+
+export default function CustomerPage() {
+  const searchParams = useSearchParams();
+
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CustomerContent searchParams={searchParams} />
+    </Suspense>
   );
 }

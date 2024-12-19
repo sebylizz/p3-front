@@ -47,6 +47,7 @@ export default function Login() {
 
                 <form onSubmit={handleLogin}>
                     <TextField
+                    name="email"
                         label="Email"
                         type="email"
                         variant="outlined"
@@ -58,6 +59,7 @@ export default function Login() {
                     />
 
                     <TextField
+                    name="password"
                         label="Password"
                         type="password"
                         variant="outlined"

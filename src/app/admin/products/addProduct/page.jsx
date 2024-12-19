@@ -25,6 +25,14 @@ import AddSizeModal from "@/app/components/admin/AddSizeModal";
 import uploadImages from "@/app/lib/uploadImages";
 
 import ConfirmationModal from "@/app/components/admin/ConfirmationModal";
+import { handleAddColor } from "@/app/lib/handleAddColor";
+import { handleAddSizeAndQuantity } from "@/app/lib/handleAddSizeAndQuantity";
+import { isStartDateInFuture } from "@/app/lib/isStartDateInFuture";
+import {
+  TextInput,
+  TextAreaInput,
+  SelectInput,
+} from "@/app/components/admin/inputComponents";
 
 export default function AddProduct() {
   const [name, setName] = useState("");
@@ -45,18 +53,15 @@ export default function AddProduct() {
   const [mainImage, setMainImage] = useState(null);
   const [extraImages, setExtraImages] = useState([]);
 
-  //collection
   const [isAddCollectionModalOpen, setIsAddCollectionModalOpen] =
     useState(false);
   const [collections, setCollections] = useState([]);
 
-  //categories
   const [parentCategoryId, setParentCategoryId] = useState(null);
   const [childCategoryId, setChildCategoryId] = useState(null);
   const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false);
   const [categories, setCategories] = useState([]);
 
-  //variant
   const [isAddColorModalOpen, setIsAddColorModalOpen] = useState(false);
   const [isAddSizeModalOpen, setIsAddSizeModalOpen] = useState(false);
 
@@ -67,6 +72,7 @@ export default function AddProduct() {
   const [productData, setProductData] = useState(null);
 
   const [status, setStatus] = useState(null);
+
   const handleDeleteVariant = (colorId, variantIndex) => {
     setSelectedColors((prevColors) =>
       prevColors.map((color) =>
@@ -81,7 +87,6 @@ export default function AddProduct() {
       )
     );
   };
-
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
@@ -115,12 +120,6 @@ export default function AddProduct() {
     setIsActive(!isStartDateInFuture(date));
   };
 
-  const isStartDateInFuture = () => {
-    const today = new Date();
-    const selectedDate = new Date(startDate);
-    return selectedDate > today;
-  };
-
   const handleToggleCollapse = (colorId) => {
     setCollapsedColors((prev) => ({
       ...prev,
@@ -144,36 +143,14 @@ export default function AddProduct() {
     setSizes((prevSizes) => [...prevSizes, newSize]);
   };
 
-  const handleAddColor = () => {
-    if (!colorToAdd) {
-      alert("Please select a color to add.");
-      return;
-    }
-
-    const colorAlreadyAdded = selectedColors.some(
-      (color) => color.colorId === colorToAdd
-    );
-    if (colorAlreadyAdded) {
-      alert("Color is already added.");
-      return;
-    }
-
-    const selectedColorDetails = colors.find(
-      (color) => color.id === colorToAdd
-    );
-
-    setSelectedColors((prevColors) => [
-      ...prevColors,
-      {
-        colorId: selectedColorDetails.id,
-        colorName: selectedColorDetails.name,
-        mainImage: null,
-        extraImages: [],
-        variants: [],
-      },
-    ]);
-
-    setColorToAdd(null);
+  const onAddColor = () => {
+    handleAddColor({
+      colorToAdd,
+      setColorToAdd,
+      selectedColors,
+      setSelectedColors,
+      colors,
+    });
   };
 
   const handleMainImageChange = (colorId, e) => {
@@ -223,32 +200,17 @@ export default function AddProduct() {
     );
   };
 
-  const handleAddSizeAndQuantity = (colorId) => {
-    if (!sizeToAdd || !quantityToAdd || quantityToAdd <= 0) {
-      alert("Please select a size and enter a valid quantity.");
-      return;
-    }
-
-    setSelectedColors((prevColors) =>
-      prevColors.map((color) =>
-        color.colorId === colorId
-          ? {
-              ...color,
-              variants: [
-                ...color.variants,
-                {
-                  sizeId: sizeToAdd,
-                  sizeName: sizes.find((s) => s.id === sizeToAdd).name,
-                  quantity: parseInt(quantityToAdd, 10),
-                },
-              ],
-            }
-          : color
-      )
-    );
-
-    setSizeToAdd(null);
-    setQuantityToAdd("");
+  const onAddSizeAndQuantity = (colorId) => {
+    handleAddSizeAndQuantity({
+      colorId,
+      sizeToAdd,
+      quantityToAdd,
+      setSizeToAdd,
+      setQuantityToAdd,
+      selectedColors,
+      setSelectedColors,
+      sizes,
+    });
   };
 
   const handleFormSubmit = (e) => {
@@ -257,7 +219,6 @@ export default function AddProduct() {
       alert("Start Date is required.");
       return;
     }
-
     const data = {
       name,
       description,
@@ -344,12 +305,12 @@ export default function AddProduct() {
       <form onSubmit={handleFormSubmit} className="space-y-6">
         <div>
           {/* Product Name */}
-          <SfInput
+          <TextInput
             label="Product Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            placeholder="product name"
+            placeholder="Product Name"
           />
         </div>
         <div>
@@ -413,7 +374,7 @@ export default function AddProduct() {
           <SfSwitch
             checked={isActive}
             onChange={() => {
-              if (!isStartDateInFuture()) {
+              if (isStartDateInFuture()) {
                 setIsActive(!isActive);
               }
             }}
@@ -422,18 +383,12 @@ export default function AddProduct() {
         </div>
         {/* Collections */}
         <div>
-          <SfSelect
+          <SelectInput
             label="Collection"
             value={collectionId || ""}
-            onChange={(e) => setCollectionId(e.target.value) || ""}
-          >
-            <option value=" ">Select a Collection</option>
-            {collections.map((collection) => (
-              <option key={collection.id} value={collection.id}>
-                {collection.name}
-              </option>
-            ))}
-          </SfSelect>
+            onChange={(e) => setCollectionId(e.target.value || null)}
+            options={collections}
+          />
           <SfButton
             type="button"
             onClick={() => setIsAddCollectionModalOpen(true)}
@@ -460,7 +415,6 @@ export default function AddProduct() {
             label="Parent Category"
             value={parentCategoryId || ""}
             onChange={(e) => {
-              const selectedId = e.target.value;
               setParentCategoryId(e.target.value);
             }}
           >
@@ -558,7 +512,7 @@ export default function AddProduct() {
               {/* Add Variant Button */}
               <SfButton
                 type="button"
-                onClick={handleAddColor}
+                onClick={onAddColor}
                 style={{ alignSelf: "center" }}
               >
                 Add Variant
@@ -782,6 +736,7 @@ export default function AddProduct() {
                       <label style={{ flex: "1" }}>
                         Size:
                         <SfSelect
+                          label="Size"
                           value={sizeToAdd || ""}
                           onChange={(e) =>
                             setSizeToAdd(parseInt(e.target.value, 10))
@@ -805,6 +760,7 @@ export default function AddProduct() {
                       <label style={{ flex: "1" }}>
                         Quantity:
                         <SfInput
+                          label="Quantity"
                           type="number"
                           value={quantityToAdd}
                           onChange={(e) =>
@@ -827,7 +783,7 @@ export default function AddProduct() {
                     {/* Add Size and Quantity Button */}
                     <SfButton
                       type="button"
-                      onClick={() => handleAddSizeAndQuantity(color.colorId)}
+                      onClick={() => onAddSizeAndQuantity(color.colorId)}
                       style={{ alignSelf: "center" }}
                     >
                       Add Size and Quantity
@@ -907,6 +863,7 @@ export default function AddProduct() {
         onConfirm={confirmSubmission}
         message="Are you sure you want to add this product?"
         status={status}
+        label="Confirm"
       />
     </div>
   );

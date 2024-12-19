@@ -23,6 +23,14 @@ import PriceList from "@/app/components/admin/PriceList";
 import deleteFiles from "@/app/lib/deleteFile";
 import { useRouter } from "next/navigation";
 import truncateToTwoDecimals from "@/app/lib/truncateToTwoDecimals";
+import { handleAddColor } from "@/app/lib/handleAddColor";
+import { handleAddSizeAndQuantity } from "@/app/lib/handleAddSizeAndQuantity";
+import { isStartDateInFuture } from "@/app/lib/isStartDateInFuture";
+import {
+  TextInput,
+  TextAreaInput,
+  SelectInput,
+} from "@/app/components/admin/inputComponents";
 
 export default function ModifyProduct({ productData }) {
   const router = useRouter();
@@ -51,6 +59,7 @@ export default function ModifyProduct({ productData }) {
   const [isAddCollectionModalOpen, setIsAddCollectionModalOpen] =
     useState(false);
   const [isAddColorModalOpen, setIsAddColorModalOpen] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const [prices, setPrices] = useState(
     productData?.prices?.map((price) => ({
@@ -85,9 +94,23 @@ export default function ModifyProduct({ productData }) {
   });
 
   const [sizeToAdd, setSizeToAdd] = useState(null);
-  const [quantityToAdd, setQuantityToAdd] = useState("");
+  const [quantityToAdd, setQuantityToAdd] = useState("  ");
   const [isAddSizeModalOpen, setIsAddSizeModalOpen] = useState(false);
   const [deletedImages, setDeletedImages] = useState([]);
+
+  const validateForm = () => {
+    const validationErrors = {};
+
+    if (!name.trim()) validationErrors.name = "Product name is required.";
+    if (!description.trim())
+      validationErrors.description = "Description is required.";
+    // if (!parentCategoryId) validationErrors.parentCategoryId = "Parent category is required.";
+    // if (selectedColors.length === 0) validationErrors.colors = "At least one color must be added.";
+    // if (prices.length === 0) validationErrors.prices = "At least one price must be set.";
+
+    setErrors(validationErrors);
+    return Object.keys(validationErrors).length === 0;
+  };
 
   const isDuplicateImage = (mainImage, extraImages, image) => {
     const mainImageName =
@@ -286,51 +309,27 @@ export default function ModifyProduct({ productData }) {
     }
   }, [productData, sizes, colors]);
 
-  const isStartDateInFuture = () => {
-    const today = new Date();
-    const selectedDate = new Date(startDate);
-    return selectedDate > today;
-  };
-
-  const handleAddColor = () => {
-    if (!colorToAdd) {
-      alert("Please select a color to add.");
-      return;
-    }
-
-    const colorAlreadyAdded = selectedColors.some(
-      (color) => color.colorId === colorToAdd
-    );
-    if (colorAlreadyAdded) {
-      alert("Color is already added.");
-      return;
-    }
-
-    const selectedColorDetails = colors.find(
-      (color) => color.id === colorToAdd
-    );
-
-    setSelectedColors((prevColors) => [
-      ...prevColors,
-      {
-        colorId: selectedColorDetails.id,
-        colorName: selectedColorDetails.name,
-        mainImage: null,
-        extraImages: [],
-        variants: [],
-      },
-    ]);
-
-    setColorToAdd(null);
+  const onAddColor = () => {
+    handleAddColor({
+      colorToAdd,
+      setColorToAdd,
+      selectedColors,
+      setSelectedColors,
+      colors,
+    });
   };
   const handleUpdateClick = (e) => {
     e.preventDefault();
     setIsConfirmationModalOpen(true);
   };
-
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+
     setIsConfirmationModalOpen(false);
+    if (!validateForm()) {
+      alert("Please fill all required fields.");
+      return;
+    }
 
     const updatedColors = selectedColors.map((color) => ({
       id: color.id || null,
@@ -424,6 +423,7 @@ export default function ModifyProduct({ productData }) {
   const handlePricesUpdate = (updatedPrices) => {
     setPrices(updatedPrices);
   };
+
   const handleToggleCollapse = (colorId) => {
     setCollapsedColors((prev) => ({
       ...prev,
@@ -431,32 +431,17 @@ export default function ModifyProduct({ productData }) {
     }));
   };
 
-  const handleAddSizeAndQuantity = (colorId) => {
-    if (!sizeToAdd || !quantityToAdd || quantityToAdd <= 0) {
-      alert("Please select a size and enter a valid quantity.");
-      return;
-    }
-
-    setSelectedColors((prevColors) =>
-      prevColors.map((color) =>
-        color.colorId === colorId
-          ? {
-              ...color,
-              variants: [
-                ...color.variants,
-                {
-                  sizeId: sizeToAdd,
-                  sizeName: sizes.find((s) => s.id === sizeToAdd).name,
-                  quantity: parseInt(quantityToAdd, 10),
-                },
-              ],
-            }
-          : color
-      )
-    );
-
-    setSizeToAdd(null);
-    setQuantityToAdd("");
+  const onAddSizeAndQuantity = (colorId) => {
+    handleAddSizeAndQuantity({
+      colorId,
+      sizeToAdd,
+      quantityToAdd,
+      setSizeToAdd,
+      setQuantityToAdd,
+      selectedColors,
+      setSelectedColors,
+      sizes,
+    });
   };
 
   return (
@@ -471,7 +456,7 @@ export default function ModifyProduct({ productData }) {
           <SfSwitch
             checked={isActive}
             onChange={() => {
-              if (isStartDateInFuture()) {
+              if (isStartDateInFuture(prices)) {
                 alert(
                   "The start date is in the future. You cannot toggle this switch."
                 );
@@ -482,32 +467,24 @@ export default function ModifyProduct({ productData }) {
             disabled={false}
           />
         </div>
-        <SfInput
+        <TextInput
           label="Product Name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
-          placeholder="Product name"
+          placeholder="Product Name"
         />
-        <textarea
+        <TextAreaInput
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Product description"
-          className="w-full border border-gray-300 rounded-md p-2"
-          rows="4"
+          placeholder="Product Description"
         />
-        <SfSelect
+        <SelectInput
           label="Collection"
           value={collectionId || ""}
           onChange={(e) => setCollectionId(e.target.value || null)}
-        >
-          <option value="">Select a collection</option>
-          {collections.map((collection) => (
-            <option key={collection.id} value={collection.id}>
-              {collection.name}
-            </option>
-          ))}
-        </SfSelect>
+          options={collections}
+        />
         <SfButton
           type="button"
           onClick={() => setIsAddCollectionModalOpen(true)}
@@ -527,6 +504,7 @@ export default function ModifyProduct({ productData }) {
           />
         )}
         <SfSelect
+          aria-label="Parent Category"
           label="Parent Category"
           value={parentCategoryId || ""}
           onChange={(e) => setParentCategoryId(e.target.value || null)}
@@ -540,6 +518,7 @@ export default function ModifyProduct({ productData }) {
         </SfSelect>
 
         <SfSelect
+          aria-label="Child Category"
           label="Child Category"
           value={childCategoryId || ""}
           onChange={(e) => setChildCategoryId(parseInt(e.target.value, 10))}
@@ -559,6 +538,7 @@ export default function ModifyProduct({ productData }) {
         </SfSelect>
 
         <SfButton
+          aria-label="Add New Category"
           style={{
             display: "block",
             margin: "0.5rem auto",
@@ -592,6 +572,7 @@ export default function ModifyProduct({ productData }) {
           {/* Dropdown and Buttons */}
           <div style={{ position: "relative", marginBottom: "1rem" }}>
             <SfSelect
+              aria-label="Choose Color"
               label="Choose Color"
               value={colorToAdd || ""}
               onChange={(e) => setColorToAdd(parseInt(e.target.value, 10))}
@@ -620,6 +601,7 @@ export default function ModifyProduct({ productData }) {
             >
               {/* Add New Color Button */}
               <SfButton
+                aria-label="Add New Color"
                 type="button"
                 onClick={() => setIsAddColorModalOpen(true)}
                 style={{ alignSelf: "flex-start" }}
@@ -629,8 +611,9 @@ export default function ModifyProduct({ productData }) {
 
               {/* Add Variant Button */}
               <SfButton
+                aria-label="Add Variant"
                 type="button"
-                onClick={handleAddColor}
+                onClick={onAddColor}
                 style={{ alignSelf: "center" }}
               >
                 Add Variant
@@ -694,6 +677,7 @@ export default function ModifyProduct({ productData }) {
               >
                 {/* Expand/Collapse Button */}
                 <SfButton
+                  aria-label="Toogle Collapse"
                   type="button"
                   onClick={() => handleToggleCollapse(color.colorId)}
                   style={{
@@ -760,6 +744,7 @@ export default function ModifyProduct({ productData }) {
                             }}
                           />
                           <SfButton
+                            aria-label="Delete Main Image"
                             type="button"
                             onClick={() => handleMainImageDelete(color.colorId)}
                             style={{
@@ -830,6 +815,7 @@ export default function ModifyProduct({ productData }) {
                               }}
                             />
                             <SfButton
+                              aria-label="Delete Extra Image"
                               type="button"
                               onClick={() =>
                                 handleExtraImageDelete(
@@ -870,6 +856,7 @@ export default function ModifyProduct({ productData }) {
                       <label style={{ flex: "1" }}>
                         Size:
                         <SfSelect
+                          aria-label="Size"
                           value={sizeToAdd || ""}
                           onChange={(e) =>
                             setSizeToAdd(parseInt(e.target.value, 10))
@@ -905,6 +892,7 @@ export default function ModifyProduct({ productData }) {
 
                     {/* Add New Size Button */}
                     <SfButton
+                      aria-label="Add New Size"
                       type="button"
                       onClick={() => setIsAddSizeModalOpen(true)}
                       style={{ alignSelf: "flex-start" }}
@@ -914,8 +902,9 @@ export default function ModifyProduct({ productData }) {
 
                     {/* Add Size and Quantity Button */}
                     <SfButton
+                      aria-label="Add Size and Quantity"
                       type="button"
-                      onClick={() => handleAddSizeAndQuantity(color.colorId)}
+                      onClick={() => onAddSizeAndQuantity(color.colorId)}
                       style={{ alignSelf: "center" }}
                     >
                       Add Size and Quantity
@@ -993,6 +982,7 @@ export default function ModifyProduct({ productData }) {
         ))}
 
         <SfButton
+          aria-label="Update Product"
           type="button"
           style={{
             display: "block",

@@ -63,6 +63,26 @@ export default function CheckoutPage() {
                     alert("Stripe failed to load.");
                     setLoading(false);
                 }
+                // const stripe = await loadStripe("pk_test_51QA8WbCZh5mI9KbJuYzOgvILXehId4peiz0SZfAXviiEDTQpw9MJmUAfuQLgNY0NboEvnJTVO2bsbJ1RIHpaP9xQ00LmbXX7vj");
+                // if (stripe) {
+                //     // Check if in test mode based on environment variable Cypress
+                //     if (Cypress.env("NODE_ENV")) {
+
+                //         // Skip Stripe redirect and simulate success
+                //         alert("In test mode, payment would be processed now.");
+                //         setLoading(false);
+                //         // Simulate success: Directly navigate to success page
+                //         window.location.href = "/success?session_id=mock_session_id";
+                //     } else {
+                //         const result = await stripe.redirectToCheckout({ sessionId: sessionId });
+                //         if (result.error) {
+                //             alert(`Error redirecting to checkout: ${result.error.message}`);
+                //         }
+                //     }
+                // } else {
+                //     alert("Stripe failed to load.");
+                //     setLoading(false);
+                // }
             } else {
                 alert("Failed to retrieve payment session");
                 setLoading(false);

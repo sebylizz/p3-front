@@ -40,23 +40,23 @@ export default function ModifyCustomer({ customerData }) {
       console.error("Error sending reset password link:", error);
       alert("An error occurred while sending the reset password link.");
     } finally {
-      setIsSendingReset(false); // Reset submission complete
+      setIsSendingReset(false); 
     }
   };
   const handleRoleChange = (newRole) => {
     if (newRole !== role) {
-      setPendingRole(newRole); // Set the role to be applied after confirmation
-      setIsPasswordModalOpen(true); // Open password modal
+      setPendingRole(newRole); 
+      setIsPasswordModalOpen(true); 
     }
   };
 
   const handlePasswordConfirm = async (password) => {
-    setIsPasswordModalOpen(false); // Close the modal
+    setIsPasswordModalOpen(false); 
 
     try {
-      const isPasswordValid = await matchPassword(password); // Pass the entered password
+      const isPasswordValid = await matchPassword(password); 
       if (isPasswordValid) {
-        setRole(pendingRole); // Apply the pending role if the password is valid
+        setRole(pendingRole); 
         alert("Password confirmed. Role changed successfully.");
       } else {
         alert("Password is incorrect. Role change aborted.");
@@ -102,7 +102,7 @@ export default function ModifyCustomer({ customerData }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsConfirmationModalOpen(true); // Show confirmation modal before submitting
+    setIsConfirmationModalOpen(true); 
   };
 
   const handleConfirmSubmission = async () => {
@@ -233,7 +233,7 @@ export default function ModifyCustomer({ customerData }) {
                 : "bg-blue-600 hover:bg-blue-700 text-white"
             }`}
             onClick={forgotPassword}
-            disabled={!email || isSendingReset} // Disable button if email is empty or already sending
+            disabled={!email || isSendingReset} 
           >
             {isSendingReset ? "Sending..." : "Send Reset Password Link"}
           </SfButton>

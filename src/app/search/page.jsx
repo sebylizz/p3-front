@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from "next/link";
-import productFetcher from '../GetProducts';
+import productFetcher from '../lib/GetProducts';
 
 export default function SearchPage() {
   const [products, setProducts] = useState([]);

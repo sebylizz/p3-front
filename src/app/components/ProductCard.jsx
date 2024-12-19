@@ -17,6 +17,7 @@ export default function ProductCard({ name, image, price, productId, colorId }) 
       className="border border-neutral-200 rounded-md hover:shadow-lg max-w-[300px]"
       onClick={handleCardClick}
       style={{ cursor: 'pointer' }}
+      data-testid="product-card"
     >
       <div className="relative">
         <img

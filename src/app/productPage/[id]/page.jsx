@@ -39,7 +39,7 @@ export default function ProductDetailsPage() {
   }
 
   // Prepare image paths with folder prefix
-  const images = product.colors[currentColorIndex].images
+  const images = (product.colors[currentColorIndex].images || "")
     .split(",")
     .map(
       (img) => `/${id}/${product.colors[currentColorIndex].id}/${img.trim()}`
