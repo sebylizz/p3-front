@@ -1,8 +1,18 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
 
-export default function ConfirmationModal({ isOpen, onClose, onConfirm, message, status }) {
+export default function ConfirmationModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  message,
+  status,
+  redirectPath, 
+}) {
+  const router = useRouter(); 
+
   if (!isOpen && !status) return null;
 
   let statusMessage = "";
@@ -15,6 +25,12 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, message,
     statusMessage = "Failed to add the product. Please try again.";
     statusClass = "text-red-600";
   }
+
+  const handleRedirect = () => {
+    if (redirectPath) {
+      router.push(redirectPath); 
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -35,7 +51,7 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, message,
                 Cancel
               </button>
               <button
-                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700"
+                className="px-4 py-2 bg-[#0d7f3f] text-white rounded hover:bg-[#0a6531]"
                 onClick={onConfirm}
               >
                 Confirm
@@ -46,7 +62,10 @@ export default function ConfirmationModal({ isOpen, onClose, onConfirm, message,
           {status && (
             <button
               className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-              onClick={onClose}
+              onClick={() => {
+                onClose(); 
+                handleRedirect(); 
+              }}
             >
               Close
             </button>

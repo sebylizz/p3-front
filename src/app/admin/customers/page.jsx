@@ -151,7 +151,10 @@ function CustomerContent({ searchParams }) {
 
       <div className="my-2 mx-1 flex justify-center">
         <div className="w-full">
-          <div className="flex border-b border-gray-300 bg-primary-700 text-white">
+          <div
+            className="flex border-b border-gray-300 text-black font-bold"
+            style={{ backgroundColor: "#fb923c" }} 
+            >
             <div className="px-4 py-2 text-sm text-center" style={{ flex: 1 }}>
               ID
             </div>

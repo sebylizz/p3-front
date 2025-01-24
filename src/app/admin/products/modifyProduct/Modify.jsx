@@ -64,14 +64,14 @@ export default function ModifyProduct({ productData }) {
   const [prices, setPrices] = useState(
     productData?.prices?.map((price) => ({
       ...price,
-      price: truncateToTwoDecimals(price.price / 1000),
+      price: (price.price / 1000),
     })) || []
   );
 
   const [initialPrices, setInitialPrices] = useState(
     productData?.prices?.map((price) => ({
       ...price,
-      price: truncateToTwoDecimals(price.price / 1000),
+      price: (price.price / 1000),
     })) || []
   );
   const [startDate, setStartDate] = useState("");
@@ -104,9 +104,6 @@ export default function ModifyProduct({ productData }) {
     if (!name.trim()) validationErrors.name = "Product name is required.";
     if (!description.trim())
       validationErrors.description = "Description is required.";
-    // if (!parentCategoryId) validationErrors.parentCategoryId = "Parent category is required.";
-    // if (selectedColors.length === 0) validationErrors.colors = "At least one color must be added.";
-    // if (prices.length === 0) validationErrors.prices = "At least one price must be set.";
 
     setErrors(validationErrors);
     return Object.keys(validationErrors).length === 0;
@@ -352,18 +349,35 @@ export default function ModifyProduct({ productData }) {
     }));
 
     const transformedPrices = prices.map((price) => {
-      const isExistingPrice = initialPrices.some(
-        (initialPrice) => initialPrice.id === price.id
-      );
-
+      const initialPrice = initialPrices.find((p) => p.id === price.id);
+    
+      // New price
+      if (!initialPrice) {
+        return {
+          id: null, // New prices have null IDs
+          price: parseFloat(price.price) * 1000 || 0, 
+          isDiscount: !!price.isDiscount,
+          startDate: price.startDate,
+          endDate: price.endDate || null,
+        };
+      }
+    
+      // Updated price
+      const isUpdated =
+        parseFloat(price.price) !== parseFloat(initialPrice.price) ||
+        price.startDate !== initialPrice.startDate ||
+        price.endDate !== initialPrice.endDate ||
+        price.isDiscount !== initialPrice.isDiscount;
+    
       return {
-        id: isExistingPrice ? price.id : null,
-        price: parseFloat(price.price * 1000) || 0,
+        id: price.id,
+        price: parseFloat(price.price) * 1000 || 0,
         isDiscount: !!price.isDiscount,
         startDate: price.startDate,
         endDate: price.endDate || null,
       };
     });
+    
 
     const updatedProduct = {
       id: productData?.id,
@@ -422,6 +436,7 @@ export default function ModifyProduct({ productData }) {
 
   const handlePricesUpdate = (updatedPrices) => {
     setPrices(updatedPrices);
+    console.log(prices);
   };
 
   const handleToggleCollapse = (colorId) => {
