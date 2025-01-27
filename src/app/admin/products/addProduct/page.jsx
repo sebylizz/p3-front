@@ -419,11 +419,13 @@ export default function AddProduct() {
             }}
           >
             <option value="">Select a Parent Category</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
+            {categories
+          .filter((category) => !category.parentCategory) 
+          .map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
           </SfSelect>
 
           <SfSelect
@@ -864,6 +866,7 @@ export default function AddProduct() {
         message="Are you sure you want to add this product?"
         status={status}
         label="Confirm"
+        redirectPath={"/admin/products"}
       />
     </div>
   );

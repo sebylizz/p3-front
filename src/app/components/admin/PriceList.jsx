@@ -46,14 +46,18 @@ export default function PriceList({ prices: initialPrices, onPricesUpdate }) {
         const priceEnd = price.endDate ? new Date(price.endDate) : null;
     
         if (
-          (newStart >= priceStart && (!priceEnd || newStart <= priceEnd)) ||
-          (newEnd && newEnd >= priceStart && (!priceEnd || newEnd <= priceEnd))
+          price.isDiscount &&
+          (
+            (newStart >= priceStart && (!priceEnd || newStart <= priceEnd)) ||
+            (newEnd && newEnd >= priceStart && (!priceEnd || newEnd <= priceEnd))
+          )
         ) {
-          alert("Discount start or end date cannot match any existing price dates.");
+          alert("Discount start or end date cannot overlap with another discount.");
           return;
         }
       }
     }
+    
   
 
     if (!isDiscount) {
@@ -85,7 +89,6 @@ export default function PriceList({ prices: initialPrices, onPricesUpdate }) {
       endDate: isDiscount ? newEndDate : null,
       isDiscount,
     };
-  
 
       setPrices((prevPrices) => [...prevPrices, newPriceEntry]);
       setIsModalOpen(false);
@@ -104,50 +107,80 @@ export default function PriceList({ prices: initialPrices, onPricesUpdate }) {
   };
 
   const handleSaveClick = (id) => {
-    setPrices((prevPrices) =>
-      prevPrices.map((price) =>
-        price.id === id
-          ? {
-              ...price,
-              price: newPrice,
-              startDate: newStartDate,
-              endDate: newEndDate,
-            }
-          : price
-      )
+    const updatedPrices = prices.map((price) =>
+      price.id === id
+        ? {
+            ...price,
+            price: parseFloat(newPrice),
+            startDate: newStartDate,
+            endDate:
+              !price.isDiscount && new Date(newStartDate) > currentDate
+                ? null
+                : newEndDate,
+          }
+        : price
     );
+    setPrices(updatedPrices);
+    onPricesUpdate([...updatedPrices]);
     setEditingPriceId(null);
-    onPricesUpdate(prices);
   };
+  
+  
+  
+  
 
   const handleDeleteClick = (id) => {
     const priceToDelete = prices.find((p) => p.id === id);
-
+  
     if (!priceToDelete) {
       console.error("Price not found");
       return;
     }
-
+  
     let updatedPrices;
-
+  
     if (priceToDelete.isDiscount) {
+
       updatedPrices = prices.filter((price) => price.id !== id);
     } else {
+
       const nonDiscountPrices = prices.filter((p) => !p.isDiscount);
-      const remainingNonDiscount = nonDiscountPrices
-        .filter((p) => p.id !== id)
-        .sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+  
+      if (nonDiscountPrices.length === 1) {
 
-      if (remainingNonDiscount.length > 0) {
-        remainingNonDiscount[remainingNonDiscount.length - 1].endDate = null;
+        alert("You cannot delete the last remaining non-discount price.");
+        return;
       }
+  
 
-      updatedPrices = prices.filter((price) => price.id !== id);
+      const sortedNonDiscountPrices = nonDiscountPrices.sort(
+        (a, b) => new Date(a.startDate) - new Date(b.startDate)
+      );
+  
+
+      const indexToDelete = sortedNonDiscountPrices.findIndex(
+        (p) => p.id === id
+      );
+  
+      if (indexToDelete > 0) {
+        const predecessor = sortedNonDiscountPrices[indexToDelete - 1];
+        updatedPrices = prices.map((price) => {
+          if (price.id === predecessor.id) {
+            return { ...price, endDate: null }; 
+          }
+          return price;
+        });
+      } else {
+        alert("Cannot delete this price as it has no predecessor.");
+        return;
+      }
+      updatedPrices = updatedPrices.filter((price) => price.id !== id);
     }
-
+  
     setPrices(updatedPrices);
     onPricesUpdate(updatedPrices);
   };
+  
   const isNonEditablePrice = (price) => {
     const today = new Date();
     const startDate = new Date(price.startDate);

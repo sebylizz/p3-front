@@ -9,6 +9,7 @@ import { SfLoaderCircular } from "@storefront-ui/react";
 import truncateToTwoDecimals from "@/app/lib/truncateToTwoDecimals";
 import { SfButton, SfIconAdd } from "@storefront-ui/react";
 import Search from "../customers/search";
+import { parse } from "path";
 
 export default function AdminProducts() {
   const [products, setProducts] = useState([]);
@@ -79,7 +80,10 @@ export default function AdminProducts() {
       {/* Products Table */}
       <div className="my-2 mx-1 flex justify-center">
         <div className="w-full">
-          <div className="flex border-b border-gray-300 bg-primary-700 text-white">
+          <div
+            className="flex border-b border-gray-300 text-black font-bold"
+            style={{ backgroundColor: "#fb923c" }} 
+            >
             <div
               className="px-4 py-2 text-sm text-center hidden md:block"
               style={{ flex: 1 }}
@@ -157,7 +161,7 @@ export default function AdminProducts() {
                 className="px-4 py-2 text-sm text-center truncate hidden md:block"
                 style={{ flex: 1 }}
               >
-                {truncateToTwoDecimals(product.price / 1000)} kr
+                {parseFloat(product.price / 1000)} kr
               </div>
 
               {/* Actions */}
