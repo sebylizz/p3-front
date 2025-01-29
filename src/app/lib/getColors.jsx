@@ -1,6 +1,6 @@
 async function colorFetcher() {
     try {
-        const response = await fetch("http://localhost:8080/colors/getColors");
+        const response = await fetch("http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//colors/getColors");
 
         if (!response.ok) {
             throw new Error('Network response was not ok');

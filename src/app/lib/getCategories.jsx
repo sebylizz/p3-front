@@ -2,7 +2,7 @@
 
 export default async function getCategories(){
     try {
-        const response = await fetch('http://localhost:8080/categories/getCategories');
+        const response = await fetch('http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//categories/getCategories');
 
         if (!response.ok) {
             throw new Error('Network response was not ok');

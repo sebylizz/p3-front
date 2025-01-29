@@ -1,6 +1,6 @@
 export default async function verifyAccount(token) {
     try {
-        const response = await fetch(`http://localhost:8080/customers/verify?token=${token}`, {
+        const response = await fetch(`http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//customers/verify?token=${token}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

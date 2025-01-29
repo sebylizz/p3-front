@@ -5,7 +5,7 @@ async function HandleDelete(idsToDelete){
 
 
   try {
-    const response = await fetch('http://localhost:8080/products/deleteproducts', {
+    const response = await fetch('http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//products/deleteproducts', {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

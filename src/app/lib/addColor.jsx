@@ -4,7 +4,7 @@ async function addColor(colorData) {
     try {
         const token = await getJWT();
 
-        const response = await fetch("http://localhost:8080/colors/addColor", {
+        const response = await fetch("http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//colors/addColor", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

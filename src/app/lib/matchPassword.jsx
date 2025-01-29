@@ -2,7 +2,7 @@ import getJWT from "./getJWT";
 const matchPassword = async (password) => {
     try {
       const token = await getJWT();
-      const response = await fetch("http://localhost:8080/customers/matchPassword", {
+      const response = await fetch("http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//customers/matchPassword", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

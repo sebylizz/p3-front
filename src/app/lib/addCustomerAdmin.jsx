@@ -3,7 +3,7 @@ async function addCustomerAdmin(data) {
   try {
     const token = await getJWT();
     const response = await fetch(
-      "http://localhost:8080/customers/addCustomerAdmin",
+      "http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//customers/addCustomerAdmin",
       {
         method: "POST",
         headers: {

@@ -142,21 +142,21 @@ Cypress.Commands.add("login", (credentials) => {
 });
 
 Cypress.Commands.add("mockStripeSession", () => {
-  cy.intercept("POST", "http://localhost:8080/payment/generatesessionid", {
+  cy.intercept("POST", "http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//payment/generatesessionid", {
     statusCode: 200,
     body: "mock_session_id",
   }).as("createStripeSession");
 });
 
 Cypress.Commands.add("mockVerifyPayment", (response = { success: true }) => {
-  cy.intercept("POST", "http://localhost:8080/payment/confirmorder", {
+  cy.intercept("POST", "http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//payment/confirmorder", {
     statusCode: response.success ? 200 : 500,
     body: response,
   }).as("verifyPayment");
 });
 
 Cypress.Commands.add("mockSessionId", () => {
-  cy.intercept("POST", "http://localhost:8080/payment/generatesessionid", {
+  cy.intercept("POST", "http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//payment/generatesessionid", {
     statusCode: 200,
     body: "mock_session_id",
   }).as("mockSessionId");

@@ -5,7 +5,7 @@ export default async function deleteAccount(Id) {
     try {
         const cookieStore = await cookies();
         const token = cookieStore.get('token');
-        const response = await fetch('http://localhost:8080/customers/deleteCustomer?Id='+Id, {
+        const response = await fetch('http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//customers/deleteCustomer?Id='+Id, {
             method: 'DELETE',
             headers: {
                 'Accept': '*/*',

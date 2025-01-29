@@ -3,7 +3,7 @@ import getJWT from "./getJWT";
 async function allProducts() {
     try {
         const token = await getJWT();
-        const response = await fetch("http://localhost:8080/products/getAllAdmin", {
+        const response = await fetch("http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//products/getAllAdmin", {
             method: "GET",
             headers: {
                 'Authorization': `Bearer ${token?.value}`

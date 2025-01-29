@@ -4,7 +4,7 @@ async function addCategory(data) {
     try {
         const token = await getJWT();
 
-        const response = await fetch("http://localhost:8080/categories/addCategory", {
+        const response = await fetch("http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//categories/addCategory", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

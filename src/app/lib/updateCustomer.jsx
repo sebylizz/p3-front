@@ -3,7 +3,7 @@ async function updateCustomer(customerData, updatedCustomer) {
   const token = await getJWT();
   try {
     const response = await fetch(
-      `http://localhost:8080/customers/updateCustomer/${customerData.id}`,
+      `http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//customers/updateCustomer/${customerData.id}`,
       {
         method: "PUT",
         headers: {

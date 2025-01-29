@@ -1,6 +1,6 @@
 export default async function loginFunction(email) {
     try {
-        const response = await fetch('http://localhost:8080/login/forgot', {
+        const response = await fetch('http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//login/forgot', {
             method: 'POST',
             credentials: 'include',
             headers: {

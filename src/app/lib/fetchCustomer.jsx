@@ -7,7 +7,7 @@ export default async function fetchCustomer(){
 
         const cookieStore = await cookies();
         const token = cookieStore.get('token');
-        const response = await fetch("http://localhost:8080/customers/getsinglecustomer", {
+        const response = await fetch("http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//customers/getsinglecustomer", {
             method: 'GET',
             headers: { 
                 'Accept': '*/*',

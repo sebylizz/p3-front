@@ -9,7 +9,7 @@ async function updateProduct(productData, updatedProduct) {
 
   const token = await getJWT();
   try {
-    const response = await fetch(`http://localhost:8080/products/updateProduct/${productData.id}`, {
+    const response = await fetch(`http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//products/updateProduct/${productData.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json',
         'Authorization': `Bearer ${token?.value}`

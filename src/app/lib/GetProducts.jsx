@@ -1,6 +1,6 @@
 async function productFetcher() {
     try {
-        const response = await fetch("http://localhost:8080/products/getall");
+        const response = await fetch("http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//products/getall");
 
         if (!response.ok) {
             throw new Error('Network response was not ok');

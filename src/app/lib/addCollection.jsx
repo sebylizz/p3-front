@@ -4,7 +4,7 @@ async function addCollection(collectionData) {
     try {
         const token = await getJWT();
 
-        const response = await fetch("http://localhost:8080/collections/addCollection", {
+        const response = await fetch("http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//collections/addCollection", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

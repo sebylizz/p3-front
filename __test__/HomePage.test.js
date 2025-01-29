@@ -105,7 +105,7 @@ describe("productFetcher", () => {
 
     const data = await productFetcher();
 
-    expect(fetch).toHaveBeenCalledWith("http://localhost:8080/products/getall");
+    expect(fetch).toHaveBeenCalledWith("http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//products/getall");
     expect(data).toEqual(mockData);
   });
 
@@ -120,7 +120,7 @@ describe("productFetcher", () => {
 
     const data = await productFetcher();
 
-    expect(fetch).toHaveBeenCalledWith("http://localhost:8080/products/getall");
+    expect(fetch).toHaveBeenCalledWith("http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//products/getall");
     expect(data).toBeUndefined();
     expect(consoleErrorSpy).toHaveBeenCalledWith("Error:", expect.any(Error));
 
@@ -136,7 +136,7 @@ describe("productFetcher", () => {
 
     const data = await productFetcher();
 
-    expect(fetch).toHaveBeenCalledWith("http://localhost:8080/products/getall");
+    expect(fetch).toHaveBeenCalledWith("http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//products/getall");
     expect(data).toBeUndefined();
     expect(consoleErrorSpy).toHaveBeenCalledWith("Error:", expect.any(Error));
 

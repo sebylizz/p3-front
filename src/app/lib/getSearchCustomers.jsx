@@ -1,6 +1,6 @@
 import getJWT from "./getJWT";
 async function getSearch(query, offset = 0, limit = 10) {
-  const url = new URL("http://localhost:8080/customers/search");
+  const url = new URL("http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//customers/search");
   url.searchParams.append("query", query);
   url.searchParams.append("offset", offset);
   url.searchParams.append("limit", limit);

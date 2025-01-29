@@ -5,7 +5,7 @@ export default async function cartSender(info, cart) {
     // }
     info.userId = "0";
     try {
-        const response = await fetch('http://localhost:8080/payment/generatesessionid', {
+        const response = await fetch('http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//payment/generatesessionid', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

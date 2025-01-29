@@ -1,6 +1,6 @@
 export default async function addCustomer(data) {
     try {
-        const response = await fetch('http://localhost:8080/customers/addcustomer', {
+        const response = await fetch('http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//customers/addcustomer', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

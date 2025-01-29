@@ -3,7 +3,7 @@
 export default async function editCustomer(customerData) {
     try {
         // Send customer data to the backend using the POST method
-        const response = await fetch("http://localhost:8080/customers/updateCustomer", {
+        const response = await fetch("http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//customers/updateCustomer", {
             method: "POST", // Specify POST request
             headers: {
                 'accept': '*/*',

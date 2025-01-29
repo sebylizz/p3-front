@@ -3,7 +3,7 @@ import getJWT from "./getJWT";
 async function deleteCustomerAdmin(id) {
     try {
         const token = await getJWT();
-        const response = await fetch(`http://localhost:8080/customers/deleteCustomer/${id}`, {
+        const response = await fetch(`http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//customers/deleteCustomer/${id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",

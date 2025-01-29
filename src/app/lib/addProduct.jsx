@@ -4,7 +4,7 @@ async function addProduct(productData) {
   try {
     const token = await getJWT();
 
-    const response = await fetch("http://localhost:8080/products/add", {
+    const response = await fetch("http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//products/add", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -1,6 +1,6 @@
 async function sizeFetcher() {
     try {
-        const response = await fetch("http://localhost:8080/sizes/getSizes");
+        const response = await fetch("http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//sizes/getSizes");
 
         if (!response.ok) {
             throw new Error('Network response was not ok');

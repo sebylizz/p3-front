@@ -1,6 +1,6 @@
 export default async function verifyPayment(sessionId) {
     try {
-        const response = await fetch("http://localhost:8080/payment/confirmorder", {
+        const response = await fetch("http://leghettoback.hzbnfzh4gkdzh6br.northeurope.azurecontainer.io:8080//payment/confirmorder", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
