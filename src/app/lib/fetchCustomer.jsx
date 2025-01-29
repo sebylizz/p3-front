@@ -1,4 +1,3 @@
-//fetch customer information for account edit
 'use server';
 import { cookies } from 'next/headers';
 
